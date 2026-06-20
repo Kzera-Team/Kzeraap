@@ -1,0 +1,1 @@
+const fs=require('fs');function a(c,m){if(!c)throw new Error(m)};const d=fs.readFileSync('docs/UI_HTML_REAL_1.9.10.md','utf8');const pkg=fs.readFileSync('package.json','utf8');a(pkg.includes('\"name\": \"kzera\"'),'versao');a(d.includes('Implementação real'),'finalizado');console.log('item-catalogo-final-193.test.cjs OK');

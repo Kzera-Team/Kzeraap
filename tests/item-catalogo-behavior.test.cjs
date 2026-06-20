@@ -1,0 +1,1 @@
+const fs=require('fs');function a(c,m){if(!c)throw new Error(m)};const d=fs.readFileSync('src/domain/item/ItemCatalogo.ts','utf8');a(d.includes('ITEM_UNIDADE_INTEIRA_DECIMAL_INVALIDO'),'decimal domain');a(d.includes('calcularMetricasPreco'),'metricas');a(d.includes('precoParaQuantidade'),'tier behavior');console.log('item-catalogo-behavior.test.cjs OK');

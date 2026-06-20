@@ -1,0 +1,1 @@
+Removido uso de any nos fluxos auditados de Perfis. Introduzida entidade Perfil tipada.

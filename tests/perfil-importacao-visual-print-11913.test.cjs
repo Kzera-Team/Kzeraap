@@ -1,0 +1,23 @@
+const assert = require('assert');
+const fs = require('fs');
+const pkg = require('../package.json');
+const css = fs.readFileSync('public/styles.css', 'utf8');
+const view = fs.readFileSync('src/presentation/perfil/PerfilDomView.ts', 'utf8');
+const binder = fs.readFileSync('src/presentation/perfil/binders/PerfilImportacaoBinder.ts', 'utf8');
+
+assert.strictEqual(pkg.version, '1.19.13', 'Versão deve ser 1.19.13.');
+assert(view.includes('importTabs'), 'Menus devem estar dentro do card branco.');
+assert(view.indexOf('importTabs') < view.indexOf('fileCard'), 'Menus devem vir antes do card de arquivo.');
+assert(!view.includes('perfil-import-appbar'), 'Logo/botão voltar soltos não devem existir na tela de importação.');
+assert(!view.includes('<h1>Importar perfis</h1>'), 'Título Importar perfis deve ser removido.');
+assert(!view.includes('Envie um arquivo'), 'Texto explicativo deve ser removido.');
+assert(binder.includes('Conhece Pessoalmente'), 'Checkbox deve exibir Conhece Pessoalmente.');
+assert(binder.includes('Válido') && binder.includes('Inválido'), 'Status Válido/Inválido deve existir.');
+assert(css.includes('#16072F'), 'Fundo roxo principal deve usar #16072F.');
+assert(css.includes('#FBF9FF'), 'Card principal deve usar #FBF9FF.');
+assert(css.includes('#F7F3FF'), 'Card principal deve usar lavanda clara #F7F3FF.');
+assert(css.includes('#8A55FF'), 'Aba ativa deve usar #8A55FF.');
+assert(css.includes('#DDF8E7'), 'Badge válido deve usar verde suavizado.');
+assert(css.includes('grid-template-columns: 72px minmax(0, 1fr) auto'), 'Card de arquivo deve manter estrutura do print.');
+assert(css.includes('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)'), 'Telefone e bairro devem ficar em duas colunas.');
+console.log('perfil-importacao-visual-print-11913 ok');

@@ -1,0 +1,28 @@
+const fs = require('fs');
+const assert = require('assert');
+function read(path) { return fs.readFileSync(path, 'utf8'); }
+const pkg = JSON.parse(read('package.json'));
+const version = read('src/app/appVersion.ts');
+const resolver = read('src/application/importacao/ResolverPendenciaImportacaoUseCase.ts');
+const conciliacao = read('src/application/importacao/ConciliarTransacoesFinanceiroUseCase.ts');
+const view = read('src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts');
+const doc = read('docs/importacao/APROVACAO_MASSA_CONCILIACAO_1.17.2.md');
+assert.strictEqual(pkg.version, '1.19.5');
+assert(version.includes("APP_VERSION = '1.19.5'"));
+assert(resolver.includes('motivoBloqueioAprovacaoMassa'), 'Use case deve revalidar segurança da massa antes de gravar.');
+assert(resolver.includes('validarVinculosEmMassa'), 'Use case deve validar todos antes de salvar.');
+assert(resolver.includes('salvos.reverse()'), 'Use case deve tentar rollback se falhar no meio.');
+assert(resolver.includes('desfazer_aprovacao_massa'), 'Staging deve permitir desfazer aprovação em massa.');
+assert(conciliacao.includes("tipoAprovacaoMassa: 'referencia'"), 'Conciliação por referência segura deve entrar na massa.');
+assert(conciliacao.includes("tipoAprovacaoMassa: 'pagamento_posterior'"), 'Pagamento posterior provável seguro deve entrar na massa.');
+assert(conciliacao.includes('motivoBloqueioAprovacaoMassa'), 'Regra de segurança deve ser compartilhada com a conciliação.');
+assert(!view.includes('window.confirm'), 'UI não deve usar window.confirm em aprovação crítica.');
+assert(!view.includes('itens.slice(0, 30)'), 'UI não pode esconder registros da aprovação em massa.');
+assert(view.includes('data-massa-vinculo'), 'UI deve permitir seleção múltipla e exceções.');
+assert(view.includes('O que parece certo já vem marcado'), 'Baixo clique: seguros devem vir marcados por padrão.');
+assert(view.includes('Desmarque só se perceber algo estranho'), 'Usuária deve desmarcar apenas exceções.');
+assert(view.includes('Ver detalhes da conferência'), 'Cada registro deve manter detalhes expansíveis.');
+assert(doc.includes('Registros incompletos ficam fora automaticamente'));
+assert(doc.includes('Nada cria transação definitiva'));
+assert(doc.includes('Nada baixa estoque'));
+console.log('aprovacao-massa-conciliacao-1172 ok');

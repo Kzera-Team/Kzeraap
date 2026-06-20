@@ -1,0 +1,12 @@
+const fs=require('fs');function assert(c,m){if(!c)throw new Error(m)};
+const app=fs.readFileSync('src/app/createKzeraAuthenticatedApp.ts','utf8');
+const perfil=fs.readFileSync('src/presentation/perfil/templates/PerfilTemplate.ts','utf8');
+const item=fs.readFileSync('src/presentation/item/templates/ItemCatalogoTemplate.ts','utf8');
+assert(app.includes('kzera-home-actions'),'Dashboard deve usar ações compactas premium em vez de grid/card gigante');
+assert(app.includes('kzera-drawer'),'Dashboard deve ter menu lateral recolhível');
+assert(app.includes('Código do Perfil'),'Dashboard deve manter Código do Perfil');
+assert(!app.includes('Sessão protegida')&&!app.includes('Segurança ativa')&&!app.includes('Proteção ativa'),'Dashboard não deve exibir card/mensagem de segurança fake');
+assert(perfil.includes('kzera-operational-header') && perfil.includes('operational-search-card') && perfil.includes('Perfis'),'Tela Perfis deve usar cabeçalho operacional compacto');
+assert(item.includes('kzera-operational-header') && item.includes('operational-search-card') && item.includes('Itens'),'Tela Itens deve usar cabeçalho operacional compacto');
+assert(!perfil.includes('kzera-module-hero') && !item.includes('kzera-module-hero'),'Perfis/Itens não devem usar hero card gigante no topo');
+console.log('visual-refactor-1925.test.cjs OK');

@@ -1,0 +1,10 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const app = fs.readFileSync('src/app/createKzeraAuthenticatedApp.ts', 'utf8');
+assert(app.includes('parts: []'), 'Configuração inicial do Código do Perfil deve abrir vazia.');
+assert(app.includes('Nenhum campo configurado ainda.'), 'Deve existir estado vazio para Código do Perfil.');
+assert(app.includes('rule.parts.length < 3'), 'Salvar Código do Perfil deve exigir pelo menos 3 campos/blocos.');
+assert(app.includes('Configure pelo menos 3 campos'), 'Mensagem deve orientar mínimo de 3 campos.');
+assert(!app.includes('<strong>Campo 1</strong>'), 'Não deve existir Campo 1 automático.');
+assert(app.includes('class="kzera-card code-rule-block"'), 'Cada campo/bloco deve ser renderizado como card.');
+console.log('codigo-perfil-initial-empty-min3.test.cjs OK');

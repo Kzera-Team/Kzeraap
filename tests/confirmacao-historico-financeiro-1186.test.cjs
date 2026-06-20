@@ -1,0 +1,26 @@
+const fs = require('fs');
+const assert = require('assert');
+const read = file => fs.readFileSync(file, 'utf8');
+const pkg = JSON.parse(read('package.json'));
+const version = read('src/app/appVersion.ts');
+const view = read('src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts');
+const doc = read('docs/importacao/CONFIRMACAO_HISTORICO_FINANCEIRO_1.19.3.md');
+
+assert.strictEqual(pkg.version, '1.19.5');
+assert(version.includes("APP_VERSION = '1.19.5'"));
+assert(view.includes('retomadaHumanaObrigatoriaView'), 'retomada humana precisa ser função explícita da tela');
+assert(view.includes('data-testid="retomada-humana-confirmacao"'), 'retomada deve ter card principal testável');
+assert(view.includes('Encontramos uma confirmação interrompida.'), 'mensagem humana principal obrigatória');
+assert(view.includes('Nada foi perdido.'), 'mensagem de esperança/proteção obrigatória');
+assert(view.includes('Seu histórico ainda está seguro'), 'precisa explicar proteção sem termo técnico');
+assert(view.includes('Ver o que aconteceu'), 'primeira ação precisa explicar antes de executar ação pesada');
+assert(view.includes('Limpar restos e abrir revisão'), 'segunda ação precisa ser honesta');
+assert(view.includes('data-revisao-retomada-aberta'), 'ação segura deve abrir revisão real');
+assert(view.indexOf('${this.retomadaHumanaObrigatoriaView()}') < view.indexOf('<div class="import-grid">'), 'retomada pendente deve aparecer antes dos formulários de importação');
+assert(!view.includes('Recuperar falha'), 'botão assustador não pode aparecer');
+assert(!view.includes('Falhas/interrupções recuperáveis'), 'interrupção principal não pode ficar com título técnico em details');
+assert(!view.includes('data-recuperar-lote-falha'), 'ação técnica antiga não deve continuar exposta na view');
+assert(view.includes('data-retomar-confirmacao-segura'), 'ação de retomada segura precisa existir');
+assert(view.includes('data-revisar-confirmacao-interrompida'), 'ação de revisão precisa existir');
+assert(doc.includes('Ver o que aconteceu') && doc.includes('Limpar restos e abrir revisão')); 
+console.log('confirmacao-historico-financeiro-1186 ok');

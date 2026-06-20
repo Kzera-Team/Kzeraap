@@ -1,0 +1,24 @@
+const fs = require('fs');
+const assert = require('assert');
+function read(path) { return fs.readFileSync(path, 'utf8'); }
+const pkg = JSON.parse(read('package.json'));
+const version = read('src/app/appVersion.ts');
+const resolver = read('src/application/importacao/ResolverPendenciaImportacaoUseCase.ts');
+const conciliacao = read('src/application/importacao/ConciliarTransacoesFinanceiroUseCase.ts');
+const view = read('src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts');
+const repo = read('src/infrastructure/repositories/ImportacaoStagingRepository.ts');
+const doc = read('docs/importacao/APROVACAO_MASSA_CONCILIACAO_1.17.2.md');
+assert.strictEqual(pkg.version, '1.19.5');
+assert(version.includes("APP_VERSION = '1.19.5'"));
+assert(resolver.includes('vincular_financeiro_em_massa'), 'Use case deve aprovar vínculos seguros em massa.');
+assert(resolver.includes('massa_segura'), 'Staging deve registrar aprovação em massa segura.');
+assert(conciliacao.includes('aprovavelEmMassa'), 'Conciliação deve classificar o que entra em massa.');
+assert(conciliacao.includes('bloqueioAprovacaoMassa'), 'Conciliação deve explicar por que item incompleto fica fora.');
+assert(conciliacao.includes('pendenciaBloqueante'), 'Registros incompletos não podem entrar na aprovação em massa.');
+assert(view.includes('data-aprovar-massa-segura'), 'UI deve ter botão de aprovação em massa.');
+assert(view.includes('Ver detalhes da conferência'), 'Usuária deve poder expandir detalhes antes de aprovar.');
+assert(view.includes('O incompleto fica fora automaticamente'), 'UI deve avisar que incompletos não entram na massa.');
+assert(repo.includes('payloadProtegido'), 'Staging deve continuar protegido.');
+assert(doc.includes('Nada cria transação definitiva'));
+assert(doc.includes('Nada baixa estoque'));
+console.log('aprovacao-massa-conciliacao-1171 ok');

@@ -1,0 +1,10 @@
+const fs=require('fs');function a(c,m){if(!c)throw new Error(m)};
+const v=['src/presentation/item/ItemCatalogoDomView.ts','src/presentation/item/binders/ItemListBinder.ts','src/presentation/item/binders/ItemImportacaoBinder.ts','src/presentation/item/renderers/ItemCardRenderer.ts','src/presentation/item/renderers/ItemEditCardRenderer.ts','src/presentation/item/templates/ItemCatalogoTemplate.ts'].map(f=>fs.readFileSync(f,'utf8')).join('\n');
+const app=fs.readFileSync('src/app/createItemCatalogoUiApp.ts','utf8');const mod=fs.readFileSync('src/app/createItemCatalogoModule.ts','utf8');
+a(v.includes('onEditarItem'),'editar ui');
+a(v.includes('Variações') && v.includes('lotes'),'variacoes/lotes ui');
+a(!v.includes('onAjustarEstoque')&&!v.includes('onAtualizarTiers'),'sem handlers legados');
+a(v.includes('item-edit-card'),'edit card');
+a(app.includes('editandoItemId'),'estado edicao');
+a(!mod.includes('ajustarEstoque')&&!mod.includes('atualizarTiers'),'module sem legado');
+console.log('item-catalogo-edicao-ui.test.cjs OK');

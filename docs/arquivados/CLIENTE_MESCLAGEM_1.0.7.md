@@ -1,0 +1,1 @@
+Mesclagem inicial de perfis duplicados. Perfil secundário é arquivado.

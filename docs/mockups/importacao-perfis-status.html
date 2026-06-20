@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mockup UX — Importação de Perfis / Status</title>
+  <style>
+    :root {
+      --kzera-bg: #f5f7fb;
+      --kzera-card: #ffffff;
+      --kzera-border: rgba(148, 163, 184, .35);
+      --kzera-text: #111827;
+      --kzera-muted: #64748b;
+      --kzera-blue: #2563eb;
+      --kzera-green: #15803d;
+      --kzera-green-bg: #eaf8ef;
+      --kzera-orange: #c45a00;
+      --kzera-orange-bg: #fff4e5;
+      --kzera-red: #dc2626;
+      --kzera-red-bg: #fff0f0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--kzera-bg);
+      color: var(--kzera-text);
+      padding: 20px;
+    }
+
+    .mockup-shell {
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    .mockup-note {
+      margin: 0 0 14px;
+      color: var(--kzera-muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .kzera-screen.import-only-screen.perfil-import-screen.import-page-background {
+      width: 100%;
+    }
+
+    .kzera-card.import-screen.perfil-import-panel.importPanel,
+    .import-panel {
+      background: var(--kzera-card);
+      border: 1px solid var(--kzera-border);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, .08);
+    }
+
+    .import-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+      padding: 4px;
+      border: 1px solid var(--kzera-border);
+      border-radius: 16px;
+      background: #f8fafc;
+    }
+
+    .import-tabs button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 8px;
+      background: transparent;
+      color: var(--kzera-muted);
+      font-weight: 700;
+    }
+
+    .import-tabs .active {
+      background: #ffffff;
+      color: var(--kzera-blue);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, .08);
+    }
+
+    .perfil-import-file-card.fileCard {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--kzera-border);
+      border-radius: 20px;
+      background: #f8fafc;
+      margin-bottom: 16px;
+    }
+
+    .perfil-import-file-icon.fileIconBox {
+      grid-row: span 3;
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #eaf2ff;
+      color: var(--kzera-blue);
+      font-weight: 800;
+    }
+
+    .fileLabel,
+    .fileMeta,
+    .previewCount {
+      color: var(--kzera-muted);
+      font-size: 12px;
+    }
+
+    .fileName {
+      font-size: 15px;
+    }
+
+    .perfil-import-file-action.changeButton {
+      grid-column: 3;
+      grid-row: 1 / span 3;
+      justify-self: end;
+      align-self: center;
+      border: 1px solid rgba(37, 99, 235, .24);
+      background: #ffffff;
+      color: var(--kzera-blue);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .perfil-import-preview-head.previewHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 10px;
+    }
+
+    .previewTitle {
+      font-size: 16px;
+    }
+
+    .perfil-import-status-filter {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--kzera-border);
+      border-radius: 16px;
+      background: #f8fafc;
+      margin-bottom: 12px;
+    }
+
+    .perfil-import-status-filter button {
+      border: 0;
+      border-radius: 12px;
+      min-height: 40px;
+      background: transparent;
+      color: var(--kzera-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .perfil-import-status-filter button[aria-pressed="true"] {
+      background: var(--kzera-blue);
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, .20);
+    }
+
+    .perfil-import-preview-line {
+      display: grid;
+      gap: 10px;
+    }
+
+    .perfil-import-card {
+      border: 1px solid var(--kzera-border);
+      border-radius: 18px;
+      background: #ffffff;
+      padding: 12px;
+    }
+
+    .perfil-import-card.preview-ok {
+      border-color: rgba(21, 128, 61, .42);
+    }
+
+    .perfil-import-card.preview-warning {
+      border-color: rgba(196, 90, 0, .46);
+    }
+
+    .perfil-import-card.preview-error {
+      border-color: rgba(220, 38, 38, .50);
+    }
+
+    .perfil-import-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .perfil-import-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .perfil-import-status.status-ok {
+      background: var(--kzera-green-bg);
+      color: var(--kzera-green);
+    }
+
+    .perfil-import-status.status-warning {
+      background: var(--kzera-orange-bg);
+      color: var(--kzera-orange);
+    }
+
+    .perfil-import-status.status-error {
+      background: var(--kzera-red-bg);
+      color: var(--kzera-red);
+    }
+
+    .perfil-import-line-number {
+      color: var(--kzera-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .perfil-import-field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .perfil-import-field span {
+      color: var(--kzera-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .perfil-import-field input,
+    .perfil-import-field select {
+      width: 100%;
+      border: 1px solid var(--kzera-border);
+      border-radius: 14px;
+      padding: 11px 12px;
+      font: inherit;
+      background: #ffffff;
+    }
+
+    .perfil-import-card-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .perfil-import-help {
+      margin: -2px 0 10px;
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .perfil-import-help.warning {
+      color: var(--kzera-orange);
+      background: var(--kzera-orange-bg);
+    }
+
+    .perfil-import-help.error {
+      color: var(--kzera-red);
+      background: var(--kzera-red-bg);
+    }
+
+    .perfil-import-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      color: var(--kzera-muted);
+      font-size: 13px;
+    }
+
+    .perfil-import-primary-button {
+      margin-top: 14px;
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 16px;
+      background: var(--kzera-blue);
+      color: #fff;
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .perfil-import-primary-button:disabled {
+      background: #cbd5e1;
+    }
+
+    @media (max-width: 390px) {
+      body { padding: 12px; }
+      .import-panel { padding: 12px; }
+      .perfil-import-status-filter button { font-size: 11px; }
+      .perfil-import-card-pair { grid-template-columns: 1fr; }
+      .perfil-import-file-card.fileCard { grid-template-columns: 38px 1fr auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="mockup-shell">
+    <p class="mockup-note">
+      Mockup baseado na tela atual de Importação de Perfis. Não redesenha o fluxo: só posiciona filtro, badge, borda sutil, aviso de bairro e erro de telefone.
+    </p>
+
+    <section class="kzera-screen import-only-screen perfil-import-screen import-page import-page-background" data-testid="perfil-importacao">
+      <section class="kzera-card import-screen perfil-import-panel importPanel import-panel" data-testid="perfil-importacao-panel">
+        <nav class="import-tabs" aria-label="Importação">
+          <button class="active" type="button">Perfis</button>
+          <button type="button">Itens</button>
+          <button type="button">Transações</button>
+        </nav>
+
+        <label class="perfil-import-file-card fileCard file-card" for="perfil-import-file">
+          <span class="perfil-import-file-icon fileIconBox file-icon-box" aria-hidden="true">⇧</span>
+          <small class="fileLabel file-label" data-file-status>Arquivo selecionado</small>
+          <strong class="fileName file-name" data-file-name>perfis_importacao.csv</strong>
+          <small class="fileMeta file-meta" data-file-meta>4 registros encontrados</small>
+          <span class="perfil-import-file-action changeButton change-button">Trocar</span>
+        </label>
+
+        <div class="perfil-import-preview-head previewHeader" data-testid="perfil-import-preview-head">
+          <strong class="previewTitle">Pré-visualização</strong>
+          <small class="previewCount" data-preview-count>4 perfis encontrados</small>
+        </div>
+
+        <div class="perfil-import-status-filter" aria-label="Filtrar perfis por status">
+          <button type="button" aria-pressed="true">Todos (4)</button>
+          <button type="button" aria-pressed="false">Válidos (1)</button>
+          <button type="button" aria-pressed="false">Atenção (2)</button>
+          <button type="button" aria-pressed="false">Erros (1)</button>
+        </div>
+
+        <div class="preview-list compact-preview-list perfil-import-preview-line" data-testid="perfil-import-preview">
+          <article class="perfil-import-card profile-card preview-ok" data-preview-index="0">
+            <div class="perfil-import-status-row">
+              <strong class="perfil-import-status valid-badge status-ok">✓ Válido</strong>
+              <span class="perfil-import-line-number">Linha 2</span>
+            </div>
+            <label class="perfil-import-field perfil-import-field-name">
+              <span>Nome</span>
+              <input class="input-like" value="Exemplo Válido" />
+            </label>
+            <div class="perfil-import-card-pair">
+              <label class="perfil-import-field">
+                <span>Telefone</span>
+                <input class="input-like" value="(61) 99999-1111" />
+              </label>
+              <label class="perfil-import-field">
+                <span>Bairro</span>
+                <select class="input-like"><option>Centro</option></select>
+              </label>
+            </div>
+            <div class="perfil-import-card-footer profile-footer">
+              <label><input type="checkbox" checked /> Conhece Pessoalmente</label>
+            </div>
+          </article>
+
+          <article class="perfil-import-card profile-card preview-warning" data-preview-index="1">
+            <div class="perfil-import-status-row">
+              <strong class="perfil-import-status valid-badge status-warning">! Atenção</strong>
+              <span class="perfil-import-line-number">Linha 3</span>
+            </div>
+            <label class="perfil-import-field perfil-import-field-name">
+              <span>Nome</span>
+              <input class="input-like" value="Exemplo Sem Bairro" />
+            </label>
+            <div class="perfil-import-card-pair">
+              <label class="perfil-import-field">
+                <span>Telefone</span>
+                <input class="input-like" value="(61) 98888-2222" />
+              </label>
+              <label class="perfil-import-field">
+                <span>Bairro</span>
+                <select class="input-like"><option>Bairro</option></select>
+              </label>
+            </div>
+            <p class="perfil-import-help warning">Bairro não informado</p>
+            <div class="perfil-import-card-footer profile-footer">
+              <label><input type="checkbox" /> Conhece Pessoalmente</label>
+            </div>
+          </article>
+
+          <article class="perfil-import-card profile-card preview-error" data-preview-index="2">
+            <div class="perfil-import-status-row">
+              <strong class="perfil-import-status valid-badge status-error">× Erro</strong>
+              <span class="perfil-import-line-number">Linha 4</span>
+            </div>
+            <label class="perfil-import-field perfil-import-field-name">
+              <span>Nome</span>
+              <input class="input-like" value="Exemplo Sem Telefone" />
+            </label>
+            <div class="perfil-import-card-pair">
+              <label class="perfil-import-field">
+                <span>Telefone</span>
+                <input class="input-like" value="" placeholder="(61) 99999-9999" />
+              </label>
+              <label class="perfil-import-field">
+                <span>Bairro</span>
+                <select class="input-like"><option>Centro</option></select>
+              </label>
+            </div>
+            <p class="perfil-import-help error">Telefone obrigatório</p>
+            <div class="perfil-import-card-footer profile-footer">
+              <label><input type="checkbox" /> Conhece Pessoalmente</label>
+            </div>
+          </article>
+        </div>
+
+        <p class="perfil-import-note" data-testid="perfil-import-note"><span aria-hidden="true">i</span> Corrija os registros com erro antes de importar.</p>
+        <button class="perfil-import-primary-button" type="button" data-action="confirmar-importacao" disabled>Importar perfis</button>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

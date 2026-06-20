@@ -1,0 +1,39 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.badge-success,
+.badge-ativo,
+.badge-stock-ok {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.badge-warning,
+.badge-pendente,
+.badge-stock-low {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.badge-danger,
+.badge-stock-empty {
+  background: #FECACA;
+  color: #991B1B;
+}
+
+.badge-info {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.badge-neutral,
+.badge-arquivado {
+  background: #E5E7EB;
+  color: #374151;
+}

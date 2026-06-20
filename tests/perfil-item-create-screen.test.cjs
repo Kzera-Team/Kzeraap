@@ -1,0 +1,13 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const perfilTemplate = fs.readFileSync('src/presentation/perfil/templates/PerfilTemplate.ts', 'utf8');
+const perfilView = fs.readFileSync('src/presentation/perfil/PerfilDomView.ts', 'utf8');
+const itemTemplate = fs.readFileSync('src/presentation/item/templates/ItemCatalogoTemplate.ts', 'utf8');
+const itemView = fs.readFileSync('src/presentation/item/ItemCatalogoDomView.ts', 'utf8');
+assert(perfilTemplate.includes('data-action="novo-perfil"'), 'Perfis deve ter botão Novo perfil.');
+assert(perfilTemplate.includes('data-perfil-form-panel hidden'), 'Cadastro de Perfil deve ficar em tela/painel separado.');
+assert(perfilView.includes('bindCreateScreen(root)'), 'View de Perfis deve alternar listagem/cadastro.');
+assert(itemTemplate.includes('data-action="novo-item"'), 'Itens deve ter botão Novo item.');
+assert(itemTemplate.includes('data-item-form-panel hidden'), 'Cadastro de Item deve ficar em tela/painel separado.');
+assert(itemView.includes('bindCreateScreen(root)'), 'View de Itens deve alternar listagem/cadastro.');
+console.log('perfil-item-create-screen.test.cjs OK');

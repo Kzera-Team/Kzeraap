@@ -1,0 +1,42 @@
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+
+const root = path.resolve(__dirname, '..');
+const read = relative => fs.readFileSync(path.join(root, relative), 'utf8');
+const pkg = JSON.parse(read('package.json'));
+const version = read('src/app/appVersion.ts');
+const domain = read('src/domain/item/ItemCatalogo.ts');
+const usecase = read('src/application/item/RegistrarFracionamentoLoteUseCase.ts');
+const moduleFile = read('src/app/createItemCatalogoModule.ts');
+const types = read('src/presentation/item/ItemCatalogoViewTypes.ts');
+const uiApp = read('src/app/createItemCatalogoUiApp.ts');
+const domView = read('src/presentation/item/ItemCatalogoDomView.ts');
+const fracionamentoBinder = read('src/presentation/item/binders/LoteFracionamentoBinder.ts');
+const renderer = read('src/presentation/item/renderers/LoteOperacionalRenderer.ts');
+const doc = read('docs/FRACIONAMENTO_REAL_1.11.0.md');
+const estado = read('docs/governanca/04_ESTADO_ATUAL_OFICIAL.md');
+
+assert.strictEqual(pkg.version, '1.19.5', 'Funcionalidade relevante deve avançar para 1.11.0.');
+assert(version.includes("APP_VERSION = '1.19.5'"), 'APP_VERSION deve estar em 1.11.0.');
+assert(domain.includes('RegistrarFracionamentoLoteInput'), 'Domínio deve declarar entrada de fracionamento real.');
+assert(domain.includes('registrarFracionamentoNoLote'), 'Domínio deve registrar fracionamento no lote.');
+assert(domain.includes('quantidadeGuardada: lote.quantidadeGuardada - equivalenteBase'), 'Fracionamento deve baixar do guardado/a granel.');
+assert(domain.includes('Fracionamento maior que a quantidade guardada/a granel disponível'), 'Domínio deve impedir fracionar mais que o guardado.');
+assert(domain.includes('quantidadeEsperada') && domain.includes('quantidadeConferida') && domain.includes('divergenciaUnidades'), 'Fracionamento deve preparar conferência por unidades.');
+assert(usecase.includes('RegistrarFracionamentoLoteUseCase'), 'Use case de fracionamento deve existir.');
+assert(usecase.includes('items.save'), 'Use case deve persistir item atualizado.');
+assert(moduleFile.includes('registrarFracionamento'), 'Módulo de item deve expor registro de fracionamento.');
+assert(types.includes('onRegistrarFracionamento'), 'UI handlers devem expor registro de fracionamento.');
+assert(uiApp.includes('module.registrarFracionamento.execute'), 'App de UI deve chamar use case de fracionamento.');
+assert(domView.includes('loteFracionamentoBinder.bind'), 'View deve delegar binding do fracionamento.');
+assert(fracionamentoBinder.includes('onRegistrarFracionamento'), 'Binder específico deve chamar handler de fracionamento.');
+assert(renderer.includes('data-testid="lote-fracionamento-form"'), 'Tela de lote deve ter formulário real de fracionamento.');
+assert(renderer.includes('⚖ Registrar fracionamento'), 'Ação principal deve ter ícone com texto claro.');
+assert(renderer.includes('Ao registrar, o sistema baixa automaticamente do guardado/a granel'), 'UI deve explicar efeito operacional do fracionamento.');
+assert(doc.includes('Baixa automática da quantidade **guardada/a granel**'), 'Documento deve registrar baixa automática do guardado.');
+assert(doc.includes('Transações'), 'Documento deve manter Transações fora desta etapa.');
+assert(estado.includes('1.11.0 — Fracionamento real do lote'), 'Estado atual deve registrar 1.12.0.');
+assert(pkg.scripts.test.includes('fracionamento-real-1110.test.cjs'), 'npm test deve incluir fracionamento 1.11.0.');
+
+console.log('fracionamento real 1.11.0 ok');

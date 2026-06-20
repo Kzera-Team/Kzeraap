@@ -1,0 +1,10 @@
+const fs=require('fs');function a(c,m){if(!c)throw new Error(m)};
+const v=['src/presentation/item/ItemCatalogoDomView.ts','src/presentation/item/binders/ItemListBinder.ts','src/presentation/item/binders/ItemImportacaoBinder.ts','src/presentation/item/renderers/ItemCardRenderer.ts','src/presentation/item/renderers/ItemEditCardRenderer.ts','src/presentation/item/templates/ItemCatalogoTemplate.ts'].map(f=>fs.readFileSync(f,'utf8')).join('\n');
+const app=fs.readFileSync('src/app/createItemCatalogoUiApp.ts','utf8');
+a(v.includes('Variações e estoque'),'edição/cadastro deve mostrar variações e estoque');
+a(v.includes('item-lote-grid'),'lotes continuam renderizados');
+a(!v.includes('Preços legados'),'preço legado não deve aparecer na UI');
+a(!v.includes('Adicionar preço'),'preço não deve ser ação de UI fora do lote');
+a(!v.includes('Remover preço'),'preço não deve ser ação de UI fora do lote');
+a(!app.includes('onAdicionarTier')&&!app.includes('onRemoverTier'),'handlers de tier devem sair');
+console.log('item-catalogo-multitiers-ui.test.cjs OK');

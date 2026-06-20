@@ -1,0 +1,14 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const item = fs.readFileSync('src/presentation/item/templates/ItemCatalogoTemplate.ts','utf8');
+const perfil = fs.readFileSync('src/presentation/perfil/templates/PerfilTemplate.ts','utf8');
+const itemView = fs.readFileSync('src/presentation/item/ItemCatalogoDomView.ts','utf8');
+const perfilView = fs.readFileSync('src/presentation/perfil/PerfilDomView.ts','utf8');
+const css = fs.readFileSync('public/styles.css','utf8');
+assert(item.includes('data-item-view-tab="resumo"'), 'Itens deve ter aba Resumo, não resumo escondido abaixo da lista.');
+assert(item.includes('data-item-view-panel="resumo" hidden'), 'Resumo de itens deve ser painel de aba.');
+assert(perfil.includes('data-perfil-view-tab="resumo"'), 'Perfis deve ter aba Resumo.');
+assert(itemView.includes('bindViewTabs'), 'Itens deve alternar abas de lista/resumo.');
+assert(perfilView.includes('bindViewTabs'), 'Perfis deve alternar abas de lista/resumo/histórico.');
+assert(css.includes('1.9.48 dashboard operacional'), 'CSS deve conter hotfix operacional do dashboard.');
+console.log('resumo tabs 1.9.48 ok');

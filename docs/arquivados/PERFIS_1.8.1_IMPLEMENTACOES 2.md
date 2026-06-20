@@ -1,0 +1,1 @@
+Substituídos os stubs de edição, pendências, duplicidades e mesclagem por implementações funcionais.

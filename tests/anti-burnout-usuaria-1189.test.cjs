@@ -1,0 +1,28 @@
+const fs = require('fs');
+const assert = require('assert');
+const read = file => fs.readFileSync(file, 'utf8');
+const pkg = JSON.parse(read('package.json'));
+const version = read('src/app/appVersion.ts');
+const view = read('src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts');
+const app = read('src/app/createKzeraAuthenticatedApp.ts');
+const doc = read('docs/importacao/CONFIRMACAO_HISTORICO_FINANCEIRO_1.19.3.md');
+
+assert.strictEqual(pkg.version, '1.19.5');
+assert(version.includes("APP_VERSION = '1.19.5'"));
+assert(view.includes('Ver o que aconteceu'), 'primeira ação precisa explicar antes de agir');
+assert(view.includes('Limpar restos e abrir revisão'), 'segunda ação precisa dizer exatamente o que vai fazer');
+assert(view.includes('Esse botão não confirma nada sozinho'), 'precisa tranquilizar antes de ação pesada');
+assert(view.includes('Nada foi perdido.'), 'precisa preservar esperança');
+assert(view.includes('Nada foi perdido e nada será confirmado sozinho'), 'revisão precisa explicar proteção');
+assert(view.includes('Ver valores financeiros'), 'números pesados devem ficar escondidos em detalhe avançado');
+assert(view.includes('Área avançada: corrigir algo já confirmado'), 'ação destrutiva deve sair do fluxo principal');
+assert(view.includes('CANCELAR COM CUIDADO'), 'ação destrutiva precisa token humano e claro');
+assert(app.includes("const telaCriticaImportacao = currentScreen === 'importacao'"), 'backup obrigatório não deve cobrir tela crítica de importação');
+assert(app.includes('!telaCriticaImportacao'), 'modal de backup deve ser bloqueado em tela crítica');
+assert(!view.includes('Conciliar staging'), 'UI não pode falar staging');
+assert(!view.includes('Pré-visualizar e congelar pacote'), 'UI não pode falar pacote/congelar');
+assert(!view.includes('Lotes confirmados recuperáveis'), 'UI não pode assustar com lotes recuperáveis');
+assert(!view.includes('Detalhe técnico guardado'), 'UI não pode jogar detalhe técnico na cara da usuária');
+assert(!view.includes('Retomar com segurança'), 'ação antiga fazia coisa demais em um clique');
+assert(doc.includes('Blindar a experiência contra burnout'), 'doc precisa registrar objetivo anti-burnout');
+console.log('anti-burnout-usuaria-1189.test.cjs OK');

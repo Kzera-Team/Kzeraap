@@ -1,0 +1,12 @@
+.metric-card,
+.item-metric-card,
+.info-item {
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.metric-card strong,
+.item-metric-card strong,
+.info-item strong {
+  display: block;
+}

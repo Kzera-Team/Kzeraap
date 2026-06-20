@@ -1,0 +1,11 @@
+const assert = require('assert');
+const fs = require('fs');
+const css = fs.readFileSync('public/styles.css', 'utf8');
+const app = fs.readFileSync('src/app/createKzeraAuthenticatedApp.ts', 'utf8');
+const perfil = fs.readFileSync('src/presentation/perfil/PerfilDomView.ts', 'utf8');
+assert(css.includes('1.9.45 hotfix'), 'hotfix CSS mobile deve existir');
+assert(css.includes('.item-tabs.labeled-tabs'), 'abas com texto não podem herdar 44px');
+assert(css.includes('padding-top: 88px'), 'conteúdo deve ficar abaixo do menu fixo');
+assert(app.includes('${escapeHtml(submitLabel)}</button>'), 'salvar Código do Perfil deve ter texto, não apenas check');
+assert(perfil.includes('>Importar perfis</button>'), 'importação de perfis deve ter botão textual');
+console.log('ux-hotfix-1945 ok');

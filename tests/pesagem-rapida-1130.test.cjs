@@ -1,0 +1,35 @@
+const fs = require('fs');
+function assert(condition, message) { if (!condition) throw new Error(message); }
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const version = fs.readFileSync('src/app/appVersion.ts', 'utf8');
+const pesagemDomain = fs.readFileSync('src/domain/operacao/PesagemRapida.ts', 'utf8');
+const itemDomain = fs.readFileSync('src/domain/item/ItemCatalogo.ts', 'utf8');
+const usecase = fs.readFileSync('src/application/item/PesagemRapidaFracionamentoUseCase.ts', 'utf8');
+const moduleFile = fs.readFileSync('src/app/createItemCatalogoModule.ts', 'utf8');
+const uiApp = fs.readFileSync('src/app/createItemCatalogoUiApp.ts', 'utf8');
+const types = fs.readFileSync('src/presentation/item/ItemCatalogoViewTypes.ts', 'utf8');
+const renderer = fs.readFileSync('src/presentation/item/renderers/LoteOperacionalRenderer.ts', 'utf8');
+const binder = fs.readFileSync('src/presentation/item/binders/LotePesagemRapidaBinder.ts', 'utf8');
+const doc = fs.readFileSync('docs/PESAGEM_RAPIDA_1.13.0.md', 'utf8');
+
+assert(pkg.version === '1.19.5', 'Versão deve ser 1.13.1 para correção de pesagem interrompida.');
+assert(version.includes("APP_VERSION = '1.19.5'"), 'APP_VERSION deve estar em 1.13.1.');
+assert(itemDomain.includes('pesagensRapidas?: SessaoPesagemRapida[]'), 'Fracionamento deve armazenar sessões persistentes de pesagem.');
+assert(pesagemDomain.includes('criarSessaoPesagemRapida'), 'Domínio deve criar sessão de pesagem rápida.');
+assert(pesagemDomain.includes('registrarPesoRapido'), 'Domínio deve registrar peso rápido.');
+assert(pesagemDomain.includes('pausarSessaoPesagemRapida') && pesagemDomain.includes('retomarSessaoPesagemRapida'), 'Sessão deve pausar e retomar.');
+assert(pesagemDomain.includes('corrigirRegistroPesoRapido'), 'Domínio deve preparar correção individual de peso.');
+assert(usecase.includes('exigirBalancaParaPesagem'), 'Use case deve exigir balança cadastrada/ativa.');
+assert(usecase.includes('items.save'), 'Cada ação de pesagem deve persistir o item atualizado.');
+assert(moduleFile.includes('pesagemRapida'), 'Módulo de item deve expor pesagem rápida.');
+assert(uiApp.includes('module.pesagemRapida.execute'), 'UI app deve chamar use case de pesagem rápida.');
+assert(types.includes('onPesagemRapida'), 'Handlers devem expor pesagem rápida.');
+assert(renderer.includes('data-testid="pesagem-iniciar-form"'), 'Tela deve permitir iniciar sessão de pesagem.');
+assert(renderer.includes('+ ${formatarAtalhoPesoHumano(pesoMg)}') || renderer.includes('formatarAtalhoPesoHumano'), 'Atalhos devem registrar peso com texto claro.');
+assert(renderer.includes('0,5 g') || renderer.includes('500'), 'Tela deve ter atalho de 0,5 g / 500 mg.');
+assert(renderer.includes('Balança usada'), 'Tela deve associar balança à pesagem.');
+assert(renderer.includes('Próxima etiqueta'), 'Tela deve mostrar próxima etiqueta.');
+assert(binder.includes('pesagem-manual-form') && binder.includes('data-pesagem-acao'), 'Binder deve tratar peso manual e atalhos.');
+assert(doc.includes('Cada peso registrado é salvo imediatamente'), 'Documentação deve reforçar persistência imediata.');
+assert(pkg.scripts.test.includes('pesagem-rapida-1130.test.cjs'), 'npm test deve incluir pesagem rápida 1.13.0.');
+console.log('pesagem-rapida-1130.test.cjs OK');

@@ -1,0 +1,1 @@
+const fs=require('fs');function a(c,m){if(!c)throw new Error(m)};const css=fs.readFileSync('public/styles.css','utf8');a(css.includes('Catalogo UX Real 1.9.9'),'css marker');a(css.includes('.item-card-header'),'card header');a(css.includes('@media(max-width:700px)'),'mobile');console.log('item-catalogo-ux-css-199.test.cjs OK');

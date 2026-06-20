@@ -1,0 +1,1 @@
+Removidos stubs restantes identificados na auditoria: busca, filtros, regra de código e edição tipada.

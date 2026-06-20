@@ -1,0 +1,42 @@
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+
+const root = path.resolve(__dirname, '..');
+const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+const appVersion = fs.readFileSync(path.join(root, 'src/app/appVersion.ts'), 'utf8');
+const domain = fs.readFileSync(path.join(root, 'src/domain/item/ItemCatalogo.ts'), 'utf8');
+const types = fs.readFileSync(path.join(root, 'src/presentation/item/ItemCatalogoViewTypes.ts'), 'utf8');
+const card = fs.readFileSync(path.join(root, 'src/presentation/item/renderers/ItemCardRenderer.ts'), 'utf8');
+const loteRenderer = fs.readFileSync(path.join(root, 'src/presentation/item/renderers/LoteOperacionalRenderer.ts'), 'utf8');
+const listBinder = fs.readFileSync(path.join(root, 'src/presentation/item/binders/ItemListBinder.ts'), 'utf8');
+const domView = fs.readFileSync(path.join(root, 'src/presentation/item/ItemCatalogoDomView.ts'), 'utf8');
+const uiApp = fs.readFileSync(path.join(root, 'src/app/createItemCatalogoUiApp.ts'), 'utf8');
+const doc = fs.readFileSync(path.join(root, 'docs/LOTES_OPERACIONAIS_1.10.0.md'), 'utf8');
+const estado = fs.readFileSync(path.join(root, 'docs/governanca/04_ESTADO_ATUAL_OFICIAL.md'), 'utf8');
+
+assert.strictEqual(pkg.version, '1.19.5', 'package.json deve usar 1.12.0 para implementação funcional relevante.');
+assert(appVersion.includes("APP_VERSION = '1.19.5'"), 'APP_VERSION deve estar em 1.12.0.');
+assert(domain.includes('ResumoOperacionalLote'), 'Domínio deve declarar resumo operacional do lote.');
+assert(domain.includes('resumoOperacionalDoLote'), 'Domínio deve calcular resumo operacional do lote.');
+assert(domain.includes('encontrarLoteOperacional'), 'Domínio deve localizar lote por item/variação/lote.');
+assert(types.includes('loteSelecionado'), 'Estado de UI deve controlar lote selecionado.');
+assert(types.includes('onAbrirLote') && types.includes('onFecharLote'), 'Handlers devem abrir/fechar estoque.');
+assert(card.includes('data-action="abrir-lote"'), 'Card de item deve ter ação textual para abrir lote.');
+assert(card.includes('>📦 Estoque</button>'), 'Botão deve manter texto claro para a usuária.');
+assert(listBinder.includes('onAbrirLote'), 'Binder da lista deve chamar abertura de lote.');
+assert(domView.includes('renderLoteOperacional'), 'View deve renderizar tela própria de estoque.');
+assert(domView.includes('bindLoteTabs'), 'Tela de lote deve ter abas próprias.');
+assert(uiApp.includes('loteSelecionado'), 'App de UI deve preservar seleção do lote.');
+assert(loteRenderer.includes('data-testid="lote-operacional-screen"'), 'Renderer deve expor tela própria de estoque.');
+assert(loteRenderer.includes('Guardado/a granel'), 'Lote deve mostrar guardado/a granel.');
+assert(loteRenderer.includes('Fracionado criado'), 'Lote deve mostrar fracionado criado.');
+assert(loteRenderer.includes('Fracionado disponível'), 'Lote deve mostrar fracionado disponível.');
+assert(loteRenderer.includes('Retirada interna'), 'Lote deve posicionar retirada interna.');
+assert(loteRenderer.includes('Pesagem rápida'), 'Lote deve posicionar pesagem rápida dentro do lote.');
+assert(loteRenderer.includes('Conferência'), 'Lote deve posicionar conferência dentro do lote.');
+assert(doc.includes('Não implementado ainda'), 'Documento deve declarar limites da entrega.');
+assert(doc.includes('Transações'), 'Documento deve reforçar que transações não entram nesta etapa.');
+assert(estado.includes('Regra oficial de versionamento a partir de 1.10.0'), 'Estado oficial deve registrar nova regra de versionamento.');
+
+console.log('estoque 1.10.0 ok');
