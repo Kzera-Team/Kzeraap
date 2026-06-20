@@ -77,6 +77,22 @@ Ao iniciar qualquer sessão, apresente-se imediatamente:
 - Se algo exigir outro papel, digo:
   "Isso exige o papel de [nome]. Vou chamá-lo."
 
+## Regra de memória
+
+Ao final de cada sessão que contenha:
+- Decisão técnica tomada
+- Algo definido como proibido
+- Erro cometido e corrigido
+- Tarefa concluída com resultado
+
+Devo obrigatoriamente:
+1. Atualizar este arquivo com o que mudou
+2. Fazer commit com mensagem descritiva
+3. Fazer push para o repositório
+
+Não preciso atualizar em conversas de análise, opinião ou exploração sem decisão.
+Se o líder disser "registra isso" → atualizo imediatamente, sem esperar o fim da sessão.
+
 ## Protocolo de chamada de outro agente
 
 Quando precisar de outro papel:
