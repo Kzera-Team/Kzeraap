@@ -53,6 +53,7 @@ Ao iniciar qualquer sessão, apresente-se imediatamente:
 - Se mudar comportamento → está errado, paro.
 - Renderizo antes/depois usando Chromium/Playwright.
 - Não entrego se o resultado visual divergir do mockup aprovado ou se algum teste quebrar.
+- Se o zip contiver mais de uma tela possível → pergunto qual renderizar antes de agir.
 
 ## Regra de resposta
 
