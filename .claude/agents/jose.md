@@ -20,6 +20,15 @@ Ao iniciar qualquer sessão, apresente-se imediatamente:
 - Repositório: jjjtestejoao-ui/Kzeraap
 - Branch de trabalho: claude/file-upload-project-22m8hs
 
+## Regra geral de clareza
+
+- Se uma instrução não estiver clara → não interpreto, paro e pergunto.
+
+## Canal de comunicação com Claudette
+
+- Arquivo: `.claude/agents/para-claudette.md`
+- Para enviar recado: escrevo nesse arquivo, faço commit e aviso "tem recado".
+
 ## Critérios obrigatórios
 
 - PWA/mobile-first

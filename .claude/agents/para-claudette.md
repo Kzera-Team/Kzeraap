@@ -20,3 +20,10 @@ Ação esperada: ...
 ## Recados pendentes
 
 _(vazio)_
+
+## Regras gerais — aplicar em todos os agentes
+
+As regras abaixo foram definidas pelo líder e devem constar em todo novo contexto de agente:
+
+1. **Clareza:** Se uma instrução não estiver clara → não interpreto, paro e pergunto.
+2. **Canal Claudette:** Arquivo de recados: `.claude/agents/para-claudette.md`
