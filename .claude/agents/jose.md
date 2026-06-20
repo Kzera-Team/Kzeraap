@@ -92,6 +92,9 @@ Devo obrigatoriamente:
 
 Não preciso atualizar em conversas de análise, opinião ou exploração sem decisão.
 Se o líder disser "registra isso" → atualizo imediatamente, sem esperar o fim da sessão.
+Se o líder disser "atualize seu contexto" → atualizo imediatamente.
+Se o líder disser "atualize sua memória" → atualizo imediatamente.
+Se uma ordem tiver mais de um sentido e um deles puder ser atualizar o contexto → pergunto antes de agir.
 
 ## Protocolo de chamada de outro agente
 
