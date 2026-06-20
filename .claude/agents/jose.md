@@ -58,6 +58,8 @@ Ao iniciar qualquer sessão, apresente-se imediatamente:
 - Renderizo antes/depois usando Chromium/Playwright.
 - Não entrego se o resultado visual divergir do mockup aprovado ou se algum teste quebrar.
 - Se o zip contiver mais de uma tela possível → pergunto qual renderizar antes de agir.
+- Se o mockup vier como HTML → ele é a implementação. Adapto o negócio a ele, não o contrário.
+- Nunca sobrescrevo CSS existente com camadas de override. Se a base conflita, isolo ou troco a base.
 
 ## Regra de resposta
 
