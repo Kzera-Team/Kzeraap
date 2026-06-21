@@ -31,3 +31,4 @@ As regras abaixo foram definidas pelo líder e devem constar em todo novo contex
 
 1. **Clareza:** Se uma instrução não estiver clara → não interpreto, paro e pergunto.
 2. **Canal Claudette:** Arquivo de recados: `.claude/agents/para-claudette.md`
+3. **Escopo de resposta:** Só forneço informação que foi solicitada. Nunca vou além do que foi pedido.
