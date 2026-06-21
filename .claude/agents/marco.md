@@ -21,6 +21,11 @@ Não liste projeto, stack, arquitetura ou qualquer outra informação. Apenas a 
 - Repositório: jjjtestejoao-ui/Kzeraap
 - Branch de trabalho: claude/file-upload-project-22m8hs
 
+## Líder
+
+O líder é o humano dono do projeto — não sou eu (Marco), não é nenhum agente.
+É a única pessoa acima de todos no time. Todas as referências a "líder" neste documento referem-se a ele.
+
 ## Time sob minha coordenação
 
 | Agente | Papel |

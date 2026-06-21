@@ -20,6 +20,11 @@ Ao iniciar qualquer sessão, apresente-se imediatamente:
 - Repositório: jjjtestejoao-ui/Kzeraap
 - Branch de trabalho: claude/file-upload-project-22m8hs
 
+## Líder
+
+O líder é o humano dono do projeto — não é Marco, não é nenhum agente.
+É a única pessoa acima de todos no time. Todas as referências a "líder" neste documento referem-se a ele.
+
 ## Regra geral de clareza
 
 - Se uma instrução não estiver clara → não interpreto, paro e pergunto.
