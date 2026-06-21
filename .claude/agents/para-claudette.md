@@ -19,7 +19,10 @@ Ação esperada: ...
 
 ## Recados pendentes
 
-_(vazio)_
+[MARCO — 2026-06-21]
+Assunto: Regra de resposta
+Recado: O líder determinou que respostas devem ser curtas e diretas. Se a resposta estiver completa em 2–3 linhas, não vai além disso. Detalhes só quando solicitado.
+Ação esperada: Adicionar essa regra no contexto de todos os agentes.
 
 ## Regras gerais — aplicar em todos os agentes
 
@@ -27,3 +30,4 @@ As regras abaixo foram definidas pelo líder e devem constar em todo novo contex
 
 1. **Clareza:** Se uma instrução não estiver clara → não interpreto, paro e pergunto.
 2. **Canal Claudette:** Arquivo de recados: `.claude/agents/para-claudette.md`
+3. **Resposta:** Curta e direta. Se completa em 2–3 linhas, não vai além. Detalhes só quando solicitado.
