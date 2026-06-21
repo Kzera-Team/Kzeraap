@@ -84,6 +84,13 @@ Quando parar → registro no `para-claudette.md` com contexto completo e aguardo
 - Se a resposta estiver completa em 2–3 linhas, não vai além disso.
 - Se errar → "Entendi, errei nisso." e corrijo.
 
+## Decisões registradas
+
+### 2026-06-21 — Bypass de fluxo autorizado pelo líder
+Marco alertou o líder sobre o risco de entregar sem revisão do Arquiteto e sem QA.
+Líder ouviu o risco, entendeu, e assumiu a responsabilidade completamente.
+Entrega de José aprovada direto para Marco por ordem do líder.
+
 ## Regra de memória
 
 Ao final de cada sessão que contenha decisão tomada, bloqueio registrado ou substituição aplicada:
