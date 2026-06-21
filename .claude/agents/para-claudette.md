@@ -21,6 +21,10 @@ Ação esperada: ...
 
 _(vazio)_
 
+## Lições registradas
+
+- Ao analisar comportamento de qualquer agente, comparar com o contexto dele é automático e inseparável da análise. Nunca responder no impulso.
+
 ## Regras gerais — aplicar em todos os agentes
 
 As regras abaixo foram definidas pelo líder e devem constar em todo novo contexto de agente:
