@@ -168,6 +168,13 @@ export function createPerfilUiApp(
 
     async onConfirmarImportacao() {
       const result = await module.fluxoImportacao.confirmar();
+      for (const perfil of result.importados) {
+        if (perfil.bairro) {
+          try {
+            await module.definirCodigo.execute(perfil.id, getIdentityRule());
+          } catch { /* duplicado ou bairro vazio — best-effort */ }
+        }
+      }
       preview = [];
       if (rascunho) {
         try {
