@@ -1,0 +1,107 @@
+/* import-transacoes.css — estilos exclusivos da tela de importação de transações */
+
+/* Cards internos claros dentro do painel branco */
+.import-transacoes-screen .kzera-card,
+.import-transacoes-screen .kzera-card.soft-card {
+  background: #FFFFFF !important;
+  border: 1px solid #DDD6EE !important;
+  color: #120B35 !important;
+  box-shadow: 0 4px 14px rgba(30, 14, 70, 0.07) !important;
+}
+
+/* Layout interno de formulários */
+.import-transacoes-panel .import-grid {
+  display: grid !important;
+  gap: 16px !important;
+  margin-bottom: 18px !important;
+}
+
+.import-transacoes-panel .import-grid.two-cols {
+  grid-template-columns: 1fr !important;
+}
+
+/* Tipografia */
+.import-transacoes-screen h3 {
+  color: #120B35 !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.import-transacoes-screen label {
+  display: grid !important;
+  gap: 7px !important;
+}
+
+.import-transacoes-screen label > span {
+  color: #6F6699 !important;
+  font-size: 14px !important;
+  font-weight: 850 !important;
+}
+
+.import-transacoes-screen .form-hint,
+.import-transacoes-screen .eyebrow,
+.import-transacoes-screen small {
+  color: #766BA8 !important;
+}
+
+.import-transacoes-screen strong:not(.eyebrow) {
+  color: #120B35 !important;
+}
+
+/* Campos de formulário */
+.import-transacoes-screen input,
+.import-transacoes-screen select,
+.import-transacoes-screen textarea {
+  width: 100% !important;
+  border: 1px solid #DAD2EC !important;
+  border-radius: 16px !important;
+  background: #FFFDFE !important;
+  color: #100A32 !important;
+  font-size: 15px !important;
+  font-weight: 750 !important;
+}
+
+.import-transacoes-screen input {
+  height: 52px !important;
+  padding: 0 16px !important;
+}
+
+.import-transacoes-screen textarea {
+  min-height: 136px !important;
+  padding: 14px 16px !important;
+  resize: vertical !important;
+}
+
+.import-transacoes-screen input::placeholder,
+.import-transacoes-screen textarea::placeholder {
+  color: #8A82B4 !important;
+}
+
+/* Botões */
+.import-transacoes-screen .icon-button {
+  background: #F8F5FF !important;
+  border: 1px solid rgba(111, 66, 232, .28) !important;
+  color: #2B2148 !important;
+  box-shadow: none !important;
+}
+
+.import-transacoes-screen .icon-button.primary-icon {
+  background: linear-gradient(180deg, #241044 0%, #18082F 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 28px rgba(22, 7, 47, 0.24) !important;
+}
+
+/* Tabela */
+.import-transacoes-screen th,
+.import-transacoes-screen td {
+  color: #120B35 !important;
+  border-color: #EDE8F8 !important;
+}
+
+/* Pill de status */
+.import-transacoes-screen .status-pill.success {
+  background: #DDF8E7 !important;
+  color: #087A36 !important;
+}

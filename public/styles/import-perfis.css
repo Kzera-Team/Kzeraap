@@ -1,0 +1,365 @@
+/* import-perfis.css — estilos exclusivos da tela de importação de perfis */
+
+/* Input de arquivo (visualmente oculto, acionado pelo label) */
+.perfil-import-file-input {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Cabeçalho da pré-visualização */
+.perfil-import-preview-head.previewHeader {
+  margin: 0 0 18px !important;
+}
+
+.previewTitle {
+  display: block !important;
+  margin: 0 0 6px !important;
+  color: #120B35 !important;
+  font-size: 25px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.4px !important;
+}
+
+.previewCount {
+  color: #766BA8 !important;
+  font-size: 17px !important;
+  font-weight: 750 !important;
+}
+
+/* Filtro de status */
+.perfil-import-status-filter {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
+  padding: 4px !important;
+  border: 1px solid #DDD6EE !important;
+  border-radius: 18px !important;
+  background: #F8F5FF !important;
+  margin-bottom: 18px !important;
+}
+
+.perfil-import-status-filter button {
+  border: 0 !important;
+  border-radius: 14px !important;
+  min-height: 40px !important;
+  padding: 6px 4px !important;
+  background: transparent !important;
+  color: #766BA8 !important;
+  font-size: 11.5px !important;
+  font-weight: 850 !important;
+  line-height: 1.15 !important;
+}
+
+.perfil-import-status-filter button[aria-pressed="true"] {
+  background: linear-gradient(180deg, #241044 0%, #18082F 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(22, 7, 47, 0.24) !important;
+}
+
+/* Lista de cards de pré-visualização */
+.perfil-import-preview-line {
+  display: grid !important;
+  gap: 0 !important;
+}
+
+.perfil-import-empty {
+  margin: 0 !important;
+  padding: 14px !important;
+  border: 1px solid #DDD6EE !important;
+  border-radius: 18px !important;
+  background: #F8F5FF !important;
+  color: #766BA8 !important;
+  font-size: 15px !important;
+  font-weight: 750 !important;
+  line-height: 1.35 !important;
+  box-shadow: 0 6px 16px rgba(30, 14, 70, 0.07) !important;
+}
+
+/* Card individual de perfil */
+.perfil-import-card {
+  display: grid !important;
+  gap: 10px !important;
+  padding: 16px !important;
+  margin-bottom: 16px !important;
+  border: 1px solid #DDD6EE !important;
+  border-radius: 22px !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(30, 14, 70, 0.07) !important;
+}
+
+.perfil-import-card.preview-ok {
+  border-color: rgba(21, 128, 61, .42) !important;
+}
+
+.perfil-import-card.preview-warning {
+  border-color: rgba(196, 90, 0, .46) !important;
+}
+
+.perfil-import-card.preview-error {
+  border-color: rgba(220, 38, 38, .50) !important;
+}
+
+/* Linha de status (topo do card) */
+.perfil-import-status-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 8px !important;
+}
+
+.perfil-import-line-number {
+  color: #766BA8 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+/* Badge de status */
+.valid-badge,
+.perfil-import-status {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 96px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  padding: 0 14px !important;
+  border-radius: 14px !important;
+  font-size: 14px !important;
+  font-weight: 850 !important;
+  white-space: nowrap !important;
+}
+
+.valid-badge.status-ok,
+.perfil-import-status.status-ok {
+  border: 1px solid #A8E8BF !important;
+  background: #DDF8E7 !important;
+  color: #087A36 !important;
+}
+
+.valid-badge.status-warning,
+.perfil-import-status.status-warning {
+  border: 1px solid rgba(194, 120, 3, .35) !important;
+  background: #FFF8E6 !important;
+  color: #92400E !important;
+}
+
+.valid-badge.status-error,
+.perfil-import-status.status-error {
+  border: 1px solid rgba(244, 63, 94, .28) !important;
+  background: #FFE4E6 !important;
+  color: #BE123C !important;
+}
+
+/* Campos editáveis do card */
+.perfil-import-card-main {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.perfil-import-field {
+  display: grid !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+}
+
+.perfil-import-field span {
+  color: #6F6699 !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+}
+
+.perfil-import-field input,
+.perfil-import-field select,
+.input-like {
+  width: 100% !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  padding: 0 16px !important;
+  border: 1px solid #DAD2EC !important;
+  border-radius: 16px !important;
+  background: #FFFDFE !important;
+  color: #100A32 !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  box-shadow: inset 0 1px 1px rgba(30, 14, 70, 0.025) !important;
+}
+
+.perfil-import-field:first-child input {
+  font-size: 17px !important;
+  font-weight: 850 !important;
+}
+
+.perfil-import-field input::placeholder {
+  color: #8A82B4 !important;
+}
+
+.perfil-import-field input:focus,
+.perfil-import-field select:focus {
+  outline: 3px solid rgba(124, 77, 255, 0.15) !important;
+  border-color: rgba(124, 77, 255, 0.45) !important;
+  background: #ffffff !important;
+}
+
+.perfil-import-card.preview-error .perfil-import-field-name input {
+  border-color: rgba(244, 63, 94, 0.72) !important;
+  background: #fffafa !important;
+}
+
+.perfil-import-card-pair {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr) !important;
+  gap: 12px !important;
+}
+
+.perfil-import-field input[data-preview-field="telefone"] {
+  padding-left: 10px !important;
+  padding-right: 8px !important;
+  font-size: 15.4px !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.055em !important;
+}
+
+.perfil-import-field select {
+  padding-right: 34px !important;
+  font-size: 16px !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* Mensagem de ajuda inline */
+.perfil-import-help {
+  margin: 0 0 4px !important;
+  border-radius: 12px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  line-height: 1.25 !important;
+}
+
+.perfil-import-help.warning {
+  background: #FFF8E6 !important;
+  color: #92400E !important;
+}
+
+.perfil-import-help.error {
+  background: #FFF1F2 !important;
+  color: #BE123C !important;
+}
+
+/* Rodapé do card (checkbox) */
+.perfil-import-card-footer {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  gap: 10px !important;
+  align-items: center !important;
+  margin-top: 18px !important;
+  min-height: 42px !important;
+}
+
+.perfil-import-check {
+  display: contents !important;
+}
+
+.perfil-import-check input {
+  grid-column: 1 !important;
+  width: 30px !important;
+  height: 30px !important;
+  border: 1px solid #BDB7D3 !important;
+  border-radius: 9px !important;
+  background: linear-gradient(180deg, #191226 0%, #0B0715 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+.perfil-import-check input:checked {
+  border-color: #BDB7D3 !important;
+  background-image:
+    linear-gradient(135deg, transparent 0 42%, #FFFFFF 43% 57%, transparent 58%),
+    linear-gradient(45deg, transparent 0 46%, #FFFFFF 47% 61%, transparent 62%),
+    linear-gradient(180deg, #191226 0%, #0B0715 100%) !important;
+  background-size: 12px 12px, 18px 18px, 100% 100% !important;
+  background-position: 6px 10px, 9px 4px, center !important;
+  background-repeat: no-repeat !important;
+}
+
+.perfil-import-check span {
+  grid-column: 2 !important;
+  min-width: 0 !important;
+  color: #3D345F !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Nota de validação */
+.perfil-import-note {
+  margin: 0 !important;
+  padding: 10px 12px !important;
+  border-radius: 15px !important;
+  background: #EFF6FF !important;
+  color: #1E3A8A !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+/* Botão principal de importação */
+.perfil-import-primary-button {
+  width: 100% !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  margin-top: 24px !important;
+  margin-bottom: 28px !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(180deg, #241044 0%, #18082F 100%) !important;
+  color: #ffffff !important;
+  font-size: 17px !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: 0 14px 28px rgba(22, 7, 47, 0.24) !important;
+}
+
+.perfil-import-primary-button:disabled {
+  background: #C9C2DA !important;
+  color: #6F6699 !important;
+  box-shadow: none !important;
+}
+
+/* Layout da tela como página própria (sem header do shell) */
+#kzera-main:has(.perfil-import-screen.import-page) {
+  padding-top: 0 !important;
+}
+
+.kzera-screen.import-only-screen.perfil-import-screen.import-page {
+  position: relative !important;
+  width: 100vw !important;
+  max-width: none !important;
+  min-height: 100dvh !important;
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+  padding: max(18px, env(safe-area-inset-top)) 14px 24px !important;
+  box-sizing: border-box !important;
+  background: radial-gradient(circle at top, #241044 0%, #16072F 48%, #0D061D 100%) !important;
+}
+
+.kzera-screen.import-only-screen.perfil-import-screen.import-page > .perfil-import-panel.import-panel {
+  width: 100% !important;
+  max-width: 430px !important;
+  margin: 56px auto 24px !important;
+  padding: 16px !important;
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, #FBF9FF 0%, #F7F3FF 100%) !important;
+  border: 1px solid #DDD4F3 !important;
+  box-shadow: 0 -8px 32px rgba(18, 8, 45, 0.22) !important;
+  box-sizing: border-box !important;
+}

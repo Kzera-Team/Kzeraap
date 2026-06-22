@@ -1,0 +1,248 @@
+/* import-shared.css — estilos compartilhados pelas 3 telas de importação */
+
+/* Fundo da página */
+.kzera-screen.import-only-screen.import-page-background {
+  width: 100vw !important;
+  max-width: none !important;
+  min-height: 100vh !important;
+  padding: max(88px, calc(env(safe-area-inset-top) + 76px)) 0 0 !important;
+  background: radial-gradient(circle at top center, #241044 0%, #16072F 48%, #0D061D 100%) !important;
+}
+
+/* Card principal (painel branco) */
+.import-panel,
+.importPanel {
+  width: calc(100vw - 28px) !important;
+  max-width: 430px !important;
+  margin: 0 auto !important;
+  padding: 22px 16px 32px !important;
+  border: 1px solid #DDD4F3 !important;
+  border-radius: 28px 28px 0 0 !important;
+  background: linear-gradient(180deg, #FBF9FF 0%, #F7F3FF 100%) !important;
+  box-shadow: 0 -8px 32px rgba(18, 8, 45, 0.22) !important;
+}
+
+/* Abas de navegação */
+.import-tabs,
+.importTabs {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1.25fr !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  margin: 0 0 26px !important;
+  gap: 6px !important;
+  padding: 4px !important;
+  overflow: hidden !important;
+  border: 1px solid #DDD4F3 !important;
+  border-radius: 16px !important;
+  background: #F8F5FF !important;
+  box-shadow: none !important;
+}
+
+.import-tab,
+.importTab {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  min-width: 0 !important;
+  height: 58px !important;
+  padding: 0 4px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  color: #2B2148 !important;
+  font-size: 14px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+.import-tab:last-child,
+.importTab:last-child {
+  border-right: none !important;
+}
+
+.import-tab span:not([aria-hidden="true"]),
+.importTab span:not([aria-hidden="true"]) {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+}
+
+.import-tab span[aria-hidden="true"],
+.importTab span[aria-hidden="true"] {
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+.import-tab.active,
+.importTab.active {
+  background: #ffffff !important;
+  color: #6F42E8 !important;
+  box-shadow: 0 4px 12px rgba(30, 14, 70, .08) !important;
+}
+
+.import-tab.active::after,
+.importTab.active::after {
+  display: none !important;
+}
+
+/* Card de upload de arquivo */
+.file-card {
+  display: grid !important;
+  grid-template-columns: 64px minmax(0, 1fr) !important;
+  grid-template-rows: auto auto auto auto !important;
+  grid-template-areas:
+    "icon label"
+    "icon name"
+    "icon meta"
+    "icon action" !important;
+  align-items: center !important;
+  column-gap: 14px !important;
+  row-gap: 4px !important;
+  min-height: 112px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 18px !important;
+  margin: 0 0 26px !important;
+  border: 1px solid #DDD6EE !important;
+  border-radius: 22px !important;
+  background: #F8F5FF !important;
+  color: #120B35 !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+}
+
+.file-icon-box {
+  grid-area: icon !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 18px !important;
+  background: #F0E8FF !important;
+  color: #7B4DFF !important;
+  font-size: 38px !important;
+  font-weight: 900 !important;
+}
+
+.file-label,
+.fileLabel {
+  grid-area: label !important;
+  min-width: 0 !important;
+  color: #7A70A8 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1.08 !important;
+}
+
+.file-name,
+.fileName {
+  grid-area: name !important;
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 132px !important;
+  color: #120B35 !important;
+  font-size: 20px !important;
+  font-weight: 850 !important;
+  line-height: 1.12 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.file-meta,
+.fileMeta {
+  grid-area: meta !important;
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 132px !important;
+  color: #766BA8 !important;
+  font-size: 12.8px !important;
+  font-weight: 800 !important;
+  line-height: 1.08 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  word-break: normal !important;
+}
+
+.change-file-button,
+.change-button,
+.changeButton {
+  grid-area: action !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  justify-self: start !important;
+  max-width: 100% !important;
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  border: 1px solid #BFAAF8 !important;
+  border-radius: 999px !important;
+  background: #ffffff !important;
+  color: #7447E8 !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+/* Botão primário de confirmação */
+.import-button {
+  width: 100% !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  margin-top: 24px !important;
+  margin-bottom: 28px !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(180deg, #241044 0%, #18082F 100%) !important;
+  color: #ffffff !important;
+  font-size: 17px !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: 0 14px 28px rgba(22, 7, 47, 0.24) !important;
+}
+
+/* Resumo de contagens */
+.import-summary {
+  display: grid !important;
+  gap: 6px !important;
+  padding: 14px !important;
+  border: 1px solid #DDD6EE !important;
+  border-radius: 18px !important;
+  background: #FFFDFE !important;
+  color: #3D345F !important;
+}
+
+.import-summary strong {
+  color: #120B35 !important;
+  font-weight: 900 !important;
+}
+
+@media (max-width: 389px) {
+  .file-card {
+    grid-template-columns: 54px minmax(0, 1fr) !important;
+    column-gap: 10px !important;
+    padding: 18px 14px !important;
+  }
+
+  .file-icon-box {
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 32px !important;
+  }
+
+  .file-name,
+  .fileName,
+  .file-meta,
+  .fileMeta {
+    max-width: 100% !important;
+  }
+}
