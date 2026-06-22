@@ -10,7 +10,7 @@ export const LOCALIDADE_GRUPOS: LocalidadeGrupo[] = [
     nome: 'Brasília e Entorno',
     localidades: [
       'Asa Norte', 'Asa Sul', 'Setor Sudeste', 'Noroeste', 'Vila Planalto', 'Sudoeste', 'Cruzeiro',
-      'Lago Norte', 'Lago Sul', 'Guará', 'Águas Claras', 'Taguatinga', 'Ceilândia', 'Samambaia',
+      'Lago Norte', 'Lago Sul', 'Guará', 'Águas Claras', 'Taguatinga', 'Ceilândia', 'Brazlândia', 'Samambaia',
       'Vicente Pires', 'Riacho Fundo', 'Recanto das Emas', 'Gama', 'Santa Maria', 'Sobradinho',
       'Planaltina', 'Paranoá', 'Itapoã', 'São Sebastião', 'Jardim Botânico', 'Valparaíso',
       'Cidade Ocidental', 'Luziânia', 'Novo Gama', 'Águas Lindas', 'Formosa', 'Santo Antônio do Descoberto'
