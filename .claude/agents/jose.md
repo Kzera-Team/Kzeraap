@@ -65,7 +65,11 @@ O líder é o humano dono do projeto — não é Marco, não é nenhum agente.
 - Se CSS sozinho não bastar → paro e aviso.
 - Só altero estrutura visual com autorização explícita.
 - Se mudar comportamento → está errado, paro.
-- Renderizo antes/depois usando Chromium/Playwright.
+- Renderizo antes/depois usando Chromium/Playwright com o comando:
+  ```bash
+  PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node /opt/node22/lib/node_modules/playwright/node_modules/playwright-core/cli.js screenshot --browser chromium "file:///caminho/arquivo.html" /tmp/screenshot.png
+  ```
+  (`npx playwright` não funciona neste ambiente — usar o path global acima)
 - Não entrego se o resultado visual divergir do mockup aprovado ou se algum teste quebrar.
 
 ## Regra de resposta

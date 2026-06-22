@@ -55,19 +55,27 @@ function atualizarFiltroStatus(
   if (btnError) btnError.textContent = `Erros (${counts.error})`;
 }
 
-function wiredFilterButtons(root: HTMLElement, preview: Element): void {
+function aplicarFiltro(preview: Element, chosen: string): void {
+  preview.querySelectorAll<HTMLElement>('[data-card-status]').forEach(card => {
+    card.hidden = chosen !== 'todos' && card.dataset.cardStatus !== chosen;
+  });
+}
+
+function wiredFilterButtons(root: HTMLElement, preview: Element, filtroAtivo: string, onFiltroChange: (chosen: string) => void): void {
   const filter = root.querySelector<HTMLElement>('.perfil-import-status-filter');
   if (!filter) return;
   const buttons = Array.from(filter.querySelectorAll<HTMLButtonElement>('button'));
   buttons.forEach(button => {
+    const isActive = (button.dataset.filterStatus || 'todos') === filtroAtivo;
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     button.onclick = () => {
       const chosen = button.dataset.filterStatus || 'todos';
+      onFiltroChange(chosen);
       buttons.forEach(b => b.setAttribute('aria-pressed', b === button ? 'true' : 'false'));
-      preview.querySelectorAll<HTMLElement>('[data-card-status]').forEach(card => {
-        card.hidden = chosen !== 'todos' && card.dataset.cardStatus !== chosen;
-      });
+      aplicarFiltro(preview, chosen);
     };
   });
+  aplicarFiltro(preview, filtroAtivo);
 }
 
 function renderCard(
@@ -153,6 +161,8 @@ function renderCard(
 }
 
 export class PerfilImportacaoBinder {
+  private filtroAtivo = 'todos';
+
   bind(root: HTMLElement, state: PerfilUiState, handlers: PerfilUiHandlers): void {
     const fileInput = root.querySelector('#perfil-import-file') as HTMLInputElement | null;
     fileInput?.addEventListener('change', async () => {
@@ -188,6 +198,7 @@ export class PerfilImportacaoBinder {
     });
 
     if (!temPreview) {
+      this.filtroAtivo = 'todos';
       preview.innerHTML = '<p class="perfil-import-empty">Escolha um arquivo para revisar os perfis antes de importar.</p>';
       return;
     }
@@ -198,7 +209,7 @@ export class PerfilImportacaoBinder {
       .map((registro, i) => renderCard(registro, statuses[i] ?? 'ok', localidadesBrasilia))
       .join('');
 
-    wiredFilterButtons(root, preview);
+    wiredFilterButtons(root, preview, this.filtroAtivo, (chosen) => { this.filtroAtivo = chosen; });
 
     preview.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-preview-field]').forEach(input => {
       input.addEventListener('input', () => {

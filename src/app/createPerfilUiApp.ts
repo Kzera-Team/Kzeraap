@@ -5,6 +5,7 @@ import type { IdentityRule } from '../domain/identidade/IdentityRule';
 import { createPerfilModule } from './createPerfilModule';
 import { PerfilDomView, type PerfilUiState, type PerfilTimelineItem } from '../presentation/perfil/PerfilDomView';
 import { releaseTransferPayload } from '../runtime/TransferScope';
+import type { ImportacaoRascunhoUseCase } from '../application/importacao/ImportacaoRascunhoUseCase';
 
 const DEFAULT_IDENTITY_RULE: IdentityRule = {
   id: 'default',
@@ -35,7 +36,13 @@ const DEFAULT_IDENTITY_RULE: IdentityRule = {
   ]
 };
 
-export function createPerfilUiApp(perfis: Repository<Perfil>, clock: Clock, idFactory: () => string, getIdentityRule: () => IdentityRule = () => DEFAULT_IDENTITY_RULE) {
+export function createPerfilUiApp(
+  perfis: Repository<Perfil>,
+  clock: Clock,
+  idFactory: () => string,
+  getIdentityRule: () => IdentityRule = () => DEFAULT_IDENTITY_RULE,
+  rascunho?: ImportacaoRascunhoUseCase
+) {
   const module = createPerfilModule(perfis, clock, idFactory);
   const view = new PerfilDomView();
   let termoAtual = '';
@@ -140,18 +147,33 @@ export function createPerfilUiApp(perfis: Repository<Perfil>, clock: Clock, idFa
     async onSelecionarArquivo(file: File) {
       const importState = await module.fluxoImportacao.carregarArquivo(file);
       preview = importState.preview;
+      if (rascunho) {
+        try {
+          await rascunho.salvar({ tipo: 'perfis', previewCount: preview.length });
+        } catch { /* rascunho é best-effort — não bloqueia o fluxo */ }
+      }
       await rerender('Prévia de importação carregada.');
     },
 
     async onAtualizarPreview(index: number, patch: Partial<PerfilUiState['importacaoPreview'][number]>) {
       const importState = module.fluxoImportacao.atualizarRegistro(index, patch);
       preview = importState.preview;
+      if (rascunho && preview.length > 0) {
+        try {
+          await rascunho.salvar({ tipo: 'perfis', previewCount: preview.length });
+        } catch { /* best-effort */ }
+      }
       await rerender();
     },
 
     async onConfirmarImportacao() {
       const result = await module.fluxoImportacao.confirmar();
       preview = [];
+      if (rascunho) {
+        try {
+          await rascunho.descartar('perfis');
+        } catch { /* best-effort */ }
+      }
       await rerender(`${result.importados.length} perfis importados.`);
     },
 
@@ -183,6 +205,14 @@ export function createPerfilUiApp(perfis: Repository<Perfil>, clock: Clock, idFa
       rootRef = root;
       panelMode = 'cadastro';
       await rerender();
+    },
+    async descartarRascunho(): Promise<void> {
+      preview = [];
+      if (rascunho) {
+        try {
+          await rascunho.descartar('perfis');
+        } catch { /* best-effort */ }
+      }
     }
   };
 }

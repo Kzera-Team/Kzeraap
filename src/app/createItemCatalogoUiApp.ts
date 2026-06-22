@@ -8,6 +8,7 @@ import { createItemCatalogoModule } from './createItemCatalogoModule';
 import { ParseImportacaoCatalogoItensUseCase } from '../application/item/ParseImportacaoCatalogoItensUseCase';
 import { ItemCatalogoDomView, type ItemCatalogoUiState } from '../presentation/item/ItemCatalogoDomView';
 import { releaseTransferPayload } from '../runtime/TransferScope';
+import type { ImportacaoRascunhoUseCase } from '../application/importacao/ImportacaoRascunhoUseCase';
 
 function validarPreview(item: ItemImportacaoPreviewRegistro): ItemImportacaoPreviewRegistro {
   const erros: string[] = [];
@@ -16,7 +17,13 @@ function validarPreview(item: ItemImportacaoPreviewRegistro): ItemImportacaoPrev
   return { ...item, valido: erros.length === 0, erros };
 }
 
-export function createItemCatalogoUiApp(items: Repository<ItemCatalogo>, balancas: Repository<Balanca>, clock: Clock, idFactory: () => string) {
+export function createItemCatalogoUiApp(
+  items: Repository<ItemCatalogo>,
+  balancas: Repository<Balanca>,
+  clock: Clock,
+  idFactory: () => string,
+  rascunho?: ImportacaoRascunhoUseCase
+) {
   const module = createItemCatalogoModule(items, balancas, clock, idFactory);
   const parser = new ParseImportacaoCatalogoItensUseCase(new BuildSafeItemSpreadsheetImportGateway());
   const view = new ItemCatalogoDomView();
@@ -201,21 +208,41 @@ export function createItemCatalogoUiApp(items: Repository<ItemCatalogo>, balanca
     async onSelecionarArquivo(file: File) {
       const parsed = await parser.execute(file);
       preview = criarPreviewImportacaoItem(parsed.linhas);
+      if (rascunho) {
+        try {
+          await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
+        } catch { /* best-effort */ }
+      }
       await rerender('Prévia carregada.');
     },
 
     async onAtualizarPreview(index: number, patch: Partial<ItemImportacaoPreviewRegistro>) {
       preview = preview.map(item => item.index === index ? validarPreview({ ...item, ...patch }) : item);
+      if (rascunho && preview.length > 0) {
+        try {
+          await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
+        } catch { /* best-effort */ }
+      }
       await rerender();
     },
 
     async onAplicarCategoriaPreviewEmMassa(categoria: string) {
       preview = preview.map(item => validarPreview({ ...item, variacaoNome: categoria || item.variacaoNome || 'Padrão' }));
+      if (rascunho && preview.length > 0) {
+        try {
+          await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
+        } catch { /* best-effort */ }
+      }
       await rerender();
     },
 
     async onLimparPreviewInvalidos() {
       preview = preview.filter(item => item.valido);
+      if (rascunho) {
+        try {
+          await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
+        } catch { /* best-effort */ }
+      }
       await rerender();
     },
 
@@ -224,6 +251,11 @@ export function createItemCatalogoUiApp(items: Repository<ItemCatalogo>, balanca
       const rejeitados = preview.filter(item => !item.valido).map(item => ({ ...item }));
       releaseTransferPayload(preview);
       preview = rejeitados;
+      if (rascunho) {
+        try {
+          await rascunho.descartar('itens');
+        } catch { /* best-effort */ }
+      }
       await rerender(`${result.importados.length} itens importados.`);
     },
 
@@ -258,6 +290,14 @@ export function createItemCatalogoUiApp(items: Repository<ItemCatalogo>, balanca
       loteSelecionado = undefined;
       panelMode = 'cadastro';
       await rerender();
+    },
+    async descartarRascunho(): Promise<void> {
+      preview = [];
+      if (rascunho) {
+        try {
+          await rascunho.descartar('itens');
+        } catch { /* best-effort */ }
+      }
     }
   };
 }

@@ -16,6 +16,8 @@ export interface ImportacaoTransacoesFinanceiroDeps {
   conciliar: ConciliarTransacoesFinanceiroUseCase;
   resolverPendencia: ResolverPendenciaImportacaoUseCase;
   confirmarHistoricoFinanceiro: ConfirmarImportacaoHistoricaFinanceiraUseCase;
+  /** Callback opcional para salvar/descartar o marcador de retomada de transações */
+  onRascunhoAtualizado?: (acao: 'salvar' | 'descartar') => Promise<void>;
 }
 
 const STATUS_CONCILIACAO_LABEL: Record<StatusConciliacaoImportacao, string> = {
@@ -486,6 +488,9 @@ export class ImportacaoTransacoesFinanceiroView {
         this.previaConfirmacao = null;
         this.confirmacaoArmada = false;
         this.mensagem = `Histórico confirmado: ${result.transacoesCriadas} registros foram salvas. Estoque não foi alterado.`;
+        if (this.deps.onRascunhoAtualizado) {
+          try { await this.deps.onRascunhoAtualizado('descartar'); } catch { /* best-effort */ }
+        }
         await this.atualizarConciliacao();
       } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível confirmar o histórico financeiro.'; }
       await this.render();
@@ -544,6 +549,9 @@ export class ImportacaoTransacoesFinanceiroView {
       if (!conteudo.trim()) { this.mensagem = 'Cole o conteúdo da planilha de registros antes de preparar.'; await this.render(); return; }
       const resultado = await this.deps.prepararTransacoes.execute({ nomeArquivo: String(data.get('nomeArquivo') || 'transacoes.csv'), conteudo });
       this.mensagem = `Registros preparados: ${resultado.resumo.total} linhas, ${resultado.resumo.pendentes} precisam de atenção.`;
+      if (this.deps.onRascunhoAtualizado) {
+        try { await this.deps.onRascunhoAtualizado('salvar'); } catch { /* best-effort */ }
+      }
       await this.render();
     });
     this.root?.querySelector('[data-import-financeiro]')?.addEventListener('submit', async event => {
@@ -554,6 +562,9 @@ export class ImportacaoTransacoesFinanceiroView {
       if (!conteudo.trim()) { this.mensagem = 'Cole o conteúdo da planilha financeira antes de preparar.'; await this.render(); return; }
       const resultado = await this.deps.prepararFinanceiro.execute({ nomeArquivo: String(data.get('nomeArquivo') || 'financeiro.csv'), conteudo });
       this.mensagem = `Pagamentos preparados: ${resultado.resumo.total} linhas, ${resultado.resumo.pendentes} precisam de atenção.`;
+      if (this.deps.onRascunhoAtualizado) {
+        try { await this.deps.onRascunhoAtualizado('salvar'); } catch { /* best-effort */ }
+      }
       await this.render();
     });
   }

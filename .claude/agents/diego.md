@@ -57,6 +57,10 @@ Dados em repouso devem ser ilegíveis fora do contexto da aplicação:
 - Se vulnerabilidade for estrutural → reporta também ao Arquiteto para correção na base
 - Não sugere "melhorias opcionais" — ou é risco e bloqueia, ou não é risco e aprova
 
+## Filosofia de segurança do projeto
+
+**Se uma única letra de dado sensível encostar em memória física sem criptografia: bloqueio.**
+
 ## Regras
 
 - Não aprovo código que exponha dados sensíveis em qualquer camada

@@ -1,5 +1,8 @@
 import { PrimeiroAcessoUseCase } from '../application/auth/PrimeiroAcessoUseCase';
 import { LoginUseCase } from '../application/auth/LoginUseCase';
+import { ImportacaoRascunhoRepository } from '../infrastructure/repositories/ImportacaoRascunhoRepository';
+import { ImportacaoRascunhoUseCase } from '../application/importacao/ImportacaoRascunhoUseCase';
+import type { RascunhoImportacao } from '../infrastructure/repositories/ImportacaoRascunhoRepository';
 import { BloquearSessaoUseCase } from '../application/auth/BloquearSessaoUseCase';
 import { ObterAuthStateUseCase } from '../application/auth/ObterAuthStateUseCase';
 import { ConfirmarFaceIdUseCase } from '../application/auth/ConfirmarFaceIdUseCase';
@@ -77,7 +80,7 @@ function createOperationalRepository<T extends { id: string }>(storeName: 'perfi
   return new IndexedDbRepository<T>(connection, storeName);
 }
 
-type Screen = 'home' | 'perfis' | 'itens' | 'transacoes' | 'relatorios' | 'codigo' | 'importacao' | 'configuracoes';
+type Screen = 'home' | 'perfis' | 'itens' | 'transacoes' | 'relatorios' | 'codigo' | 'importacao-perfis' | 'importacao-itens' | 'importacao-transacoes' | 'configuracoes';
 
 interface LegacyCodigoPerfilConfig { fields: IdentityColumn[]; separator: string; }
 
@@ -292,7 +295,14 @@ export function createKzeraAuthenticatedApp() {
     listarStaging: new ListarStagingImportacaoUseCase(lotesImportacaoTransacoes, registrosImportacaoTransacoes, lotesImportacaoFinanceira, registrosImportacaoFinanceira),
     conciliar: new ConciliarTransacoesFinanceiroUseCase(registrosImportacaoTransacoes, registrosImportacaoFinanceira),
     resolverPendencia: new ResolverPendenciaImportacaoUseCase(registrosImportacaoTransacoes, registrosImportacaoFinanceira, () => clock.now().toISOString()),
-    confirmarHistoricoFinanceiro: new ConfirmarImportacaoHistoricaFinanceiraUseCase(registrosImportacaoTransacoes, registrosImportacaoFinanceira, transacoesFinanceiras, pagamentosTransacao, movimentosFinanceiros, clock, prefix => `${prefix}-${Date.now()}-${++counter}`, pacotesConfirmacaoHistorica)
+    confirmarHistoricoFinanceiro: new ConfirmarImportacaoHistoricaFinanceiraUseCase(registrosImportacaoTransacoes, registrosImportacaoFinanceira, transacoesFinanceiras, pagamentosTransacao, movimentosFinanceiros, clock, prefix => `${prefix}-${Date.now()}-${++counter}`, pacotesConfirmacaoHistorica),
+    onRascunhoAtualizado: async (acao) => {
+      if (acao === 'salvar') {
+        try { await importacaoRascunho.salvar({ tipo: 'transacoes' }); } catch { /* best-effort */ }
+      } else {
+        try { await importacaoRascunho.descartar('transacoes'); } catch { /* best-effort */ }
+      }
+    }
   });
   security.resourceScope.register(importacaoTransacoesFinanceiroApp);
   const resumoFinanceiro = new ResumoFinanceiroUseCase(transacoesFinanceiras, movimentosFinanceiros, pagamentosTransacao);
@@ -305,9 +315,13 @@ export function createKzeraAuthenticatedApp() {
     registrarCalibragemBalanca: new RegistrarCalibragemBalancaUseCase(balancas, clock, () => `calibragem-${Date.now()}-${++counter}`),
     limparMetricasUso: () => uxTracker.limparMetricas()
   });
+  // Rascunho de importação — criado após security.session estar disponível
+  const importacaoRascunhoRepo = new ImportacaoRascunhoRepository(security.session);
+  const importacaoRascunho = new ImportacaoRascunhoUseCase(importacaoRascunhoRepo);
+
   let cachedIdentityRule: IdentityRule = cloneRule(DEFAULT_CODIGO_PERFIL_RULE);
-  const perfilApp = createPerfilUiApp(perfis, clock, idFactory, () => cachedIdentityRule);
-  const itemApp = createItemCatalogoUiApp(itens, balancas, clock, () => `item-${Date.now()}-${++counter}`);
+  const perfilApp = createPerfilUiApp(perfis, clock, idFactory, () => cachedIdentityRule, importacaoRascunho);
+  const itemApp = createItemCatalogoUiApp(itens, balancas, clock, () => `item-${Date.now()}-${++counter}`, importacaoRascunho);
   const backupGate = new BackupGateUseCase();
   const backupExport = new BackupExportUseCase(new BrowserBackupExporter(), security.session);
   const uxMetricas = new UxMetricasService(createUxEventosRepository(), undefined, { clock, idFactory: () => `ux-${Date.now()}-${++counter}` });
@@ -331,11 +345,17 @@ export function createKzeraAuthenticatedApp() {
   let swipeBound = false;
   let backupDecision: BackupDecision | null = null;
   let backupMessage = '';
-  let importacaoAbaAtiva: 'perfis' | 'itens' | 'transacoes' = 'perfis';
   let filtrosFinanceiros: { dataInicio: string; dataFim: string; perfil: string; metodo: string; origem: string; statusFinanceiro: 'todos' | 'pago' | 'parcial' | 'pendente' | 'cancelado' } = { dataInicio: '', dataFim: '', perfil: '', metodo: '', origem: 'todas', statusFinanceiro: 'todos' };
   let mensagemTransacoes = '';
   let filtrosRelatorios: RelatorioFiltroOperacional = { dataInicio: '', dataFim: '', origem: 'todas', statusFinanceiro: 'todos' };
   let mensagemRelatorios = '';
+
+  // --- Rascunho de importação / retomada entre sessões ---
+  // Flag de nova sessão: sessionStorage sobrevive à mesma aba mas é limpo ao fechar/reabrir.
+  const SESSION_FLAG_KEY = 'kzera_sessao_ativa';
+  let rascunhosRetomada: RascunhoImportacao[] = [];
+  let modalRetomadaVisivel = false;
+  let rascunhosVerificados = false;
 
   async function loadCodigoPerfilRule(): Promise<IdentityRule | null> {
     const raw = await configStore.get(CODE_RULE_STORAGE_KEY);
@@ -668,7 +688,7 @@ export function createKzeraAuthenticatedApp() {
 
   function renderDrawer(): string {
     const openClass = menuOpen ? ' is-open' : '';
-    const items: Array<[Screen, string]> = [['perfis', 'Perfis'], ['itens', 'Itens'], ['transacoes', 'Dinheiro'], ['relatorios', 'Relatórios'], ['codigo', 'Código do Perfil'], ['importacao', 'Importação'], ['configuracoes', 'Configurações']];
+    const items: Array<[Screen, string]> = [['perfis', 'Perfis'], ['itens', 'Itens'], ['transacoes', 'Dinheiro'], ['relatorios', 'Relatórios'], ['codigo', 'Código do Perfil'], ['importacao-perfis', 'Importar Perfis'], ['importacao-itens', 'Importar Itens'], ['importacao-transacoes', 'Importar Transações'], ['configuracoes', 'Configurações']];
     return `${renderAppMenuButton()}
       <div class="kzera-drawer-backdrop${openClass}" data-menu-close></div>
       <aside class="kzera-drawer${openClass}" aria-label="Menu principal">
@@ -837,6 +857,96 @@ export function createKzeraAuthenticatedApp() {
     });
   }
 
+  /**
+   * Verifica se é uma nova sessão (aba fechada e reaberta).
+   * Usa sessionStorage como flag: presente = mesma sessão, ausente = sessão nova.
+   */
+  function isNovaSessao(): boolean {
+    if (typeof sessionStorage === 'undefined') return false;
+    const flag = sessionStorage.getItem(SESSION_FLAG_KEY);
+    if (!flag) {
+      sessionStorage.setItem(SESSION_FLAG_KEY, '1');
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Verifica rascunhos de importação pendentes e sinaliza o modal,
+   * mas apenas uma vez por sessão e apenas em sessão nova.
+   */
+  async function verificarRascunhosRetomada(): Promise<void> {
+    if (rascunhosVerificados) return;
+    rascunhosVerificados = true;
+
+    const novaSessao = isNovaSessao();
+    if (!novaSessao) return;
+
+    try {
+      const lista = await importacaoRascunho.listar();
+      if (lista.length > 0) {
+        rascunhosRetomada = lista;
+        modalRetomadaVisivel = true;
+      }
+    } catch {
+      // best-effort: se não conseguiu ler, não bloqueia o app
+    }
+  }
+
+  function labelTelaRascunho(rascunho: RascunhoImportacao): string {
+    if (rascunho.tipo === 'perfis') return `Importação de perfis${rascunho.previewCount ? ` (${rascunho.previewCount} registros na prévia)` : ''}`;
+    if (rascunho.tipo === 'itens') return `Importação de itens${rascunho.previewCount ? ` (${rascunho.previewCount} registros na prévia)` : ''}`;
+    return 'Importação de transações financeiras';
+  }
+
+  function renderModalRetomada(): string {
+    if (!modalRetomadaVisivel || rascunhosRetomada.length === 0) return '';
+    const linhas = rascunhosRetomada
+      .map(r => `<li>${escapeHtml(labelTelaRascunho(r))}</li>`)
+      .join('');
+    return `<div class="kzera-modal-backdrop" data-testid="modal-retomada-importacao" role="dialog" aria-modal="true" aria-label="Importação em andamento">
+      <section class="kzera-modal-card">
+        <span class="eyebrow">Importação em andamento</span>
+        <h2>Continuar de onde parou?</h2>
+        <p>Você tinha uma importação em andamento:</p>
+        <ul class="compact-list">${linhas}</ul>
+        <p class="form-hint">Selecione "Sim" para navegar até a importação ou "Não" para descartar.</p>
+        <div class="backup-modal-actions">
+          <button type="button" class="icon-button-text primary" data-retomada-sim aria-label="Continuar importação" title="Continuar importação">Sim, continuar</button>
+          <button type="button" class="icon-button-text" data-retomada-nao aria-label="Descartar rascunho" title="Descartar rascunho">Não, descartar</button>
+        </div>
+      </section>
+    </div>`;
+  }
+
+  function telaParaRascunho(rascunho: RascunhoImportacao): Screen {
+    if (rascunho.tipo === 'perfis') return 'importacao-perfis';
+    if (rascunho.tipo === 'itens') return 'importacao-itens';
+    return 'importacao-transacoes';
+  }
+
+  function bindModalRetomada(): void {
+    rootRef?.querySelector('[data-retomada-sim]')?.addEventListener('click', async () => {
+      modalRetomadaVisivel = false;
+      // Navega para a primeira tela com rascunho (se houver mais de um, o usuário pode navegar depois)
+      const primeiro = rascunhosRetomada[0];
+      if (primeiro) {
+        await navigate(telaParaRascunho(primeiro));
+      } else {
+        await render();
+      }
+    });
+    rootRef?.querySelector('[data-retomada-nao]')?.addEventListener('click', async () => {
+      modalRetomadaVisivel = false;
+      rascunhosRetomada = [];
+      // Descarta rascunhos de perfis e itens (preview em memória já foi descartado na nova sessão)
+      try { await perfilApp.descartarRascunho(); } catch { /* best-effort */ }
+      try { await itemApp.descartarRascunho(); } catch { /* best-effort */ }
+      try { await importacaoRascunho.descartarTodos(); } catch { /* best-effort */ }
+      await render();
+    });
+  }
+
   async function renderUnlocked(): Promise<void> {
     if (!rootRef) return;
     const savedRule = await ensureCodigoPerfilRule();
@@ -867,7 +977,9 @@ export function createKzeraAuthenticatedApp() {
             <button class="icon-button text-icon" data-quick="novo-item" aria-label="Novo item" title="Novo item">+ Item</button>
           </section>
           <details class="kzera-utility-panel kzera-home-more"><summary>Mais</summary><div class="kzera-home-more-grid">
-            <button class="icon-button text-icon" data-nav="importacao" aria-label="Importação" title="Importação">Importação</button>
+            <button class="icon-button text-icon" data-nav="importacao-perfis" aria-label="Importar Perfis" title="Importar Perfis">Importar Perfis</button>
+            <button class="icon-button text-icon" data-nav="importacao-itens" aria-label="Importar Itens" title="Importar Itens">Importar Itens</button>
+            <button class="icon-button text-icon" data-nav="importacao-transacoes" aria-label="Importar Transações" title="Importar Transações">Importar Transações</button>
             <button class="icon-button text-icon" data-nav="relatorios" aria-label="Relatórios" title="Relatórios">Relatórios</button>
             <button class="icon-button text-icon" data-nav="codigo" aria-label="Código do Perfil" title="Código do Perfil">Código</button>
             <button class="icon-button text-icon" data-nav="configuracoes" aria-label="Configurações" title="Configurações">Configurações</button>
@@ -875,16 +987,16 @@ export function createKzeraAuthenticatedApp() {
           ${backupDecision?.required ? `<section class="kzera-utility-panel kzera-home-status" aria-label="Status operacional"><strong>Cópia de segurança pendente</strong><span>Salve uma cópia de segurança para proteger seu trabalho.</span></section>` : ''}
         </main>
       </div>`;
-    } else if (currentScreen === 'importacao') {
-      rootRef.innerHTML = `<main id="kzera-main" aria-label="Importação"></main>`;
     } else {
-      const title = currentScreen === 'perfis' ? 'Perfis' : currentScreen === 'itens' ? 'Itens' : currentScreen === 'transacoes' ? 'Dinheiro' : currentScreen === 'relatorios' ? 'Relatórios' : currentScreen === 'codigo' ? 'Código do Perfil' : 'Configurações';
+      const title = currentScreen === 'perfis' ? 'Perfis' : currentScreen === 'itens' ? 'Itens' : currentScreen === 'transacoes' ? 'Dinheiro' : currentScreen === 'relatorios' ? 'Relatórios' : currentScreen === 'codigo' ? 'Código do Perfil' : currentScreen === 'importacao-perfis' ? 'Importar Perfis' : currentScreen === 'importacao-itens' ? 'Importar Itens' : currentScreen === 'importacao-transacoes' ? 'Importar Transações' : 'Configurações';
       rootRef.innerHTML = `<div class="app-frame">${renderDrawer()}<main id="kzera-main" aria-label="${title}"></main></div>`;
     }
 
     await refreshBackupDecision();
-    const telaCriticaImportacao = currentScreen === 'importacao';
+    await verificarRascunhosRetomada();
+    const telaCriticaImportacao = currentScreen === 'importacao-perfis' || currentScreen === 'importacao-itens' || currentScreen === 'importacao-transacoes';
     if (backupDecision?.required && rootRef && !telaCriticaImportacao) { rootRef.insertAdjacentHTML('beforeend', renderBackupModal()); bindBackupModal(); }
+    if (modalRetomadaVisivel && rootRef) { rootRef.insertAdjacentHTML('beforeend', renderModalRetomada()); bindModalRetomada(); }
     bindNavigation();
     const appRoot = rootRef.querySelector('#kzera-main') as HTMLElement | null;
     if (currentScreen !== 'home') {
@@ -894,31 +1006,9 @@ export function createKzeraAuthenticatedApp() {
       if (currentScreen === 'codigo') { currentDraftRule = currentDraftRule || cloneRule(savedRule || cachedIdentityRule); appRoot.innerHTML = codigoPerfilConfigScreen(currentDraftRule, erro, 'authenticated'); await bindCodigoPerfilForm(); }
       if (currentScreen === 'transacoes') { appRoot.innerHTML = await renderTransacoesScreen(); bindTransacoesFilters(); }
       if (currentScreen === 'relatorios') { appRoot.innerHTML = await renderRelatoriosScreen(); bindRelatoriosFilters(); }
-      if (currentScreen === 'importacao') {
-        appRoot.innerHTML = `<div class="importacao-hub">
-          <nav class="importacao-hub-nav" aria-label="Tipo de importação">
-            <button type="button" class="icon-button text-icon${importacaoAbaAtiva === 'perfis' ? ' active' : ''}" data-importacao-aba="perfis">♟ Perfis</button>
-            <button type="button" class="icon-button text-icon${importacaoAbaAtiva === 'itens' ? ' active' : ''}" data-importacao-aba="itens">▣ Itens</button>
-            <button type="button" class="icon-button text-icon${importacaoAbaAtiva === 'transacoes' ? ' active' : ''}" data-importacao-aba="transacoes">💰 Transações/Financeiro</button>
-          </nav>
-          <div data-importacao-conteudo></div>
-        </div>`;
-        appRoot.querySelectorAll('[data-importacao-aba]').forEach(button => {
-          button.addEventListener('click', async () => {
-            const aba = (button as HTMLElement).dataset.importacaoAba as 'perfis' | 'itens' | 'transacoes';
-            importacaoAbaAtiva = aba;
-            await render();
-          });
-        });
-        const conteudo = appRoot.querySelector('[data-importacao-conteudo]') as HTMLElement | null;
-        if (conteudo) {
-          if (importacaoAbaAtiva === 'perfis') await perfilApp.mountImportacao(conteudo);
-          else if (importacaoAbaAtiva === 'transacoes') await importacaoTransacoesFinanceiroApp.mount(conteudo);
-          else {
-            conteudo.innerHTML = '<p class="form-hint" style="padding:1rem">Importação de itens em breve.</p>';
-          }
-        }
-      }
+      if (currentScreen === 'importacao-perfis') await perfilApp.mountImportacao(appRoot);
+      if (currentScreen === 'importacao-itens') await itemApp.mountImportacao(appRoot);
+      if (currentScreen === 'importacao-transacoes') await importacaoTransacoesFinanceiroApp.mount(appRoot);
       if (currentScreen === 'configuracoes') await configuracoesApp.mount(appRoot);
     }
 

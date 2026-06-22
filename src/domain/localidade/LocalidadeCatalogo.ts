@@ -9,17 +9,17 @@ export const LOCALIDADE_GRUPOS: LocalidadeGrupo[] = [
     id: 'brasilia-entorno',
     nome: 'Brasília e Entorno',
     localidades: [
-      'Asa Norte', 'Asa Sul', 'Setor Sudeste', 'Noroeste', 'Vila Planalto', 'Sudoeste', 'Cruzeiro',
-      'Lago Norte', 'Lago Sul', 'Guará', 'Águas Claras', 'Taguatinga', 'Ceilândia', 'Brazlândia', 'Samambaia',
-      'Vicente Pires', 'Riacho Fundo', 'Recanto das Emas', 'Gama', 'Santa Maria', 'Sobradinho',
-      'Planaltina', 'Paranoá', 'Itapoã', 'São Sebastião', 'Jardim Botânico', 'Valparaíso',
-      'Cidade Ocidental', 'Luziânia', 'Novo Gama', 'Águas Lindas', 'Formosa', 'Santo Antônio do Descoberto'
+      'Águas Claras', 'Águas Lindas', 'Asa Norte', 'Asa Sul', 'Brazlândia', 'Ceilândia', 'Cidade Ocidental',
+      'Cruzeiro', 'Formosa', 'Gama', 'Guará', 'Itapoã', 'Jardim Botânico', 'Lago Norte', 'Lago Sul',
+      'Luziânia', 'Noroeste', 'Novo Gama', 'Paranoá', 'Planaltina', 'Recanto das Emas', 'Riacho Fundo',
+      'Samambaia', 'Santa Maria', 'Santo Antônio do Descoberto', 'São Sebastião', 'Setor Sudeste',
+      'Sobradinho', 'Sudoeste', 'Taguatinga', 'Valparaíso', 'Vicente Pires', 'Vila Planalto'
     ]
   },
   {
     id: 'goiania',
     nome: 'Goiânia',
-    localidades: ['Setor Bueno', 'Jardim Goiás', 'Setor Marista', 'Setor Oeste', 'Setor Sul', 'Campinas', 'Urias Magalhães']
+    localidades: ['Campinas', 'Jardim Goiás', 'Setor Bueno', 'Setor Marista', 'Setor Oeste', 'Setor Sul', 'Urias Magalhães']
   }
 ];
 
