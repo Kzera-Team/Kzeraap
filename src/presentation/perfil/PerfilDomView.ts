@@ -23,6 +23,13 @@ const PERFIL_IMPORT_TEMPLATE = `<section class="kzera-screen import-only-screen 
       <small class="previewCount" data-preview-count></small>
     </div>
 
+    <div class="perfil-import-status-filter" aria-label="Filtrar por status" hidden>
+      <button type="button" aria-pressed="true" data-filter-status="todos">Todos</button>
+      <button type="button" aria-pressed="false" data-filter-status="ok">Válidos</button>
+      <button type="button" aria-pressed="false" data-filter-status="warning">Atenção</button>
+      <button type="button" aria-pressed="false" data-filter-status="error">Erros</button>
+    </div>
+
     <div class="preview-list compact-preview-list perfil-import-preview-line" data-testid="perfil-import-preview"></div>
 
     <p class="perfil-import-note" data-testid="perfil-import-note" hidden><span aria-hidden="true">i</span> Corrija os inválidos antes de importar.</p>
