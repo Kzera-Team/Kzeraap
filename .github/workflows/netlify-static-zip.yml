@@ -20,14 +20,18 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Instalar dependências
-        run: npm ci
+      - name: Instalar dependências com devDependencies
+        run: npm ci --include=dev
+
+      - name: Garantir Vite disponível
+        run: npm install vite@^8.0.16 --no-save --include=dev
 
       - name: Gerar build
-        run: npm run build
+        run: npx vite build
 
       - name: Criar ZIP pronto para Netlify Drop
         run: |
+          test -d dist
           cd dist
           zip -r ../Kzera-Netlify-Static-Deploy-${{ github.sha }}.zip .
 
