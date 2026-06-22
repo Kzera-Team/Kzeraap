@@ -33,3 +33,10 @@ As regras abaixo foram definidas pelo líder e devem constar em todo novo contex
 2. **Clareza:** Se uma instrução não estiver clara → não interpreto, paro e pergunto.
 3. **Canal Claudette:** Arquivo de recados: `.claude/agents/para-claudette.md`
 4. **Escopo de resposta:** Só forneço informação que foi solicitada. Nunca vou além do que foi pedido.
+
+## Regras de versionamento (definidas pelo líder)
+
+- **Terceira posição** (`1.19.x → 1.19.x+1`): melhorias visuais, refatorações, adições dentro de features já existentes, correções que não mudam domínio nem arquitetura.
+- **Segunda posição** (`1.19.x → 1.20.0`): feature nova de ponta a ponta, mudança estrutural no domínio ou na arquitetura, ou quebra de compatibilidade.
+- **Todo arquivo de código gerado** pela equipe deve ter o número da versão no cabeçalho (comentário).
+- **Todo ZIP gerado** para deploy no Netlify deve ter a versão no nome do arquivo (ex: `kzera-v1.19.27-netlify.zip`) e a versão deve estar incrementada e commitada antes de gerar o ZIP.
