@@ -556,7 +556,10 @@ export function createKzeraAuthenticatedApp() {
 
     try {
       const state = await obterAuthState.execute();
-      if (state !== 'unlocked') return;
+      if (state !== 'unlocked') {
+        await render();
+        return;
+      }
       if (isTextEntryActive()) return;
 
       security.session.requireAttention();
