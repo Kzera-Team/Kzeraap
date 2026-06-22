@@ -35,6 +35,7 @@ Não começar a codar sem responder mentalmente:
 - Não criar tela de cadastro misturada com listagem quando já foi decidido tela própria.
 - Não implementar transação usando estoque simplificado. Transação deve nascer como módulo oficial, com entidade de transação, item da transação, cliente informado e baixa rastreável.
 - Não criar “transação rápida” ou “saída rápida” como caminho paralelo antes do módulo de Transações existir.
+- Não criar "transação rápida" como atalho antes da entidade principal existir.
 - Não importar transação de CSV sem prévia corrigível, mapeamento de itens e tratamento claro para produto inexistente no app.
 - Não usar botão “+1” ou “-1” sem unidade; usar `+1 mg`, `-10 mg`, etc. Ícone é permitido, mas ação crítica/rara/ambígua deve ter texto ou ícone + texto.
 - Não salvar sessão de pesagem só no final; cada peso precisa persistir imediatamente.
