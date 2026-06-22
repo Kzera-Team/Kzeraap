@@ -2535,3 +2535,56 @@ textarea {
   }
 }
 
+/* 1.19.26 — importação polimento premium: mobile-first, espaço útil, sombra sutil */
+.import-panel,
+.importPanel {
+  width: calc(100vw - 28px) !important;
+  box-shadow: 0 10px 24px rgba(30, 14, 70, 0.07) !important;
+}
+.import-page-background,
+.kzera-screen.import-only-screen {
+  padding: max(88px, calc(env(safe-area-inset-top) + 76px)) 0 0 !important;
+}
+.import-tabs,
+.importTabs {
+  height: 58px !important;
+  grid-template-columns: 1fr 1fr 1.25fr !important;
+}
+.file-card,
+.fileCard {
+  grid-template-columns: 64px minmax(0, 1fr) auto !important;
+}
+.change-button,
+.changeButton {
+  min-width: 94px !important;
+}
+.import-transacoes-panel input[type="text"],
+.import-transacoes-panel textarea,
+.import-screen input[type="text"],
+.import-screen textarea {
+  height: 54px !important;
+}
+.import-panel .perfil-import-primary-button,
+.import-panel [data-action="confirmar-importacao"],
+.import-transacoes-panel [data-action="confirmar-importacao-historica"] {
+  height: 58px !important;
+}
+.valid-badge {
+  height: 42px !important;
+  min-width: 92px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+.valid-badge.status-ok {
+  background: #DDF8E7 !important;
+  color: #087A36 !important;
+}
+.profile-footer {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: grid;
+  align-items: center;
+  gap: 8px;
+}
+

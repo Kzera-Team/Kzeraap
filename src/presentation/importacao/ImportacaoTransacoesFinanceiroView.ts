@@ -328,14 +328,16 @@ export class ImportacaoTransacoesFinanceiroView {
       <div class="import-grid">
         <form data-import-transacoes class="kzera-card soft-card">
           <h3>Planilha de registros</h3>
-          <label><span>Nome do arquivo</span><input name="nomeArquivo" value="transacoes.csv" /></label>
-          <label><span>Conteúdo CSV/TSV</span><textarea name="conteudo" rows="7" placeholder="Cole a planilha de registros aqui"></textarea></label>
+          <label><span>Nome do arquivo</span><input name="nomeArquivo" value="transacoes.csv" data-nome-arquivo-transacoes /></label>
+          <label class="file-upload-label"><span>Escolher arquivo CSV</span><input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-transacoes aria-label="Escolher arquivo de registros" /></label>
+          <label><span>Ou cole o conteúdo aqui</span><textarea name="conteudo" rows="5" placeholder="Cole a planilha de registros aqui" data-conteudo-transacoes></textarea></label>
           <button class="icon-button text-icon primary-icon" type="submit">⇩ Preparar registros</button>
         </form>
         <form data-import-financeiro class="kzera-card soft-card">
           <h3>Movimentações financeiras</h3>
-          <label><span>Nome do arquivo</span><input name="nomeArquivo" value="financeiro.csv" /></label>
-          <label><span>Conteúdo CSV/TSV</span><textarea name="conteudo" rows="7" placeholder="Cole a planilha financeira aqui"></textarea></label>
+          <label><span>Nome do arquivo</span><input name="nomeArquivo" value="financeiro.csv" data-nome-arquivo-financeiro /></label>
+          <label class="file-upload-label"><span>Escolher arquivo CSV</span><input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-financeiro aria-label="Escolher arquivo financeiro" /></label>
+          <label><span>Ou cole o conteúdo aqui</span><textarea name="conteudo" rows="5" placeholder="Cole a planilha financeira aqui" data-conteudo-financeiro></textarea></label>
           <button class="icon-button text-icon primary-icon" type="submit">⇩ Preparar financeiro</button>
         </form>
       </div>
@@ -366,7 +368,26 @@ export class ImportacaoTransacoesFinanceiroView {
     this.conciliacao = await this.deps.conciliar.execute();
   }
 
+  private bindFileUpload(seletor: string, nomeArquivoSeletor: string, conteudoSeletor: string): void {
+    const fileInput = this.root?.querySelector<HTMLInputElement>(seletor);
+    if (!fileInput) return;
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+      const nomeInput = this.root?.querySelector<HTMLInputElement>(nomeArquivoSeletor);
+      if (nomeInput) nomeInput.value = file.name;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const textarea = this.root?.querySelector<HTMLTextAreaElement>(conteudoSeletor);
+        if (textarea) textarea.value = String(event.target?.result || '');
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+  }
+
   private bind(): void {
+    this.bindFileUpload('[data-file-upload-transacoes]', '[data-nome-arquivo-transacoes]', '[data-conteudo-transacoes]');
+    this.bindFileUpload('[data-file-upload-financeiro]', '[data-nome-arquivo-financeiro]', '[data-conteudo-financeiro]');
     this.root?.querySelector('[data-expandir-vinculos]')?.addEventListener('click', () => {
       this.root?.querySelectorAll<HTMLDetailsElement>('.inline-details').forEach(details => { details.open = true; });
     });
