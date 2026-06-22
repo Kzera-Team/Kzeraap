@@ -2,9 +2,6 @@ name: Gerar ZIP Netlify
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - claude/file-upload-project-22m8hs
 
 jobs:
   build-netlify-zip:
