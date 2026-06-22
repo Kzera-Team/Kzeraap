@@ -2535,6 +2535,20 @@ textarea {
   }
 }
 
+/* 1.19.15 — correção: abas proporcionais, labels pequenos para iPhone */
+.import-tabs,
+.importTabs {
+  grid-template-columns: .86fr .74fr 1.40fr;
+}
+.perfil-import-check span,
+.checkbox-label span {
+  font-size: 13px !important;
+}
+.perfil-import-field span,
+.import-screen label span {
+  font-size: 13.5px !important;
+}
+
 /* 1.19.26 — importação polimento premium: mobile-first, espaço útil, sombra sutil */
 .import-panel,
 .importPanel {
@@ -2549,14 +2563,25 @@ textarea {
 .importTabs {
   height: 58px !important;
   grid-template-columns: 1fr 1fr 1.25fr !important;
+  box-shadow: 0 8px 20px rgba(30, 14, 70, 0.06) !important;
+}
+.import-tab:not(:last-child),
+.importTab:not(:last-child) {
+  border-right: 1px solid rgba(221, 212, 243, 0.55) !important;
 }
 .file-card,
 .fileCard {
   grid-template-columns: 64px minmax(0, 1fr) auto !important;
+  column-gap: 14px !important;
+}
+.file-card,
+.fileCard {
+  grid-template-columns: 64px minmax(0, 1fr) 96px !important;
 }
 .change-button,
 .changeButton {
   min-width: 94px !important;
+  min-width: 92px !important;
 }
 .import-transacoes-panel input[type="text"],
 .import-transacoes-panel textarea,
@@ -2568,6 +2593,9 @@ textarea {
 .import-panel [data-action="confirmar-importacao"],
 .import-transacoes-panel [data-action="confirmar-importacao-historica"] {
   height: 58px !important;
+  margin-top: 24px !important;
+  margin-bottom: 28px !important;
+  height: 60px !important;
 }
 .valid-badge {
   height: 42px !important;
@@ -2586,5 +2614,53 @@ textarea {
   display: grid;
   align-items: center;
   gap: 8px;
+}
+
+/* 1.19.18 — acabamento premium: tipografia e cards mais densos */
+.profile-card,
+.perfil-import-card {
+  padding: 16px !important;
+}
+.import-screen input,
+.import-screen select,
+.import-screen textarea,
+.profile-card input,
+.profile-card select {
+  height: 52px !important;
+  font-size: 16px !important;
+}
+.perfil-import-field-name input {
+  font-size: 17px !important;
+}
+.perfil-import-check input[type="checkbox"],
+.checkbox-label input[type="checkbox"] {
+  width: 30px !important;
+  height: 30px !important;
+  background: #141021 !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
+  background: linear-gradient(180deg, #191226 0%, #0B0715 100%) !important;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.import-screen label span,
+.perfil-import-field span {
+  font-size: 13.5px !important;
+}
+.import-panel h2,
+.import-screen h2 {
+  font-size: 25px !important;
+}
+.import-panel .perfil-import-primary-button,
+.import-panel [data-action="confirmar-importacao"] {
+  background: linear-gradient(180deg, #241044 0%, #18082F 100%) !important;
+}
+.profile-card .perfil-import-card-pair {
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr) !important;
+}
+.profile-card .perfil-import-field input[type="tel"],
+.profile-card input[type="tel"] {
+  font-size: 15.4px !important;
 }
 
