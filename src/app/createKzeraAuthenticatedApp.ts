@@ -331,6 +331,7 @@ export function createKzeraAuthenticatedApp() {
   let swipeBound = false;
   let backupDecision: BackupDecision | null = null;
   let backupMessage = '';
+  let importacaoAbaAtiva: 'perfis' | 'itens' | 'transacoes' = 'perfis';
   let filtrosFinanceiros: { dataInicio: string; dataFim: string; perfil: string; metodo: string; origem: string; statusFinanceiro: 'todos' | 'pago' | 'parcial' | 'pendente' | 'cancelado' } = { dataInicio: '', dataFim: '', perfil: '', metodo: '', origem: 'todas', statusFinanceiro: 'todos' };
   let mensagemTransacoes = '';
   let filtrosRelatorios: RelatorioFiltroOperacional = { dataInicio: '', dataFim: '', origem: 'todas', statusFinanceiro: 'todos' };
@@ -889,9 +890,29 @@ export function createKzeraAuthenticatedApp() {
       if (currentScreen === 'transacoes') { appRoot.innerHTML = await renderTransacoesScreen(); bindTransacoesFilters(); }
       if (currentScreen === 'relatorios') { appRoot.innerHTML = await renderRelatoriosScreen(); bindRelatoriosFilters(); }
       if (currentScreen === 'importacao') {
-        appRoot.innerHTML = '<div data-import-panel="perfis"></div>';
-        const perfilImportRoot = appRoot.querySelector('[data-import-panel="perfis"]') as HTMLElement | null;
-        if (perfilImportRoot) await perfilApp.mountImportacao(perfilImportRoot);
+        appRoot.innerHTML = `<div class="importacao-hub">
+          <nav class="importacao-hub-nav" aria-label="Tipo de importação">
+            <button type="button" class="icon-button text-icon${importacaoAbaAtiva === 'perfis' ? ' active' : ''}" data-importacao-aba="perfis">♟ Perfis</button>
+            <button type="button" class="icon-button text-icon${importacaoAbaAtiva === 'itens' ? ' active' : ''}" data-importacao-aba="itens">▣ Itens</button>
+            <button type="button" class="icon-button text-icon${importacaoAbaAtiva === 'transacoes' ? ' active' : ''}" data-importacao-aba="transacoes">💰 Transações/Financeiro</button>
+          </nav>
+          <div data-importacao-conteudo></div>
+        </div>`;
+        appRoot.querySelectorAll('[data-importacao-aba]').forEach(button => {
+          button.addEventListener('click', async () => {
+            const aba = (button as HTMLElement).dataset.importacaoAba as 'perfis' | 'itens' | 'transacoes';
+            importacaoAbaAtiva = aba;
+            await render();
+          });
+        });
+        const conteudo = appRoot.querySelector('[data-importacao-conteudo]') as HTMLElement | null;
+        if (conteudo) {
+          if (importacaoAbaAtiva === 'perfis') await perfilApp.mountImportacao(conteudo);
+          else if (importacaoAbaAtiva === 'transacoes') await importacaoTransacoesFinanceiroApp.mount(conteudo);
+          else {
+            conteudo.innerHTML = '<p class="form-hint" style="padding:1rem">Importação de itens em breve.</p>';
+          }
+        }
       }
       if (currentScreen === 'configuracoes') await configuracoesApp.mount(appRoot);
     }

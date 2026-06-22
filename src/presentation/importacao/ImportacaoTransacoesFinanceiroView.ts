@@ -322,6 +322,7 @@ export class ImportacaoTransacoesFinanceiroView {
     return `<section class="kzera-screen import-only-screen import-transacoes-screen import-page-background" data-testid="importacao-transacoes-financeiro">
       <section class="kzera-card import-screen import-transacoes-panel importPanel import-panel">
       ${renderImportacaoTabs('transacoes')}
+      <p class="form-hint">Nada vira registro definitivo aqui: nada baixa estoque. Tudo fica em conferência até você confirmar.</p>
       ${this.retomadaHumanaObrigatoriaView()}
       ${this.mensagem ? `<div class="toast">${escapeHtml(this.mensagem)}</div>` : ''}
       <div class="import-grid">
