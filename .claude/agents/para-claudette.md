@@ -36,7 +36,9 @@ As regras abaixo foram definidas pelo líder e devem constar em todo novo contex
 
 ## Regras de versionamento (definidas pelo líder)
 
-- **Terceira posição** (`1.19.x → 1.19.x+1`): melhorias visuais, refatorações, adições dentro de features já existentes, correções que não mudam domínio nem arquitetura.
-- **Segunda posição** (`1.19.x → 1.20.0`): feature nova de ponta a ponta, mudança estrutural no domínio ou na arquitetura, ou quebra de compatibilidade.
+- **Formato pré-produção:** `0.x.x` — o sistema ainda está em desenvolvimento, não está pronto para uso em produção.
+- **Formato produção:** `1.0.0` — reservado para quando o sistema estiver estável e pronto para uso real. Histórico anterior a essa mudança não precisa ser reescrito.
+- **Terceira posição** (`0.19.x → 0.19.x+1`): melhorias visuais, refatorações, adições dentro de features já existentes, correções que não mudam domínio nem arquitetura.
+- **Segunda posição** (`0.19.x → 0.20.0`): feature nova de ponta a ponta, mudança estrutural no domínio ou na arquitetura, ou quebra de compatibilidade.
 - **Todo arquivo de código gerado** pela equipe deve ter o número da versão no cabeçalho (comentário).
-- **Todo ZIP gerado** para deploy no Netlify deve ter a versão no nome do arquivo (ex: `kzera-v1.19.27-netlify.zip`) e a versão deve estar incrementada e commitada antes de gerar o ZIP.
+- **Todo ZIP gerado** para deploy no Netlify deve ter a versão no nome do arquivo (ex: `kzera-v0.19.27-netlify.zip`) e a versão deve estar incrementada e commitada antes de gerar o ZIP.
