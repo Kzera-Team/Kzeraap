@@ -7,40 +7,11 @@ import { PerfilDomView, type PerfilUiState, type PerfilTimelineItem } from '../p
 import { releaseTransferPayload } from '../runtime/TransferScope';
 import type { ImportacaoRascunhoUseCase } from '../application/importacao/ImportacaoRascunhoUseCase';
 
-const DEFAULT_IDENTITY_RULE: IdentityRule = {
-  id: 'default',
-  version: 1,
-  active: true,
-  createdAt: new Date(0).toISOString(),
-  parts: [
-    {
-      type: 'column',
-      column: 'perfil.nome',
-      extraction: 'firstLetter',
-      caseFormat: 'upper',
-      transform: 'none'
-    },
-    {
-      type: 'staticText',
-      value: '.',
-      caseFormat: 'original',
-      transform: 'none'
-    },
-    {
-      type: 'column',
-      column: 'perfil.bairro',
-      extraction: 'firstLetterOfEachWord',
-      caseFormat: 'upper',
-      transform: 'none'
-    }
-  ]
-};
-
 export function createPerfilUiApp(
   perfis: Repository<Perfil>,
   clock: Clock,
   idFactory: () => string,
-  getIdentityRule: () => IdentityRule = () => DEFAULT_IDENTITY_RULE,
+  getIdentityRule?: () => IdentityRule,
   rascunho?: ImportacaoRascunhoUseCase
 ) {
   const module = createPerfilModule(perfis, clock, idFactory);
@@ -141,7 +112,9 @@ export function createPerfilUiApp(
     },
 
     async onDefinirCodigo(perfilId: string) {
-      await runWithFeedback(async () => module.definirCodigo.execute(perfilId, getIdentityRule()), 'Código definido.');
+      const rule = getIdentityRule?.();
+      if (!rule?.parts?.length) return;
+      await runWithFeedback(async () => module.definirCodigo.execute(perfilId, rule), 'Código definido.');
     },
 
     async onSelecionarArquivo(file: File) {
@@ -168,11 +141,14 @@ export function createPerfilUiApp(
 
     async onConfirmarImportacao() {
       const result = await module.fluxoImportacao.confirmar();
-      for (const perfil of result.importados) {
-        if (perfil.bairro) {
-          try {
-            await module.definirCodigo.execute(perfil.id, getIdentityRule());
-          } catch { /* duplicado ou bairro vazio — best-effort */ }
+      const rule = getIdentityRule?.();
+      if (rule?.parts?.length) {
+        for (const perfil of result.importados) {
+          if (perfil.bairro) {
+            try {
+              await module.definirCodigo.execute(perfil.id, rule);
+            } catch { /* duplicado ou bairro vazio — best-effort */ }
+          }
         }
       }
       preview = [];
