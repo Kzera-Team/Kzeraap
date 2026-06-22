@@ -3210,7 +3210,7 @@ textarea {
   margin-right: calc(50% - 50vw) !important;
   padding: max(18px, env(safe-area-inset-top)) 14px 24px !important;
   box-sizing: border-box !important;
-  background: #f5f7fb !important;
+  background: radial-gradient(circle at top, #241044 0%, #16072F 48%, #0D061D 100%) !important;
 }
 
 .kzera-screen.import-only-screen.perfil-import-screen.import-page > .perfil-import-panel.import-panel {
@@ -3219,24 +3219,19 @@ textarea {
   margin: 56px auto 24px !important;
   padding: 16px !important;
   border-radius: 24px !important;
-  background: #ffffff !important;
-  border: 1px solid rgba(148, 163, 184, .35) !important;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, .08) !important;
+  background: linear-gradient(180deg, #FBF9FF 0%, #F7F3FF 100%) !important;
+  border: 1px solid #DDD4F3 !important;
+  box-shadow: 0 -8px 32px rgba(18, 8, 45, 0.22) !important;
   box-sizing: border-box !important;
 }
 
-/* 1.19.26 — Visual do mockup: importação de perfis */
-.kzera-screen.import-only-screen.perfil-import-screen.import-page-background,
-.kzera-screen.import-only-screen.import-transacoes-screen.import-page-background {
-  background: #f5f7fb !important;
-}
-
+/* 1.19.26 — Visual mockup com cores do sistema */
 .import-tabs, .importTabs {
   gap: 6px !important;
   padding: 4px !important;
-  border: 1px solid rgba(148, 163, 184, .35) !important;
+  border: 1px solid #DDD4F3 !important;
   border-radius: 16px !important;
-  background: #f8fafc !important;
+  background: #F8F5FF !important;
   box-shadow: none !important;
 }
 
@@ -3244,14 +3239,14 @@ textarea {
   border-right: 0 !important;
   border-radius: 12px !important;
   background: transparent !important;
-  color: #64748b !important;
+  color: #2B2148 !important;
   font-size: 14px !important;
 }
 
 .import-tab.active, .importTab.active {
   background: #ffffff !important;
-  color: #2563eb !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, .08) !important;
+  color: #6F42E8 !important;
+  box-shadow: 0 4px 12px rgba(30, 14, 70, .08) !important;
 }
 
 .import-tab.active::after, .importTab.active::after {
@@ -3260,72 +3255,72 @@ textarea {
 
 .file-card,
 .perfil-import-file-card.fileCard {
-  background: #f8fafc !important;
-  border: 1px solid rgba(148, 163, 184, .35) !important;
+  background: #F8F5FF !important;
+  border: 1px solid #DDD6EE !important;
   box-shadow: none !important;
-  color: #111827 !important;
+  color: #120B35 !important;
 }
 
 .file-icon-box,
 .perfil-import-file-icon.fileIconBox {
-  background: #eaf2ff !important;
-  color: #2563eb !important;
+  background: #F0E8FF !important;
+  color: #7B4DFF !important;
 }
 
 .file-label, .fileLabel,
 .perfil-import-file-card .fileLabel {
-  color: #64748b !important;
+  color: #7A70A8 !important;
 }
 
 .file-name, .fileName,
 .perfil-import-file-card .fileName,
 .perfil-import-file-card strong.fileName {
-  color: #111827 !important;
+  color: #120B35 !important;
 }
 
 .file-meta, .fileMeta,
 .perfil-import-file-card .fileMeta {
-  color: #64748b !important;
+  color: #766BA8 !important;
 }
 
 .change-file-button, .change-button, .changeButton,
 .perfil-import-file-action.changeButton {
-  border: 1px solid rgba(37, 99, 235, .24) !important;
+  border: 1px solid #BFAAF8 !important;
   background: #ffffff !important;
-  color: #2563eb !important;
+  color: #7447E8 !important;
   border-radius: 999px !important;
   box-shadow: none !important;
 }
 
 .preview-title, .previewTitle,
 .perfil-import-preview-head.previewHeader .previewTitle {
-  color: #111827 !important;
+  color: #120B35 !important;
 }
 
 .preview-count, .previewCount,
 .perfil-import-preview-head.previewHeader .previewCount {
-  color: #64748b !important;
+  color: #766BA8 !important;
 }
 
 .perfil-import-status-filter {
-  background: #f8fafc !important;
-  border-color: rgba(148, 163, 184, .35) !important;
+  background: #F8F5FF !important;
+  border-color: #DDD6EE !important;
 }
 
 .perfil-import-status-filter button {
-  color: #64748b !important;
+  color: #2B2148 !important;
 }
 
 .perfil-import-status-filter button[aria-pressed="true"] {
-  background: #2563eb !important;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, .20) !important;
+  background: linear-gradient(180deg, #241044 0%, #18082F 100%) !important;
+  box-shadow: 0 4px 12px rgba(22, 7, 47, 0.24) !important;
   color: #ffffff !important;
 }
 
 .profile-card, .perfil-import-card {
   background: #ffffff !important;
-  border: 1px solid rgba(148, 163, 184, .35) !important;
-  box-shadow: none !important;
+  border: 1px solid #DDD6EE !important;
+  box-shadow: 0 6px 16px rgba(30, 14, 70, 0.07) !important;
 }
 
 .perfil-import-card.preview-ok {
@@ -3341,111 +3336,111 @@ textarea {
 }
 
 .perfil-import-field span {
-  color: #64748b !important;
+  color: #6F6699 !important;
 }
 
 .input-like,
 .perfil-import-field input,
 .perfil-import-field select {
-  border: 1px solid rgba(148, 163, 184, .35) !important;
-  background: #ffffff !important;
-  color: #111827 !important;
-  box-shadow: none !important;
+  border: 1px solid #DAD2EC !important;
+  background: #FFFDFE !important;
+  color: #100A32 !important;
+  box-shadow: inset 0 1px 1px rgba(30, 14, 70, 0.025) !important;
 }
 
 .perfil-import-field input::placeholder {
-  color: #94a3b8 !important;
+  color: #8A82B4 !important;
 }
 
 .perfil-import-field input:focus,
 .perfil-import-field select:focus {
-  border-color: rgba(37, 99, 235, .45) !important;
-  outline: 3px solid rgba(37, 99, 235, .15) !important;
+  border-color: rgba(124, 77, 255, 0.45) !important;
+  outline: 3px solid rgba(124, 77, 255, 0.15) !important;
   background: #ffffff !important;
 }
 
 .perfil-import-card.preview-error .perfil-import-field-name input {
-  border-color: rgba(220, 38, 38, .50) !important;
-  background: #fff0f0 !important;
+  border-color: rgba(244, 63, 94, 0.72) !important;
+  background: #fffafa !important;
 }
 
 .valid-badge.status-ok,
 .perfil-import-status.status-ok {
-  background: #eaf8ef !important;
-  border: 1px solid rgba(21, 128, 61, .28) !important;
-  color: #15803d !important;
+  background: #DDF8E7 !important;
+  border: 1px solid #A8E8BF !important;
+  color: #087A36 !important;
 }
 
 .valid-badge.status-warning,
 .perfil-import-status.status-warning {
-  background: #fff4e5 !important;
-  border: 1px solid rgba(196, 90, 0, .28) !important;
-  color: #c45a00 !important;
+  background: #FFF8E6 !important;
+  border: 1px solid rgba(194, 120, 3, .35) !important;
+  color: #92400E !important;
 }
 
 .valid-badge.status-error,
 .perfil-import-status.status-error {
-  background: #fff0f0 !important;
-  border: 1px solid rgba(220, 38, 38, .28) !important;
-  color: #dc2626 !important;
+  background: #FFE4E6 !important;
+  border: 1px solid rgba(244, 63, 94, .28) !important;
+  color: #BE123C !important;
 }
 
 .perfil-import-line-number {
-  color: #64748b !important;
+  color: #766BA8 !important;
 }
 
 .perfil-import-help.warning {
-  background: #fff4e5 !important;
-  color: #c45a00 !important;
+  background: #FFF8E6 !important;
+  color: #92400E !important;
 }
 
 .perfil-import-help.error {
-  background: #fff0f0 !important;
-  color: #dc2626 !important;
+  background: #FFF1F2 !important;
+  color: #BE123C !important;
 }
 
 .checkbox-label span,
 .perfil-import-check span {
-  color: #64748b !important;
+  color: #3D345F !important;
 }
 
 .perfil-import-check input {
-  background: #ffffff !important;
-  border-color: rgba(148, 163, 184, .5) !important;
-  box-shadow: none !important;
+  background: linear-gradient(180deg, #191226 0%, #0B0715 100%) !important;
+  border-color: #BDB7D3 !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
 }
 
 .perfil-import-check input:checked {
-  border-color: #2563eb !important;
-  background-color: #2563eb !important;
+  border-color: #BDB7D3 !important;
   background-image:
     linear-gradient(135deg, transparent 0 42%, #FFFFFF 43% 57%, transparent 58%),
-    linear-gradient(45deg, transparent 0 46%, #FFFFFF 47% 61%, transparent 62%) !important;
-  background-size: 12px 12px, 18px 18px !important;
-  background-position: 6px 10px, 9px 4px !important;
+    linear-gradient(45deg, transparent 0 46%, #FFFFFF 47% 61%, transparent 62%),
+    linear-gradient(180deg, #191226 0%, #0B0715 100%) !important;
+  background-size: 12px 12px, 18px 18px, 100% 100% !important;
+  background-position: 6px 10px, 9px 4px, center !important;
   background-repeat: no-repeat !important;
 }
 
 .perfil-import-empty {
-  background: #f8fafc !important;
-  border-color: rgba(148, 163, 184, .35) !important;
-  color: #64748b !important;
-  box-shadow: none !important;
+  background: #F8F5FF !important;
+  border-color: #DDD6EE !important;
+  color: #766BA8 !important;
+  box-shadow: 0 6px 16px rgba(30, 14, 70, 0.07) !important;
 }
 
 .perfil-import-note {
-  background: #eff6ff !important;
-  color: #1e40af !important;
+  background: #EFF6FF !important;
+  color: #1E3A8A !important;
 }
 
 .import-button, .perfil-import-primary-button {
-  background: #2563eb !important;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, .25) !important;
+  background: linear-gradient(180deg, #241044 0%, #18082F 100%) !important;
+  box-shadow: 0 14px 28px rgba(22, 7, 47, 0.24) !important;
   color: #ffffff !important;
 }
 
 .perfil-import-primary-button:disabled {
-  background: #cbd5e1 !important;
-  color: #94a3b8 !important;
+  background: #C9C2DA !important;
+  color: #6F6699 !important;
   box-shadow: none !important;
 }
