@@ -15,8 +15,8 @@ const daily = read('docs/governanca/00_LEIA_TODO_DIA.md');
 const doc = read('docs/TRANSACOES_IMPORTACAO_CSV_1.13.2.md');
 const governance = read('src/domain/governanca/OperacaoKzera.ts');
 
-assert.strictEqual(pkg.version, '1.19.27', 'Versão deve avançar para 1.13.2 como ajuste de governança/decisão.');
-assert(version.includes("APP_VERSION = '1.19.27'"), 'APP_VERSION deve estar em 1.13.2.');
+assert.strictEqual(pkg.version, '0.19.27', 'Versão deve avançar para 1.13.2 como ajuste de governança/decisão.');
+assert(version.includes("APP_VERSION = '0.19.27'"), 'APP_VERSION deve estar em 1.13.2.');
 
 assert(licoes.includes('Não criar atalho antes da entidade principal'), 'Lições devem registrar atalho antes da entidade principal.');
 assert(licoes.includes('fracionamento mínimo'), 'Lições devem registrar contorno com fracionamento mínimo.');
