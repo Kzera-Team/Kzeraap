@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Ler versão do pacote
+        run: echo "APP_VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_ENV"
+
       - name: Instalar dependências
         run: npm install --include=dev
 
@@ -43,14 +46,16 @@ jobs:
 
       - name: Criar ZIP Netlify Drop
         run: |
+          ZIP_NAME="Kzera-Netlify-Static-Deploy-v${APP_VERSION}.zip"
           cd dist
-          zip -r ../Kzera-Netlify-Static-Deploy.zip .
+          zip -r "../${ZIP_NAME}" .
           cd ..
-          test -f Kzera-Netlify-Static-Deploy.zip
+          test -f "${ZIP_NAME}"
+          echo "ZIP_NAME=${ZIP_NAME}" >> "$GITHUB_ENV"
 
       - name: Publicar artefato
         uses: actions/upload-artifact@v4
         with:
-          name: Kzera-Netlify-Static-Deploy-Safe
-          path: Kzera-Netlify-Static-Deploy.zip
+          name: Kzera-Netlify-Static-Deploy-v${{ env.APP_VERSION }}
+          path: ${{ env.ZIP_NAME }}
           if-no-files-found: error
