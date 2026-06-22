@@ -3433,7 +3433,11 @@ textarea {
   color: #1E3A8A !important;
 }
 
-.import-button, .perfil-import-primary-button {
+.import-button, .perfil-import-primary-button,
+.import-transacoes-screen .icon-button.primary-icon,
+.import-transacoes-screen .icon-button.text-icon.primary-icon,
+.item-importacao-screen .icon-button.primary-icon,
+.item-importacao-screen .icon-button.text-icon.primary-icon {
   background: linear-gradient(180deg, #241044 0%, #18082F 100%) !important;
   box-shadow: 0 14px 28px rgba(22, 7, 47, 0.24) !important;
   color: #ffffff !important;
@@ -3443,4 +3447,69 @@ textarea {
   background: #C9C2DA !important;
   color: #6F6699 !important;
   box-shadow: none !important;
+}
+
+/* 1.19.26 — Transações e Itens: cards internos claros dentro do painel branco */
+.import-transacoes-screen .kzera-card,
+.import-transacoes-screen .kzera-card.soft-card,
+.item-importacao-screen .kzera-card,
+.item-importacao-screen .kzera-card.import-screen {
+  background: #FFFFFF !important;
+  border: 1px solid #DDD6EE !important;
+  color: #120B35 !important;
+  box-shadow: 0 4px 14px rgba(30, 14, 70, 0.07) !important;
+}
+
+.import-transacoes-screen h3,
+.import-transacoes-screen label > span,
+.import-transacoes-screen strong:not(.eyebrow),
+.item-importacao-screen h3,
+.item-importacao-screen label > span {
+  color: #120B35 !important;
+}
+
+.import-transacoes-screen .form-hint,
+.import-transacoes-screen .eyebrow,
+.import-transacoes-screen small,
+.item-importacao-screen .form-hint,
+.item-importacao-screen .eyebrow,
+.item-importacao-screen small {
+  color: #766BA8 !important;
+}
+
+.import-transacoes-screen input,
+.import-transacoes-screen select,
+.import-transacoes-screen textarea,
+.item-importacao-screen input:not(#item-import-file),
+.item-importacao-screen select,
+.item-importacao-screen textarea {
+  background: #FFFDFE !important;
+  border: 1px solid #DAD2EC !important;
+  color: #100A32 !important;
+}
+
+.import-transacoes-screen .icon-button,
+.item-importacao-screen .icon-button {
+  background: #F8F5FF !important;
+  border: 1px solid rgba(111, 66, 232, .28) !important;
+  color: #2B2148 !important;
+  box-shadow: none !important;
+}
+
+.import-transacoes-screen th,
+.import-transacoes-screen td {
+  color: #120B35 !important;
+  border-color: #EDE8F8 !important;
+}
+
+.import-transacoes-screen .status-pill.success {
+  background: #DDF8E7 !important;
+  color: #087A36 !important;
+}
+
+.import-transacoes-screen .kzera-operational-header,
+.item-importacao-screen .kzera-operational-header {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
 }
