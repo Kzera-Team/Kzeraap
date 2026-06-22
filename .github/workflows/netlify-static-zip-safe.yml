@@ -1,0 +1,56 @@
+name: Gerar ZIP Netlify Seguro
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/file-upload-project-22m8hs
+
+jobs:
+  build-netlify-zip-safe:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install --include=dev
+
+      - name: Instalar Vite localmente
+        run: npm install vite@^8.0.16 --no-save --include=dev
+
+      - name: Gerar build
+        run: npx vite build
+
+      - name: Validar build
+        run: |
+          test -d dist
+          test -f dist/index.html
+          test -d dist/assets
+
+      - name: Garantir arquivos Netlify
+        run: |
+          printf '/* /index.html 200\n' > dist/_redirects
+          cp netlify.toml dist/netlify.toml
+          test -f dist/_redirects
+          test -f dist/netlify.toml
+
+      - name: Criar ZIP Netlify Drop
+        run: |
+          cd dist
+          zip -r ../Kzera-Netlify-Static-Deploy.zip .
+          cd ..
+          test -f Kzera-Netlify-Static-Deploy.zip
+
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kzera-Netlify-Static-Deploy-Safe
+          path: Kzera-Netlify-Static-Deploy.zip
+          if-no-files-found: error
