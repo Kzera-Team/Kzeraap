@@ -1,6 +1,6 @@
 {
   "name": "kzera",
-  "version": "1.19.26",
+  "version": "1.19.27",
   "private": true,
   "type": "module",
   "description": "Kzera internal package for the public PWA shell.",

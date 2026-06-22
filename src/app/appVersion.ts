@@ -1,4 +1,2 @@
-import pkg from '../../package.json' assert { type: 'json' };
-
-export const APP_VERSION = pkg.version;
-export const APP_VERSION_LABEL = `v${pkg.version}`;
+export const APP_VERSION = '1.19.27';
+export const APP_VERSION_LABEL = `v${APP_VERSION}`;

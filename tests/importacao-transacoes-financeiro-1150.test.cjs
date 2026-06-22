@@ -17,8 +17,8 @@ const backup = read('src/application/backup/BackupExportUseCase.ts');
 const docs = read('docs/importacao/STAGING_TRANSACOES_FINANCEIRO_1.15.1.md');
 const pkg = JSON.parse(read('package.json'));
 
-assert.strictEqual(pkg.version, '1.19.5', 'package deve estar na versão 1.15.1');
-assert(read('src/app/appVersion.ts').includes("1.19.5"), 'appVersion deve estar em 1.15.1');
+assert.strictEqual(pkg.version, '1.19.27', 'package deve estar na versão 1.15.1');
+assert(read('src/app/appVersion.ts').includes("1.19.27"), 'appVersion deve estar em 1.15.1');
 
 [
   'LoteImportacaoTransacoes',
