@@ -983,9 +983,9 @@ button {
   --vv-line: rgba(148, 163, 184, .18);
   --vv-text: #F8FAFC;
   --vv-muted: #A9B0C2;
-  --vv-purple: #A855F7;
-  --vv-purple-2: #7E22CE;
-  --vv-purple-soft: rgba(168, 85, 247, .16);
+  --vv-purple: #7B4DFF;
+  --vv-purple-2: #3A1078;
+  --vv-purple-soft: rgba(111, 66, 232, .16);
   --vv-radius-xl: 28px;
   --vv-radius-lg: 22px;
   --vv-radius-md: 16px;
@@ -1033,8 +1033,8 @@ body {
   place-items: center;
   padding: 24px;
   background:
-    radial-gradient(circle at 35% 0%, rgba(168, 85, 247, .22), transparent 32%),
-    linear-gradient(180deg, #050509, #0B0F19);
+    radial-gradient(circle at 35% 0%, rgba(111, 66, 232, .22), transparent 32%),
+    linear-gradient(180deg, #0D061D, #16072F);
 }
 
 .auth-card,
@@ -1796,7 +1796,7 @@ button[data-action="exportar"],
   min-height: 44px;
   padding: 0;
   margin: 0;
-  border-color: rgba(168,85,247,.28);
+  border-color: rgba(111,66,232,.28);
   background: rgba(15,23,42,.72);
   color: var(--vv-text);
   box-shadow: none;
@@ -2415,9 +2415,9 @@ button[data-action="exportar"],
 
 /* 1.13.3 — modo operação noturna: reduzir brilho, roxo forte, blur e sombras para uso longo de madrugada. */
 :root {
-  --kzera-operacao-bg: #0b1020;
-  --kzera-operacao-card: #121827;
-  --kzera-operacao-card-soft: #151d2f;
+  --kzera-operacao-bg: #0D061D;
+  --kzera-operacao-card: #16072F;
+  --kzera-operacao-card-soft: #1A0A38;
   --kzera-operacao-border: rgba(148, 163, 184, .22);
   --kzera-operacao-text: #e5e7eb;
   --kzera-operacao-muted: #a7b0c2;
