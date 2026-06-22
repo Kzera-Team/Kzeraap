@@ -872,8 +872,10 @@ export function createKzeraAuthenticatedApp() {
           ${backupDecision?.required ? `<section class="kzera-utility-panel kzera-home-status" aria-label="Status operacional"><strong>Cópia de segurança pendente</strong><span>Salve uma cópia de segurança para proteger seu trabalho.</span></section>` : ''}
         </main>
       </div>`;
+    } else if (currentScreen === 'importacao') {
+      rootRef.innerHTML = `<main id="kzera-main" aria-label="Importação"></main>`;
     } else {
-      const title = currentScreen === 'perfis' ? 'Perfis' : currentScreen === 'itens' ? 'Itens' : currentScreen === 'transacoes' ? 'Dinheiro' : currentScreen === 'relatorios' ? 'Relatórios' : currentScreen === 'importacao' ? 'Importação' : currentScreen === 'codigo' ? 'Código do Perfil' : 'Configurações';
+      const title = currentScreen === 'perfis' ? 'Perfis' : currentScreen === 'itens' ? 'Itens' : currentScreen === 'transacoes' ? 'Dinheiro' : currentScreen === 'relatorios' ? 'Relatórios' : currentScreen === 'codigo' ? 'Código do Perfil' : 'Configurações';
       rootRef.innerHTML = `<div class="app-frame">${renderDrawer()}<main id="kzera-main" aria-label="${title}"></main></div>`;
     }
 

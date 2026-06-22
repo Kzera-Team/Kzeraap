@@ -146,7 +146,7 @@
   grid-area: name !important;
   display: block !important;
   min-width: 0 !important;
-  max-width: 132px !important;
+  max-width: 100% !important;
   color: #120B35 !important;
   font-size: 20px !important;
   font-weight: 850 !important;
