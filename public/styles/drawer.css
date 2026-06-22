@@ -1,0 +1,94 @@
+/* v0.19.27 */
+/* drawer.css — estilos do menu lateral (drawer navigation) */
+
+/* Kzera drawer navigation 1.9.27 */
+.kzera-menu-button {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  right: auto;
+  z-index: 60;
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(20,20,32,.82);
+  color: white;
+  font-size: 22px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.22);
+}
+
+.kzera-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(0,0,0,.34);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+
+.kzera-drawer-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.kzera-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: auto;
+  z-index: 80;
+  width: min(84vw, 320px);
+  height: 100vh;
+  padding: 22px;
+  background: rgba(18,18,28,.98);
+  color: white;
+  transform: translateX(-105%);
+  transition: transform .2s ease;
+  box-shadow: 24px 0 60px rgba(0,0,0,.34);
+}
+
+.kzera-drawer.is-open {
+  transform: translateX(0);
+}
+
+.kzera-drawer header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.kzera-drawer header button,
+.kzera-drawer nav button {
+  border: 0;
+  color: inherit;
+  background: transparent;
+}
+
+.kzera-drawer nav {
+  display: grid;
+  gap: 10px;
+}
+
+.kzera-drawer nav button {
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.08);
+}
+
+.kzera-drawer nav button.active,
+.kzera-drawer nav button:hover {
+  background: rgba(255,255,255,.16);
+}
+
+.kzera-drawer-version {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.54);
+}

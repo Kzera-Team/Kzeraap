@@ -1,0 +1,193 @@
+/* v0.19.27 */
+/* auth.css — estilos da tela de autenticação (login, primeiro acesso, face id) */
+
+/* Shell da tela de auth */
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 30% 10%, rgba(124, 58, 237, .28), transparent 35%),
+    linear-gradient(145deg, #09090B 0%, #111827 60%, #1E1B4B 100%);
+  color: #F8FAFC;
+}
+
+/* Refactor 1.9.25 — dark premium shell */
+.auth-shell {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 35% 0%, rgba(111, 66, 232, .22), transparent 32%),
+    linear-gradient(180deg, #0D061D, #16072F);
+}
+
+.auth-card {
+  width: min(420px, 100%);
+  border: 1px solid rgba(167, 139, 250, .28);
+  border-radius: 28px;
+  padding: 28px;
+  background: rgba(15, 23, 42, .88);
+  box-shadow: 0 24px 80px rgba(0,0,0,.42);
+  backdrop-filter: blur(14px);
+}
+
+.auth-brand {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.auth-icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #6D28D9, #C084FC);
+  color: #111827;
+  font-size: 32px;
+  font-weight: 900;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.42), 0 16px 32px rgba(124,58,237,.28);
+}
+
+/* Refactor 1.9.25 — logo unificada */
+.kzera-logo,
+.auth-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 19px;
+  font-weight: 950;
+  font-size: 34px;
+  color: #F5D0FE;
+  background: linear-gradient(145deg, #2E1065, #7E22CE 54%, #C084FC);
+  box-shadow: 0 18px 36px rgba(126, 34, 206, .34), inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+.auth-brand h1,
+.auth-form h2 {
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.auth-brand p,
+.auth-form p {
+  color: #CBD5E1;
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-field {
+  display: grid;
+  gap: 8px;
+  color: #E2E8F0;
+  font-weight: 700;
+}
+
+.auth-field input {
+  border: 1px solid rgba(148, 163, 184, .35);
+  border-radius: 14px;
+  padding: 13px 14px;
+  background: rgba(2, 6, 23, .76);
+  color: #F8FAFC;
+  outline: none;
+}
+
+.auth-field input:focus {
+  border-color: #A78BFA;
+  box-shadow: 0 0 0 4px rgba(167,139,250,.16);
+}
+
+.auth-form button,
+.app-topbar button {
+  border: 0;
+  border-radius: 14px;
+  padding: 13px 16px;
+  font-weight: 800;
+  color: #111827;
+  background: linear-gradient(145deg, #A78BFA, #C084FC);
+}
+
+.auth-panel {
+  padding: 16px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.auth-form.compact {
+  max-width: 520px;
+  margin: 0 auto;
+  color: #111827;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.auth-form.compact .auth-field {
+  color: #111827;
+}
+
+.auth-form.compact .auth-field input {
+  background: #FFFFFF;
+  color: #111827;
+}
+
+.reset-access {
+  margin-top: 18px;
+  color: #CBD5E1;
+}
+
+.reset-access summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: #C4B5FD;
+}
+
+.reset-access .auth-form.compact {
+  margin-top: 12px;
+  background: rgba(2, 6, 23, .45);
+  color: #F8FAFC;
+  border-color: rgba(167,139,250,.24);
+}
+
+.auth-version {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.password-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-control input {
+  flex: 1;
+  margin: 0;
+}
+
+.password-toggle {
+  width: 48px;
+  min-width: 48px;
+  margin: 0;
+  padding: 12px 8px;
+  background: rgba(15,23,42,.88);
+  border: 1px solid rgba(168,85,247,.3);
+  box-shadow: none;
+}

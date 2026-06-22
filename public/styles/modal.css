@@ -1,0 +1,57 @@
+/* v0.19.27 */
+/* modal.css — estilos do modal de backup e outros modais globais */
+
+.kzera-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: end center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(12px);
+}
+
+.kzera-modal-card {
+  width: min(100%, 440px);
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(9, 13, 27, 0.98));
+  box-shadow: 0 24px 80px rgba(0,0,0,.48);
+  padding: 1.25rem;
+}
+
+.backup-modal-card h2 {
+  margin: .25rem 0 .75rem;
+}
+
+.backup-modal-card p {
+  color: var(--muted, #a9b0c3);
+  line-height: 1.45;
+}
+
+.backup-modal-actions {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.icon-text-button {
+  border: 1px solid rgba(167, 139, 250, 0.32);
+  border-radius: 999px;
+  padding: .85rem 1rem;
+  background: rgba(15, 23, 42, 0.9);
+  color: #f8fafc;
+  font-weight: 800;
+}
+
+.icon-text-button.primary {
+  background: linear-gradient(135deg, #8b5cf6, #c084fc);
+  color: #111827;
+}
+
+/* 1.13.3 modo noturna */
+.kzera-modal-backdrop {
+  backdrop-filter: none !important;
+}
