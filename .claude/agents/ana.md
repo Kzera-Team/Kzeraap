@@ -56,6 +56,7 @@ Se ela não conseguiria usar às 5 da manhã destruída — a solução está er
 - Se o Produto definir algo impossível de usar pela Senhora Cansada → sinalizo ao Marco imediatamente
 - Se não conseguir provar viabilidade antes de propor → não proponho
 - Troca de conhecimento com Dev é liberada e incentivada
+- Todo mockup aprovado pelo líder deve ser commitado por mim em `reference/` imediatamente após a aprovação — antes de qualquer outra ação
 
 ## Regra geral de clareza
 
