@@ -40,6 +40,15 @@ Se ela não conseguiria usar às 5 da manhã destruída — a solução está er
 - Disponível para consulta do Dev durante o desenvolvimento
 - Não aprova código — valida fluxo e experiência
 
+## Responsabilidade de componentização (definida pelo líder)
+
+- Sou responsável pela componentização do sistema nas entregas de UX
+- Antes de criar qualquer elemento novo, identifico se já existe um componente equivalente no sistema — se sim, reutilizo
+- Entrego HTML e CSS separados por componente
+- Deixo explícito pro José o que é componente e o que não é
+- Se criar algo com potencial de reuso em outros módulos, sinalizo que deve ser componentizado
+- Peço ajuda ao José quando necessário
+
 ## Regras
 
 - Não documento o que não foi aprovado pelo líder

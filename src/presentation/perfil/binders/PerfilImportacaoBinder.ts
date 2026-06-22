@@ -1,25 +1,18 @@
+// v0.19.27
 import type { PerfilUiHandlers, PerfilUiState } from '../PerfilViewTypes';
 import type { PerfilImportacaoPreviewRegistro } from '../../../domain/perfil/PerfilImportacao';
-import { escapeHtml } from '../../shared/ui/Html';
-import { buscarLocalidadesPorGrupo, grupoPadraoLocalidade } from '../../../domain/localidade/LocalidadeCatalogo';
 import { normalizarTelefoneBrasil } from '../../../domain/perfil/PerfilImportacao';
+import { criarPerfilCard } from '../components/PerfilCard/PerfilCard';
+import { criarImportacaoFab } from '../components/ImportacaoFab/ImportacaoFab';
+import { criarBottomSheet } from '../components/ImportacaoBottomSheet/ImportacaoBottomSheet';
+import type { ModoImportacao } from '../components/ImportacaoBottomSheet/ImportacaoBottomSheet';
 
 type StatusCard = 'ok' | 'warning' | 'error';
-
-function option(value: string, label: string, selected?: string): string {
-  return `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(label)}</option>`;
-}
 
 function statusRegistro(registro: PerfilImportacaoPreviewRegistro): StatusCard {
   if (!registro.valido) return 'error';
   if (!registro.bairro?.trim()) return 'warning';
   return 'ok';
-}
-
-function importarButtonLabel(temPreview: boolean, temErro: boolean): string {
-  if (!temPreview) return 'Importe um arquivo primeiro';
-  if (temErro) return 'Corrija os erros';
-  return 'Importar perfis';
 }
 
 function atualizarResumoArquivo(root: HTMLElement, temPreview: boolean, quantidade: number): void {
@@ -78,86 +71,9 @@ function wiredFilterButtons(root: HTMLElement, preview: Element, filtroAtivo: st
   aplicarFiltro(preview, filtroAtivo);
 }
 
-function renderCard(
-  registro: PerfilImportacaoPreviewRegistro,
-  status: StatusCard,
-  localidadesBrasilia: string[]
-): string {
-  const statusLabel = status === 'ok' ? '✓ Válido' : status === 'warning' ? '! Atenção' : '× Erro';
-  const bairroSelecionado = registro.bairro || '';
-  const telefone = normalizarTelefoneBrasil(registro.telefone || '');
-  const linhaNumero = registro.index + 2;
-
-  const helpMsg = status === 'warning'
-    ? `<p class="perfil-import-help warning">Bairro não informado</p>`
-    : status === 'error'
-    ? `<p class="perfil-import-help error">${escapeHtml(registro.erros.join('; '))}</p>`
-    : '';
-
-  return `
-    <article class="perfil-import-card profile-card preview-${status}" data-preview-index="${registro.index}" data-card-status="${status}">
-      <div class="perfil-import-status-row">
-        <strong class="perfil-import-status valid-badge status-${status}">${statusLabel}</strong>
-        <span class="perfil-import-line-number">Linha ${linhaNumero}</span>
-      </div>
-      <div class="perfil-import-card-main">
-        <label class="perfil-import-field perfil-import-field-name">
-          <span>Nome</span>
-          <input
-            class="input-like"
-            data-preview-index="${registro.index}"
-            data-preview-field="nome"
-            value="${escapeHtml(registro.nome)}"
-            placeholder="Digite o nome"
-            aria-label="Nome"
-          />
-        </label>
-
-        <div class="perfil-import-card-pair">
-          <label class="perfil-import-field">
-            <span>Telefone</span>
-            <input
-              class="input-like"
-              data-preview-index="${registro.index}"
-              data-preview-field="telefone"
-              value="${escapeHtml(telefone)}"
-              placeholder="(61) 99999-9999"
-              inputmode="tel"
-              autocomplete="tel"
-              aria-label="Telefone"
-            />
-          </label>
-
-          <label class="perfil-import-field">
-            <span>Bairro</span>
-            <select
-              class="input-like"
-              data-preview-index="${registro.index}"
-              data-preview-field="bairro"
-              aria-label="Bairro"
-            >
-              <option value="">Bairro</option>
-              ${localidadesBrasilia.map(localidade => option(localidade, localidade, bairroSelecionado)).join('')}
-            </select>
-          </label>
-        </div>
-
-        ${helpMsg}
-
-        <div class="perfil-import-card-footer profile-footer">
-          <label class="perfil-import-check checkbox-label">
-            <input
-              type="checkbox"
-              data-preview-index="${registro.index}"
-              data-preview-field="conhecePessoalmente"
-              ${registro.conhecePessoalmente ? 'checked' : ''}
-            />
-            <span>Conhece Pessoalmente</span>
-          </label>
-        </div>
-      </div>
-    </article>
-  `;
+function removerBottomSheet(root: HTMLElement): void {
+  root.querySelector('.importacao-overlay')?.remove();
+  root.querySelector('.importacao-bottom-sheet')?.remove();
 }
 
 export class PerfilImportacaoBinder {
@@ -171,10 +87,13 @@ export class PerfilImportacaoBinder {
     });
 
     const preview = root.querySelector('[data-testid="perfil-import-preview"]');
-    const confirmar = root.querySelector('[data-action="confirmar-importacao"]') as HTMLButtonElement | null;
     const note = root.querySelector<HTMLElement>('[data-testid="perfil-import-note"]');
 
-    if (!preview || !confirmar) return;
+    // Remove inline confirmar button — FAB takes over
+    const confirmarInline = root.querySelector('[data-action="confirmar-importacao"]');
+    if (confirmarInline) confirmarInline.remove();
+
+    if (!preview) return;
 
     const temPreview = state.importacaoPreview.length > 0;
     const statuses = state.importacaoPreview.map(statusRegistro);
@@ -188,14 +107,54 @@ export class PerfilImportacaoBinder {
     atualizarResumoArquivo(root, temPreview, state.importacaoPreview.length);
     atualizarFiltroStatus(root, temPreview, counts);
 
-    confirmar.hidden = false;
-    confirmar.disabled = !temPreview || temErro;
-    confirmar.textContent = importarButtonLabel(temPreview, temErro);
     if (note) note.hidden = !temErro;
 
-    confirmar.addEventListener('click', async () => {
-      if (!confirmar.disabled) await handlers.onConfirmarImportacao();
-    });
+    // Remove existing FAB/sheet if re-binding
+    root.querySelector('.fab-importar')?.remove();
+    removerBottomSheet(root);
+
+    if (temPreview) {
+      const fab = criarImportacaoFab(counts, () => {
+        removerBottomSheet(root);
+
+        const sheet = criarBottomSheet(
+          counts,
+          async (modo: ModoImportacao) => {
+            removerBottomSheet(root);
+
+            if (modo === 'validos') {
+              // Exclude warning and error entries before confirming
+              const indexesNaoValidos = statuses
+                .map((s, i) => (s !== 'ok' ? i : -1))
+                .filter((i): i is number => i !== -1)
+                .reverse();
+              for (const idx of indexesNaoValidos) {
+                await handlers.onAtualizarPreview(idx, { valido: false, erros: ['excluído do modo somente válidos'] });
+              }
+            } else {
+              // 'todos' = válidos + atenção — exclude only errors
+              const indexesErro = statuses
+                .map((s, i) => (s === 'error' ? i : -1))
+                .filter((i): i is number => i !== -1)
+                .reverse();
+              for (const idx of indexesErro) {
+                await handlers.onAtualizarPreview(idx, { valido: false, erros: ['não importável'] });
+              }
+            }
+
+            await handlers.onConfirmarImportacao();
+          },
+          () => {
+            removerBottomSheet(root);
+          }
+        );
+
+        root.appendChild(sheet.overlay);
+        root.appendChild(sheet.sheet);
+      });
+
+      root.appendChild(fab.elemento);
+    }
 
     if (!temPreview) {
       this.filtroAtivo = 'todos';
@@ -203,11 +162,11 @@ export class PerfilImportacaoBinder {
       return;
     }
 
-    const localidadesBrasilia = buscarLocalidadesPorGrupo(grupoPadraoLocalidade().id);
-
-    preview.innerHTML = state.importacaoPreview
-      .map((registro, i) => renderCard(registro, statuses[i] ?? 'ok', localidadesBrasilia))
-      .join('');
+    preview.innerHTML = '';
+    state.importacaoPreview.forEach(registro => {
+      const card = criarPerfilCard(registro);
+      preview.appendChild(card);
+    });
 
     wiredFilterButtons(root, preview, this.filtroAtivo, (chosen) => { this.filtroAtivo = chosen; });
 

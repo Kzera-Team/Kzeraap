@@ -1,0 +1,205 @@
+<template id="perfil-card-template">
+  <style>
+    .perfil-import-card {
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid #DDD6EE;
+      border-radius: 22px;
+      background: #ffffff;
+      box-shadow: 0 6px 16px rgba(30, 14, 70, 0.07);
+    }
+
+    .perfil-import-card[data-card-status="ok"] {
+      border-color: rgba(21, 128, 61, 0.42);
+    }
+
+    .perfil-import-card[data-card-status="warning"] {
+      border-color: rgba(196, 90, 0, 0.46);
+    }
+
+    .perfil-import-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .perfil-import-line-number {
+      color: #766BA8;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .perfil-import-status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 88px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .perfil-import-status-badge[data-status="ok"] {
+      border: 1px solid #A8E8BF;
+      background: #DDF8E7;
+      color: #087A36;
+    }
+
+    .perfil-import-status-badge[data-status="warning"] {
+      border: 1px solid rgba(194, 120, 3, 0.35);
+      background: #FFF8E6;
+      color: #92400E;
+    }
+
+    .perfil-import-status-badge[data-status="error"] {
+      border: 1px solid rgba(220, 38, 38, 0.35);
+      background: #FEF2F2;
+      color: #991B1B;
+    }
+
+    .perfil-import-field {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .perfil-import-field > span {
+      color: #6F6699;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .perfil-import-card-pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+      gap: 10px;
+    }
+
+    .perfil-import-card-pair .perfil-import-field {
+      margin-bottom: 0;
+    }
+
+    .input-like {
+      width: 100%;
+      height: 48px;
+      padding: 0 14px;
+      border: 1px solid #DAD2EC;
+      border-radius: 14px;
+      background: #FFFDFE;
+      color: #100A32;
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      font-family: inherit;
+      letter-spacing: -0.02em;
+      box-sizing: border-box;
+    }
+
+    select.input-like {
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .perfil-import-help {
+      margin: -4px 0 10px;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .perfil-import-help.warning {
+      background: #FFF8E6;
+      color: #92400E;
+    }
+
+    .perfil-import-help.error {
+      background: #FEF2F2;
+      color: #991B1B;
+    }
+
+    .perfil-import-help[hidden] {
+      display: none;
+    }
+
+    .perfil-import-card-footer {
+      margin-top: 4px;
+    }
+
+    .perfil-import-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #6F6699;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  </style>
+
+  <article
+    class="perfil-import-card profile-card"
+    data-card-status=""
+    data-preview-index=""
+  >
+    <div class="perfil-import-status-row">
+      <span class="perfil-import-line-number" data-linha></span>
+      <span class="perfil-import-status-badge" data-status="" data-status-badge></span>
+    </div>
+
+    <label class="perfil-import-field perfil-import-field-name">
+      <span>Nome</span>
+      <input
+        class="input-like"
+        data-preview-field="nome"
+        data-nome
+        placeholder="Digite o nome"
+        aria-label="Nome"
+      />
+    </label>
+
+    <p class="perfil-import-help" data-erro hidden></p>
+
+    <div class="perfil-import-card-pair">
+      <label class="perfil-import-field">
+        <span>Telefone</span>
+        <input
+          class="input-like"
+          data-preview-field="telefone"
+          data-telefone
+          placeholder="(61) 99999-9999"
+          inputmode="tel"
+          autocomplete="tel"
+          aria-label="Telefone"
+        />
+      </label>
+
+      <label class="perfil-import-field">
+        <span>Bairro</span>
+        <select
+          class="input-like"
+          data-preview-field="bairro"
+          data-bairro
+          aria-label="Bairro"
+        >
+        </select>
+      </label>
+    </div>
+
+    <div class="perfil-import-card-footer profile-footer">
+      <label class="perfil-import-check checkbox-label">
+        <input
+          type="checkbox"
+          data-preview-field="conhecePessoalmente"
+        />
+        <span>Conhece Pessoalmente</span>
+      </label>
+    </div>
+  </article>
+</template>

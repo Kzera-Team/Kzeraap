@@ -1,0 +1,130 @@
+<!-- v0.19.27 -->
+<template id="importacao-bottom-sheet-template">
+  <style>
+    .importacao-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 5, 24, 0.54);
+      z-index: 30;
+    }
+
+    .importacao-bottom-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: #F7F3FF;
+      border-radius: 28px 28px 0 0;
+      padding: 12px 16px 32px;
+      box-shadow: 0 -12px 40px rgba(18, 8, 45, 0.36);
+    }
+
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: #C4BBE0;
+      margin: 0 auto 18px;
+    }
+
+    .sheet-title {
+      color: #120B35;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .sheet-subtitle {
+      color: #766BA8;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 22px;
+      line-height: 1.35;
+    }
+
+    .sheet-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 18px;
+      height: 62px;
+      border-radius: 18px;
+      border: 1px solid #DDD4F3;
+      background: #ffffff;
+      color: #120B35;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(30, 14, 70, 0.07);
+      letter-spacing: -0.01em;
+    }
+
+    .sheet-option .opt-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    .sheet-option .opt-badge.ok {
+      background: #DDF8E7;
+      color: #087A36;
+      border: 1px solid #A8E8BF;
+    }
+
+    .sheet-option .opt-badge.mixed {
+      background: #FFF8E6;
+      color: #92400E;
+      border: 1px solid rgba(194, 120, 3, 0.35);
+    }
+
+    .sheet-cancel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0;
+      height: 52px;
+      border-radius: 16px;
+      border: 0;
+      background: transparent;
+      color: #7447E8;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+  </style>
+
+  <div class="importacao-overlay" data-overlay></div>
+
+  <div class="importacao-bottom-sheet" role="dialog" aria-modal="true" aria-label="Importar perfis">
+    <div class="sheet-handle" aria-hidden="true"></div>
+
+    <div class="sheet-title">Importar perfis</div>
+    <div class="sheet-subtitle" data-sheet-subtitle></div>
+
+    <button class="sheet-option" type="button" data-action="somente-validos">
+      <span>Somente v&#225;lidos</span>
+      <span class="opt-badge ok" data-badge-validos></span>
+    </button>
+
+    <button class="sheet-option" type="button" data-action="validos-atencao">
+      <span>V&#225;lidos + Aten&#231;&#227;o</span>
+      <span class="opt-badge mixed" data-badge-todos></span>
+    </button>
+
+    <button class="sheet-cancel" type="button" data-action="cancelar">Cancelar</button>
+  </div>
+</template>

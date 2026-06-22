@@ -1,0 +1,40 @@
+/* v0.19.27 */
+
+.fab-importar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 350px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #7B4DFF 0%, #5B2ECC 100%);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+  font-family: inherit;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow:
+    0 8px 24px rgba(91, 46, 204, 0.50),
+    0 2px 6px rgba(0, 0, 0, 0.18);
+  z-index: 20;
+}
+
+.fab-importar .fab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 14px;
+  font-weight: 900;
+}
