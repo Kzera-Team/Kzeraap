@@ -1,8 +1,9 @@
 import type { Repository } from '../ports/Repository';
 import type { Clock } from '../../core/Clock';
-import type { ItemCatalogo, ItemLote, ItemVariacao } from '../../domain/item/ItemCatalogo';
+import type { ItemCatalogo, ItemVariacao } from '../../domain/item/ItemCatalogo';
 import { VARIACAO_PADRAO_ITEM } from '../../domain/item/ItemCatalogo';
 import type { ItemImportacaoPreviewRegistro } from '../../domain/item/ItemImportacao';
+import { criarLoteImportado } from '../../domain/item/ItemImportacaoLoteFactory';
 import { nomesItemImportacaoIguais } from '../../domain/item/ItemImportacaoNormalizacao';
 import { CriarCatalogoItemUseCase, type CriarCatalogoItemInput } from './CriarCatalogoItemUseCase';
 import { releaseObject } from '../../runtime/RuntimeCleanup';
@@ -45,27 +46,15 @@ export class ImportarCatalogoItensUseCase {
     return input;
   }
 
-  private criarLote(item: ItemImportacaoPreviewRegistro, now: string): ItemLote {
-    const quantidade = item.quantidadeLote || 0;
-    const custo = item.custoLote || 0;
-
-    return {
+  private criarLote(item: ItemImportacaoPreviewRegistro, now: string) {
+    return criarLoteImportado({
       id: this.idFactory(),
-      nome: item.loteNome?.trim() || 'Lote importado',
+      nome: item.loteNome,
       valor: item.valorLote || 0,
-      custo,
-      custoTotal: custo,
-      custoUnitario: quantidade ? custo / quantidade : 0,
-      quantidade,
-      quantidadeGuardada: quantidade,
+      custo: item.custoLote || 0,
+      quantidade: item.quantidadeLote || 0,
       dataLancamento: now,
-      fracionamentos: [],
-      retiradasInternas: [],
-      conferencias: [],
-      status: 'ativo',
-      createdAt: now,
-      updatedAt: now
-    };
+    });
   }
 
   private variacaoNome(item: ItemImportacaoPreviewRegistro): string {
