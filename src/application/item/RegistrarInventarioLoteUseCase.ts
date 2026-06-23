@@ -1,5 +1,6 @@
 import type { FracionamentoLote, ItemLote, LoteConferencia, LoteConferenciaLinha } from '../../domain/item/ItemCatalogo';
 import { estoqueBaseDisponivelDoLote, equivalenteDisponivelFracionamento } from '../../domain/item/ItemCatalogo';
+import { unidadeBanco } from '../../domain/item/UnidadeOperacional';
 import type { LoteOperacionalEditor } from './LoteOperacionalEditor';
 
 export interface RegistrarInventarioLoteUseCaseInput {
@@ -27,15 +28,17 @@ export class RegistrarInventarioLoteUseCase {
   async execute(input: RegistrarInventarioLoteUseCaseInput) {
     if (input.guardadoContadoBase < 0) throw new Error('Inventário não aceita quantidade negativa.');
 
-    return this.editor.edit(input, ({ lote, now }) => {
+    return this.editor.edit(input, ({ lote, variacao, now }) => {
       const linhas = this.criarLinhas(lote, input);
       const conferencia = this.criarConferencia(lote, linhas, input, input.dataHora || now);
+      const unidadeInterna = unidadeBanco(variacao.unidade === 'ml' ? 'ml' : 'g');
 
       return {
         ...lote,
         fracionamentos: this.aplicarContagens(lote.fracionamentos, input),
-        conferencias: [conferencia, ...lote.conferencias],
-        status: conferencia.divergenciaBase === 0 ? 'ativo' : 'divergente'
+        conferencias: [conferencia, ...lote.conferencias.map(item => ({ ...item, linhas: item.linhas }))],
+        status: conferencia.divergenciaBase === 0 ? 'ativo' : 'divergente',
+        observacao: lote.observacao || `Unidade interna: ${unidadeInterna}`
       };
     });
   }
