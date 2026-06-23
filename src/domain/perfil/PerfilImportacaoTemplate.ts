@@ -13,7 +13,7 @@ export const CLIENTE_IMPORTACAO_TEMPLATE: PerfilImportacaoColunaTemplate[] = [
   {
     campo: 'telefone',
     obrigatorio: true,
-    aliases: ['celular']
+    aliases: ['telefone', 'celular', 'fone', 'tel']
   },
   {
     campo: 'email',

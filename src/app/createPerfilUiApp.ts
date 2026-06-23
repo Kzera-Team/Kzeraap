@@ -140,24 +140,33 @@ export function createPerfilUiApp(
     },
 
     async onConfirmarImportacao() {
-      const result = await module.fluxoImportacao.confirmar();
-      const rule = getIdentityRule?.();
-      if (rule?.parts?.length) {
-        for (const perfil of result.importados) {
-          if (perfil.bairro) {
-            try {
-              await module.definirCodigo.execute(perfil.id, rule);
-            } catch { /* duplicado ou bairro vazio — best-effort */ }
+      loading = true;
+      erro = undefined;
+      await rerender();
+      try {
+        const result = await module.fluxoImportacao.confirmar();
+        const rule = getIdentityRule?.();
+        if (rule?.parts?.length) {
+          for (const perfil of result.importados) {
+            if (perfil.bairro) {
+              try {
+                await module.definirCodigo.execute(perfil.id, rule);
+              } catch { /* best-effort */ }
+            }
           }
         }
+        preview = [];
+        panelMode = 'lista';
+        if (rascunho) {
+          try { await rascunho.descartar('perfis'); } catch { /* best-effort */ }
+        }
+        loading = false;
+        await rerender(`${result.importados.length} perfis importados.`);
+      } catch (error) {
+        loading = false;
+        erro = error instanceof Error ? error.message : 'Erro ao importar.';
+        await rerender();
       }
-      preview = [];
-      if (rascunho) {
-        try {
-          await rascunho.descartar('perfis');
-        } catch { /* best-effort */ }
-      }
-      await rerender(`${result.importados.length} perfis importados.`);
     },
 
     async onExportar() {

@@ -53,6 +53,10 @@ export class FluxoImportacaoPerfisUseCase {
           atualizado.telefone = normalizarTelefoneBrasil(patch.telefone);
         }
 
+        if (atualizado.excluido) {
+          return { ...atualizado, valido: false };
+        }
+
         const erros = validarPreviewImportacaoPerfil(atualizado);
 
         return {

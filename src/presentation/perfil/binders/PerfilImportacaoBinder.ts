@@ -122,24 +122,12 @@ export class PerfilImportacaoBinder {
           async (modo: ModoImportacao) => {
             removerBottomSheet(root);
 
-            if (modo === 'validos') {
-              // Exclude warning and error entries before confirming
-              const indexesNaoValidos = statuses
-                .map((s, i) => (s !== 'ok' ? i : -1))
-                .filter((i): i is number => i !== -1)
-                .reverse();
-              for (const idx of indexesNaoValidos) {
-                await handlers.onAtualizarPreview(idx, { valido: false, erros: ['excluído do modo somente válidos'] });
-              }
-            } else {
-              // 'todos' = válidos + atenção — exclude only errors
-              const indexesErro = statuses
-                .map((s, i) => (s === 'error' ? i : -1))
-                .filter((i): i is number => i !== -1)
-                .reverse();
-              for (const idx of indexesErro) {
-                await handlers.onAtualizarPreview(idx, { valido: false, erros: ['não importável'] });
-              }
+            const indexesToExclude = modo === 'validos'
+              ? statuses.map((s, i) => (s !== 'ok' ? i : -1)).filter((i): i is number => i !== -1).reverse()
+              : statuses.map((s, i) => (s === 'error' ? i : -1)).filter((i): i is number => i !== -1).reverse();
+
+            for (const idx of indexesToExclude) {
+              await handlers.onAtualizarPreview(idx, { excluido: true });
             }
 
             await handlers.onConfirmarImportacao();

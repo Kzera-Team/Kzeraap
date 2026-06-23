@@ -2548,6 +2548,7 @@ textarea {
 .import-panel,
 .importPanel {
   width: calc(100vw - 28px) !important;
+  min-height: calc(100dvh - max(88px, calc(env(safe-area-inset-top) + 76px)) - 28px) !important;
   box-shadow: 0 10px 24px rgba(30, 14, 70, 0.07) !important;
 }
 .import-page-background,

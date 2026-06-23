@@ -19,6 +19,7 @@ export interface PerfilImportacaoPreviewRegistro {
   conhecePessoalmente: boolean;
   valido: boolean;
   erros: string[];
+  excluido?: boolean;
 }
 
 function setOptional<T extends object, K extends keyof PerfilImportacaoPreviewRegistro>(
