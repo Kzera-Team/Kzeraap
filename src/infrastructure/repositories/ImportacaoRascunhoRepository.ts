@@ -40,11 +40,13 @@ export interface RascunhoImportacao {
   tipo: 'perfis' | 'itens' | 'transacoes';
   tela: TelaRascunho;
   previewCount?: number;
+  previewRegistros?: unknown[];
   updatedAt: string;
 }
 
 interface RascunhoPayload {
   previewCount: number;
+  registros?: unknown[];
 }
 
 const DB_NAME = 'kzera_rascunho_importacao_1';
@@ -82,6 +84,7 @@ export class ImportacaoRascunhoRepository {
     // Apenas perfis e itens possuem previewCount — transações só guardam o marcador.
     if (rascunho.tipo !== 'transacoes' && rascunho.previewCount !== undefined) {
       const payload: RascunhoPayload = { previewCount: rascunho.previewCount };
+      if (rascunho.previewRegistros) payload.registros = rascunho.previewRegistros;
       record.payloadProtegido = await this.crypto.packJson(
         payload,
         `rascunho:importacao:${rascunho.tipo}`
@@ -131,6 +134,7 @@ export class ImportacaoRascunhoRepository {
       );
       // Só após decrypt completo e sem erro propagamos os dados.
       base.previewCount = payload.previewCount;
+      if (payload.registros) base.previewRegistros = payload.registros;
     } catch {
       // OperationError (sessão errada / dado corrompido): descarta o payload,
       // retorna apenas o marcador sem previewCount — nenhum fragmento vaza.

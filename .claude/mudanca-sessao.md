@@ -19,10 +19,12 @@ Pendências resolvidas e bloqueadores abertos ao encerrar esta sessão.
 
 | Severidade | Arquivo | Linha | Problema |
 |------------|---------|-------|----------|
-| CRÍTICO | `src/domain/auth/AuthRules.ts` | 8–10 | Senha mínima de 1 caractere em produção |
-| ALTA | `src/infrastructure/storage/RuntimeMetadataKeyValueStore.ts` | 4 | Chave de segurança hardcoded |
-| ALTA | `src/infrastructure/auth/BrowserFaceIdGateway.ts` | 3 | Chave de passkey hardcoded |
-| ALTA | `src/app/createKzeraAuthenticatedApp.ts` | 119–131 | `samplePerfil` no bundle de produção |
-| ALTA | `src/app/createKzeraAuthenticatedApp.ts` | 133–139, 641 | ID fixo `'codigo-perfil-config'` no bundle |
+| CRÍTICO | `src/domain/auth/AuthRules.ts` | 8–10 | Senha mínima de 1 caractere em produção — **não impeditivo enquanto versão < 1.0.0. A partir de 1.0.0, build proibido sem correção prévia, sem exceção.** |
 
 Nenhum desses foi endereçado. Aguardam decisão do líder para iniciar correção.
+
+---
+
+## Pendente — José (próxima entrega)
+
+- `src/app/createKzeraAuthenticatedApp.ts` linhas 119–131 — remover `samplePerfil` hardcoded do bundle de produção e substituir por dado dinâmico ou genérico no preview da tela de configuração do Código do Perfil.

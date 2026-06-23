@@ -36,18 +36,21 @@ export class ConfirmarImportacaoPerfisUseCase {
   }
 
   async execute(registros: PerfilImportacaoPreviewRegistro[]): Promise<ConfirmarImportacaoPerfisResultado> {
-    const invalidos = registros.filter(registro => !registro.valido);
+    const validos = registros.filter(registro => registro.valido && !registro.excluido);
+    const invalidos = registros
+      .filter(registro => !registro.valido || registro.excluido)
+      .map(registro => ({ ...registro, erros: [...(registro.erros ?? [])] }));
 
-    if (invalidos.length > 0) {
-      throw new Error('Corrija as linhas com problema antes de confirmar.');
+    if (validos.length === 0) {
+      throw new Error('Nenhum registro válido para importar.');
     }
 
-    const inputs: ImportarPerfilInput[] = registros.map(toImportInput);
+    const inputs: ImportarPerfilInput[] = validos.map(toImportInput);
     const resultado = await this.importar.execute(inputs);
 
     return {
       ...resultado,
-      ignoradosInvalidos: []
+      ignoradosInvalidos: invalidos
     };
   }
 }
