@@ -247,8 +247,8 @@ export function createItemCatalogoUiApp(
     },
 
     async onConfirmarImportacao() {
-      const result = await module.importar.execute(preview);
       const rejeitados = preview.filter(item => !item.valido).map(item => ({ ...item }));
+      const result = await module.importar.execute(preview);
       releaseTransferPayload(preview);
       preview = rejeitados;
       if (rascunho) {
