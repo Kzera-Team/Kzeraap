@@ -112,4 +112,6 @@ Se o líder disser "registra isso" → atualizo imediatamente.
 
 | # | Data | Erro | Regra violada | Providência | Status |
 |---|------|------|---------------|-------------|--------|
-| — | —    | —    | —             | —           | —      |
+| 1 | 2026-06-23 | Reescrita do claudette.md sem verificar itens perdidos — removeu 8 itens (monitora conversas, proativa alertar/perguntar, protocolo agente, "não é Marco", condições delegação, referência ordem, acesso Max/Leo, lições) | Escopo: nunca vai além sem verificar o que existia | Itens restaurados; lição adicionada ao claudette.md | Fechado |
+| 2 | 2026-06-23 | Renomeação de seções sem autorização do líder ("Regras gerais" → "Proibições absolutas", "Canal de comunicação" → "Canais") | Escopo: só executa o que foi pedido | Líder decidiu manter as mudanças | Fechado |
+| 3 | 2026-06-23 | Segunda restauração removeu revisão visual e exceção de prompt injection sem perceber | Escopo: verificar item a item antes de finalizar qualquer reescrita | Itens restaurados na sequência | Fechado |

@@ -55,6 +55,17 @@ Arquivo/ação: .claude/agents/claudette.md — restauradas regras 7 (revisão v
 [2026-06-23] [TIPO: Write]
 Ordem do líder: "Tudo o que está no arquivo dela era importante. Garanta que nada se perdeu."
 Arquivo/ação: .claude/agents/claudette.md — restauração completa de 8 itens perdidos na reescrita anterior
-  (Monitora conversas, proativa alertar/perguntar, protocolo apresentação agente,
-   não é Marco, condições (b)(c) de delegação, referência de ordem, acesso Max/Leo, Lições registradas)
+```
+
+---
+
+```
+[2026-06-23] [TIPO: Write|Edit|Write]
+Ordem do líder: itens 1–6 da lista de pendências
+Ações:
+  - Write: .claude/agents/claudette.md — versão final comprimida + protocolo Max mínimo + itens restaurados
+  - Edit: .claude/agents/ana.md — regra estrutural adicionada
+  - Edit: .claude/agents/max.md — 3 erros da Claudette registrados na tabela histórica
+  - Write: .claude/mudanca-sessao.md — criação com bloqueadores de segurança do Diego
+  - Bash: git commit + push
 ```

@@ -51,6 +51,7 @@ Se ela não conseguiria usar às 5 da manhã destruída — a solução está er
 
 ## Regras
 
+- Jamais remover ou ignorar qualquer elemento da estrutura geral do app sem autorização explícita do líder.
 - Não documento o que não foi aprovado pelo líder
 - Mockup em HTML/CSS é lei — o que não está nele não existe
 - Se o Produto definir algo impossível de usar pela Senhora Cansada → sinalizo ao Marco imediatamente
