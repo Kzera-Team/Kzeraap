@@ -6,16 +6,20 @@ import { criarPerfilCard } from '../components/PerfilCard/PerfilCard';
 import { criarImportacaoFab } from '../components/ImportacaoFab/ImportacaoFab';
 import { criarBottomSheet } from '../components/ImportacaoBottomSheet/ImportacaoBottomSheet';
 import type { ModoImportacao } from '../components/ImportacaoBottomSheet/ImportacaoBottomSheet';
+import { buscarLocalidadesPorGrupo, grupoPadraoLocalidade } from '../../../domain/localidade/LocalidadeCatalogo';
 
 type StatusCard = 'ok' | 'warning' | 'error';
 
 function statusRegistro(registro: PerfilImportacaoPreviewRegistro): StatusCard {
   if (!registro.valido) return 'error';
-  if (!registro.bairro?.trim()) return 'warning';
+  const bairro = registro.bairro?.trim() ?? '';
+  if (!bairro) return 'warning';
+  const localidades = buscarLocalidadesPorGrupo(grupoPadraoLocalidade().id);
+  if (!localidades.includes(bairro)) return 'warning';
   return 'ok';
 }
 
-function atualizarResumoArquivo(root: HTMLElement, temPreview: boolean, quantidade: number): void {
+function atualizarResumoArquivo(root: HTMLElement, temPreview: boolean, quantidade: number, nomeArquivo?: string): void {
   const status = root.querySelector<HTMLElement>('[data-file-status]');
   const nome = root.querySelector<HTMLElement>('[data-file-name]');
   const meta = root.querySelector<HTMLElement>('[data-file-meta]');
@@ -23,7 +27,7 @@ function atualizarResumoArquivo(root: HTMLElement, temPreview: boolean, quantida
   const head = root.querySelector<HTMLElement>('[data-testid="perfil-import-preview-head"]');
 
   if (status) status.textContent = temPreview ? 'Arquivo selecionado' : 'Arquivo';
-  if (nome) nome.textContent = temPreview ? 'perfis_importacao.csv' : 'Escolher arquivo';
+  if (nome) nome.textContent = temPreview ? (nomeArquivo || 'arquivo.csv') : 'Escolher arquivo';
   if (meta) meta.textContent = temPreview ? `${quantidade} registro${quantidade === 1 ? '' : 's'} encontrado${quantidade === 1 ? '' : 's'}` : 'CSV de perfis';
   if (count) count.textContent = temPreview ? `${quantidade} perf${quantidade === 1 ? 'il' : 'is'} encontrado${quantidade === 1 ? '' : 's'}` : '';
   if (head) head.hidden = !temPreview;
@@ -78,12 +82,16 @@ function removerBottomSheet(root: HTMLElement): void {
 
 export class PerfilImportacaoBinder {
   private filtroAtivo = 'todos';
+  private nomeArquivo: string | undefined;
 
   bind(root: HTMLElement, state: PerfilUiState, handlers: PerfilUiHandlers): void {
     const fileInput = root.querySelector('#perfil-import-file') as HTMLInputElement | null;
     fileInput?.addEventListener('change', async () => {
       const file = fileInput.files?.[0];
-      if (file) await handlers.onSelecionarArquivo(file);
+      if (file) {
+        this.nomeArquivo = file.name;
+        await handlers.onSelecionarArquivo(file);
+      }
     });
 
     const preview = root.querySelector('[data-testid="perfil-import-preview"]');
@@ -98,7 +106,7 @@ export class PerfilImportacaoBinder {
       error: statuses.filter(s => s === 'error').length,
     };
 
-    atualizarResumoArquivo(root, temPreview, state.importacaoPreview.length);
+    atualizarResumoArquivo(root, temPreview, state.importacaoPreview.length, this.nomeArquivo);
     atualizarFiltroStatus(root, temPreview, counts);
 
     // Remove existing FAB/sheet if re-binding
