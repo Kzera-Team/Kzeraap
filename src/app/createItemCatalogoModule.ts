@@ -10,8 +10,10 @@ import { ReativarCatalogoItemUseCase } from '../application/item/ReativarCatalog
 import { ItemDashboardUseCase } from '../application/item/ItemDashboardUseCase';
 import { ExportarCatalogoItensUseCase } from '../application/item/ExportarCatalogoItensUseCase';
 import { ImportarCatalogoItensUseCase } from '../application/item/ImportarCatalogoItensUseCase';
+import { ParseImportacaoCatalogoItensUseCase } from '../application/item/ParseImportacaoCatalogoItensUseCase';
 import { RegistrarFracionamentoLoteUseCase } from '../application/item/RegistrarFracionamentoLoteUseCase';
 import { PesagemRapidaFracionamentoUseCase } from '../application/item/PesagemRapidaFracionamentoUseCase';
+import { BuildSafeItemSpreadsheetImportGateway } from '../infrastructure/importacao/ItemSpreadsheetImportGateway';
 
 export function createItemCatalogoModule(items: Repository<ItemCatalogo>, balancas: Repository<Balanca>, clock: Clock, idFactory: () => string) {
   return {
@@ -23,6 +25,7 @@ export function createItemCatalogoModule(items: Repository<ItemCatalogo>, balanc
     dashboard: new ItemDashboardUseCase(items),
     exportar: new ExportarCatalogoItensUseCase(items),
     importar: new ImportarCatalogoItensUseCase(items, clock, idFactory),
+    parserImportacao: new ParseImportacaoCatalogoItensUseCase(new BuildSafeItemSpreadsheetImportGateway()),
     registrarFracionamento: new RegistrarFracionamentoLoteUseCase(items, clock, idFactory),
     pesagemRapida: new PesagemRapidaFracionamentoUseCase(items, balancas, clock, idFactory)
   };
