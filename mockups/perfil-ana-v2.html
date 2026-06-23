@@ -36,6 +36,25 @@
   }
   .status-bar .time { font-weight: 900; font-size: 15px; }
 
+  .menu-button {
+    position: fixed;
+    top: 58px;
+    right: 34px;
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.2);
+    background: rgba(20,20,32,.82);
+    color: #fff;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 16px 40px rgba(0,0,0,.22);
+    z-index: 60;
+  }
+
   .screen-header {
     padding: 12px 20px 8px;
     display: flex;
@@ -173,6 +192,8 @@
 </head>
 <body>
 <div class="phone">
+
+  <button class="menu-button" aria-label="Abrir menu">☰</button>
 
   <div class="status-bar">
     <span class="time">9:41</span>
