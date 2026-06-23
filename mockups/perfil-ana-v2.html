@@ -23,6 +23,7 @@
     overflow: hidden;
     box-shadow: 0 40px 120px rgba(0,0,0,0.6);
     padding: 16px 0 40px;
+    position: relative;
   }
 
   .status-bar {
@@ -37,9 +38,9 @@
   .status-bar .time { font-weight: 900; font-size: 15px; }
 
   .menu-button {
-    position: fixed;
+    position: absolute;
     top: 58px;
-    right: 34px;
+    right: 16px;
     width: 44px;
     height: 44px;
     border-radius: 16px;
@@ -77,6 +78,12 @@
     letter-spacing: -0.5px;
     color: #120B35;
     line-height: 1.05;
+  }
+  .screen-header .hint {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8A7DC0;
+    margin-top: 3px;
   }
   .btn-novo {
     flex-shrink: 0;
@@ -155,6 +162,15 @@
   }
   .list-header h2 { font-size: 17px; font-weight: 900; color: #120B35; letter-spacing: -0.3px; }
   .list-header .count { font-size: 13px; font-weight: 700; color: #9B8FC8; }
+  .btn-salvar {
+    font-size: 13px;
+    font-weight: 800;
+    color: #5B2ECC;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
 
   /* CARD — só nome e status */
   .perfil-card {
@@ -204,8 +220,8 @@
     <div>
       <span class="eyebrow">Área de trabalho</span>
       <h1>Perfis</h1>
+      <p class="hint">Sem pressa: busque ou crie um perfil.</p>
     </div>
-    <button class="btn-novo">+ Perfil</button>
   </div>
 
   <div class="search-wrap">
@@ -223,7 +239,7 @@
   <div class="list-section">
     <div class="list-header">
       <h2>Perfis cadastrados</h2>
-      <span class="count">3 perfis</span>
+      <button class="btn-salvar">⇩ Salvar lista</button>
     </div>
 
     <div class="perfil-card">
