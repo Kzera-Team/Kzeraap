@@ -62,9 +62,15 @@ function aplicarFiltro(preview: Element, chosen: string): void {
 function wiredFilterButtons(root: HTMLElement, preview: Element, filtroAtivo: string, onFiltroChange: (chosen: string) => void): void {
   const filter = root.querySelector<HTMLElement>('.perfil-import-status-filter');
   if (!filter) return;
+
+  const cards = Array.from(preview.querySelectorAll<HTMLElement>('[data-card-status]'));
+  const temCardNoFiltro = filtroAtivo === 'todos' || cards.some(c => c.dataset.cardStatus === filtroAtivo);
+  const efetivo = temCardNoFiltro ? filtroAtivo : 'todos';
+  if (efetivo !== filtroAtivo) onFiltroChange('todos');
+
   const buttons = Array.from(filter.querySelectorAll<HTMLButtonElement>('button'));
   buttons.forEach(button => {
-    const isActive = (button.dataset.filterStatus || 'todos') === filtroAtivo;
+    const isActive = (button.dataset.filterStatus || 'todos') === efetivo;
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     button.onclick = () => {
       const chosen = button.dataset.filterStatus || 'todos';
@@ -73,7 +79,7 @@ function wiredFilterButtons(root: HTMLElement, preview: Element, filtroAtivo: st
       aplicarFiltro(preview, chosen);
     };
   });
-  aplicarFiltro(preview, filtroAtivo);
+  aplicarFiltro(preview, efetivo);
 }
 
 function removerBottomSheet(root: HTMLElement): void {
