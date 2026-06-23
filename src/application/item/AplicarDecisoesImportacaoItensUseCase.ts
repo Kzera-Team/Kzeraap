@@ -1,7 +1,8 @@
 import type { Repository } from '../ports/Repository';
 import type { Clock } from '../../core/Clock';
-import type { ItemCatalogo, ItemLote, ItemVariacao } from '../../domain/item/ItemCatalogo';
+import type { ItemCatalogo, ItemVariacao } from '../../domain/item/ItemCatalogo';
 import { VARIACAO_PADRAO_ITEM } from '../../domain/item/ItemCatalogo';
+import { criarLoteImportado } from '../../domain/item/ItemImportacaoLoteFactory';
 import type { ItemImportacaoNormalizadaPreview } from '../../domain/item/ItemImportacaoNormalizada';
 
 export interface AplicarDecisoesImportacaoItensResultado {
@@ -104,7 +105,14 @@ export class AplicarDecisoesImportacaoItensUseCase {
     }
 
     const now = this.clock.now().toISOString();
-    const lote = this.criarLote(item, now);
+    const lote = criarLoteImportado({
+      id: this.idFactory(),
+      nome: item.loteNome,
+      valor: item.valorLote,
+      custo: item.custoLote,
+      quantidade: item.quantidadeLote,
+      dataLancamento: now,
+    });
     const variacoes = destino.variacoes.map(variacao => variacao.id === item.variacaoDestinoId
       ? { ...variacao, lotes: [...variacao.lotes, lote], updatedAt: now }
       : variacao);
@@ -123,30 +131,14 @@ export class AplicarDecisoesImportacaoItensUseCase {
       id: this.idFactory(),
       nome: this.nomeVariacao(item),
       unidade: this.unidade(item),
-      lotes: [this.criarLote(item, now)],
-      status: 'ativo',
-      createdAt: now,
-      updatedAt: now,
-    };
-  }
-
-  private criarLote(item: ItemImportacaoNormalizadaPreview, now: string): ItemLote {
-    const quantidade = item.quantidadeLote;
-    const custo = item.custoLote;
-
-    return {
-      id: this.idFactory(),
-      nome: item.loteNome?.trim() || 'Lote importado',
-      valor: item.valorLote,
-      custo,
-      custoTotal: custo,
-      custoUnitario: quantidade ? custo / quantidade : 0,
-      quantidade,
-      quantidadeGuardada: quantidade,
-      dataLancamento: now,
-      fracionamentos: [],
-      retiradasInternas: [],
-      conferencias: [],
+      lotes: [criarLoteImportado({
+        id: this.idFactory(),
+        nome: item.loteNome,
+        valor: item.valorLote,
+        custo: item.custoLote,
+        quantidade: item.quantidadeLote,
+        dataLancamento: now,
+      })],
       status: 'ativo',
       createdAt: now,
       updatedAt: now,
