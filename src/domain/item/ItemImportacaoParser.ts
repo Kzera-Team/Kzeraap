@@ -10,11 +10,7 @@ export interface ItemImportacaoParseResult {
 const UNIDADES_VALIDAS: ItemUnidade[] = ['un', 'g', 'mg', 'ml', 'kg', 'l'];
 
 function normalizarHeader(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim()
-    .toLowerCase();
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
 }
 
 function campoPorHeader(header: string): string | null {
@@ -43,50 +39,40 @@ function campoPorHeader(header: string): string | null {
     valor: 'valorLote',
     'valor lote': 'valorLote',
     'preco 1+': 'valorLote',
-    lote: 'loteNome' 
+    lote: 'loteNome'
   };
-
   return mapa[h] || null;
 }
 
 function detectarSeparador(content: string): ',' | ';' | '\t' {
   const firstLine = content.split(/\r?\n/)[0] || '';
   const candidates: Array<',' | ';' | '\t'> = [',', ';', '\t'];
-
-  return candidates
-    .map(delimiter => ({ delimiter, count: firstLine.split(delimiter).length }))
-    .sort((a, b) => b.count - a.count)[0]?.delimiter || ',';
+  return candidates.map(delimiter => ({ delimiter, count: firstLine.split(delimiter).length })).sort((a, b) => b.count - a.count)[0]?.delimiter || ',';
 }
 
 function parseLine(line: string, delimiter: string): string[] {
   const values: string[] = [];
   let current = '';
   let quoted = false;
-
   for (let index = 0; index < line.length; index++) {
     const char = line[index] || '';
     const next = line[index + 1];
-
     if (char === '"' && quoted && next === '"') {
       current += '"';
       index++;
       continue;
     }
-
     if (char === '"') {
       quoted = !quoted;
       continue;
     }
-
     if (char === delimiter && !quoted) {
       values.push(current.trim());
       current = '';
       continue;
     }
-
     current += char;
   }
-
   values.push(current.trim());
   return values;
 }
@@ -97,23 +83,28 @@ function numero(value: string | undefined): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-function unidade(value: string | undefined): ItemUnidade {
-  const normalized = (value || 'un').trim().toLowerCase() as ItemUnidade;
-  return UNIDADES_VALIDAS.includes(normalized) ? normalized : 'un';
+function unidade(value: string | undefined): { unidade?: ItemUnidade; erro?: string } {
+  const raw = value?.trim();
+  if (!raw) return { erro: 'Unidade da variação é obrigatória.' };
+  const normalized = raw.toLowerCase() as ItemUnidade;
+  if (UNIDADES_VALIDAS.includes(normalized)) return { unidade: normalized };
+  return { erro: `Unidade inválida: ${raw}.` };
 }
 
 function buildLinha(record: Record<string, string>): ItemImportacaoLinha {
+  const unidadeParse = unidade(record.unidade);
   const linha: ItemImportacaoLinha = {
     nome: record.nome || '',
     categoria: record.variacaoNome || '',
-    variacaoNome: record.variacaoNome || '',
-    unidade: unidade(record.unidade)
+    variacaoNome: record.variacaoNome || ''
   };
+
+  if (unidadeParse.unidade) linha.unidade = unidadeParse.unidade;
+  if (unidadeParse.erro) linha.errosImportacao = [unidadeParse.erro];
 
   const custoLote = numero(record.custoLote);
   const quantidadeLote = numero(record.quantidadeLote);
   const valorLote = numero(record.valorLote);
-
   if (custoLote !== undefined) linha.custoLote = custoLote;
   if (quantidadeLote !== undefined) linha.quantidadeLote = quantidadeLote;
   if (valorLote !== undefined) linha.valorLote = valorLote;
@@ -122,40 +113,29 @@ function buildLinha(record: Record<string, string>): ItemImportacaoLinha {
   if (record.descricao) linha.descricao = record.descricao;
   if (record.observacao) linha.observacao = record.observacao;
   if (record.tags) linha.tags = record.tags.split('|').map(tag => tag.trim()).filter(Boolean);
-
   return linha;
 }
 
 export function parseItemImportacaoCsvTsv(content: string): ItemImportacaoParseResult {
   const clean = content.replace(/^\uFEFF/, '').trim();
-
-  if (!clean) {
-    return { linhas: [], colunasIgnoradas: [], erros: ['Arquivo vazio.'] };
-  }
+  if (!clean) return { linhas: [], colunasIgnoradas: [], erros: ['Arquivo vazio.'] };
 
   const delimiter = detectarSeparador(clean);
   const lines = clean.split(/\r?\n/).filter(line => line.trim());
   const first = lines[0];
-
-  if (!first) {
-    return { linhas: [], colunasIgnoradas: [], erros: ['Arquivo sem cabeçalho.'] };
-  }
+  if (!first) return { linhas: [], colunasIgnoradas: [], erros: ['Arquivo sem cabeçalho.'] };
 
   const headers = parseLine(first, delimiter);
   const mapped = headers.map(header => ({ header, field: campoPorHeader(header) }));
   const colunasIgnoradas = mapped.filter(item => !item.field).map(item => item.header);
   const linhas: ItemImportacaoLinha[] = [];
-
   for (const line of lines.slice(1)) {
     const values = parseLine(line, delimiter);
     const record: Record<string, string> = {};
-
     mapped.forEach((item, index) => {
       if (item.field) record[item.field] = values[index] || '';
     });
-
     linhas.push(buildLinha(record));
   }
-
   return { linhas, colunasIgnoradas, erros: [] };
 }
