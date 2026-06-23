@@ -1,29 +1,14 @@
 import type { Repository } from '../application/ports/Repository';
 import type { Clock } from '../core/Clock';
-import type { ItemCatalogo, ItemLote, ItemUnidade, ItemVariacao } from '../domain/item/ItemCatalogo';
+import type { ItemCatalogo, ItemLote, ItemVariacao } from '../domain/item/ItemCatalogo';
 import type { Balanca } from '../domain/operacao/Balanca';
 import { criarPreviewImportacaoItem, type ItemImportacaoPreviewRegistro } from '../domain/item/ItemImportacao';
-import { BuildSafeItemSpreadsheetImportGateway } from '../infrastructure/importacao/ItemSpreadsheetImportGateway';
+import { validarPreviewImportacaoItem } from '../domain/item/ItemImportacaoValidacao';
 import { createItemCatalogoModule } from './createItemCatalogoModule';
-import { ParseImportacaoCatalogoItensUseCase } from '../application/item/ParseImportacaoCatalogoItensUseCase';
 import { ItemCatalogoDomView, type ItemCatalogoUiState } from '../presentation/item/ItemCatalogoDomView';
+import { mensagemErrosImportacaoItem } from '../presentation/item/ItemImportacaoMensagens';
 import { releaseTransferPayload } from '../runtime/TransferScope';
 import type { ImportacaoRascunhoUseCase } from '../application/importacao/ImportacaoRascunhoUseCase';
-
-const UNIDADES_IMPORTACAO: ItemUnidade[] = ['un', 'g', 'mg', 'ml', 'kg', 'l'];
-
-function validarUnidadePreview(unidade: ItemImportacaoPreviewRegistro['unidade']): string | null {
-  if (!unidade) return 'Unidade é obrigatória.';
-  return UNIDADES_IMPORTACAO.includes(unidade) ? null : `Unidade inválida: ${unidade}.`;
-}
-
-function validarPreview(item: ItemImportacaoPreviewRegistro): ItemImportacaoPreviewRegistro {
-  const erros: string[] = [...(item.errosImportacao || [])];
-  const erroUnidade = validarUnidadePreview(item.unidade);
-  if (!item.nome?.trim()) erros.push('Nome é obrigatório.');
-  if (erroUnidade && !erros.some(erro => erro.includes('Unidade'))) erros.push(erroUnidade);
-  return { ...item, valido: erros.length === 0, erros };
-}
 
 export function createItemCatalogoUiApp(
   items: Repository<ItemCatalogo>,
@@ -33,7 +18,6 @@ export function createItemCatalogoUiApp(
   rascunho?: ImportacaoRascunhoUseCase
 ) {
   const module = createItemCatalogoModule(items, balancas, clock, idFactory);
-  const parser = new ParseImportacaoCatalogoItensUseCase(new BuildSafeItemSpreadsheetImportGateway());
   const view = new ItemCatalogoDomView();
 
   let rootRef: HTMLElement | null = null;
@@ -215,11 +199,11 @@ export function createItemCatalogoUiApp(
 
     async onSelecionarArquivo(file: File) {
       erro = undefined;
-      const parsed = await parser.execute(file);
+      const parsed = await module.parserImportacao.execute(file);
 
       if (parsed.erros.length > 0) {
         preview = [];
-        erro = parsed.erros.join(' ');
+        erro = mensagemErrosImportacaoItem(parsed.erros);
         if (rascunho) {
           try {
             await rascunho.descartar('itens');
@@ -239,7 +223,7 @@ export function createItemCatalogoUiApp(
     },
 
     async onAtualizarPreview(index: number, patch: Partial<ItemImportacaoPreviewRegistro>) {
-      preview = preview.map(item => item.index === index ? validarPreview({ ...item, ...patch }) : item);
+      preview = preview.map(item => item.index === index ? validarPreviewImportacaoItem({ ...item, ...patch }) : item);
       if (rascunho && preview.length > 0) {
         try {
           await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
@@ -249,7 +233,7 @@ export function createItemCatalogoUiApp(
     },
 
     async onAplicarCategoriaPreviewEmMassa(categoria: string) {
-      preview = preview.map(item => validarPreview({ ...item, variacaoNome: categoria || item.variacaoNome || 'Padrão' }));
+      preview = preview.map(item => validarPreviewImportacaoItem({ ...item, variacaoNome: categoria || item.variacaoNome || 'Padrão' }));
       if (rascunho && preview.length > 0) {
         try {
           await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
