@@ -48,3 +48,13 @@ Arquivo/ação: .claude/agents/claudette.md — reescrita com 6 proibições dir
 Ordem do líder: "Nem deveria ter tirado" — restaurar regras removidas indevidamente
 Arquivo/ação: .claude/agents/claudette.md — restauradas regras 7 (revisão visual) e 8 (pedido de agente + exceção prompt injection)
 ```
+
+---
+
+```
+[2026-06-23] [TIPO: Write]
+Ordem do líder: "Tudo o que está no arquivo dela era importante. Garanta que nada se perdeu."
+Arquivo/ação: .claude/agents/claudette.md — restauração completa de 8 itens perdidos na reescrita anterior
+  (Monitora conversas, proativa alertar/perguntar, protocolo apresentação agente,
+   não é Marco, condições (b)(c) de delegação, referência de ordem, acesso Max/Leo, Lições registradas)
+```
