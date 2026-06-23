@@ -2571,17 +2571,50 @@ textarea {
 }
 .file-card,
 .fileCard {
-  grid-template-columns: 64px minmax(0, 1fr) auto !important;
+  grid-template-columns: 64px minmax(0, 1fr) !important;
+  grid-template-rows: auto auto auto auto !important;
+  grid-template-areas:
+    "icon label"
+    "icon name"
+    "icon meta"
+    "icon action" !important;
   column-gap: 14px !important;
+  row-gap: 4px !important;
 }
-.file-card,
-.fileCard {
-  grid-template-columns: 64px minmax(0, 1fr) 96px !important;
+.file-icon-box,
+.fileIconBox {
+  grid-area: icon !important;
+  align-self: center !important;
+}
+.file-label,
+.fileLabel {
+  grid-area: label !important;
+}
+.file-name,
+.fileName {
+  grid-area: name !important;
+}
+.file-meta,
+.fileMeta {
+  grid-area: meta !important;
 }
 .change-button,
 .changeButton {
-  min-width: 94px !important;
-  min-width: 92px !important;
+  grid-area: action !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  max-width: 100% !important;
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  border: 1px solid #BFAAF8 !important;
+  border-radius: 999px !important;
+  background: #ffffff !important;
+  color: #7447E8 !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
 }
 .import-transacoes-panel input[type="text"],
 .import-transacoes-panel textarea,
