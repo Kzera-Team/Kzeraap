@@ -214,11 +214,6 @@ th, td {
   border-color: #FECACA;
 }
 
-@media (max-width: 700px) {
-  .perfil-card-header {
-    flex-direction: column;
-  }
-}
 
 
 /* Catalogo UX 1.9.8 */
