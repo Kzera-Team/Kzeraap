@@ -1,20 +1,19 @@
 # CI validation for Kzera dev branch
+# Runs automatically only for pull requests targeting dev.
+# Manual execution remains available through workflow_dispatch.
 name: CI
 
 on:
-  push:
-    branches:
-      - "**"
   pull_request:
     branches:
-      - "**"
+      - dev
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
