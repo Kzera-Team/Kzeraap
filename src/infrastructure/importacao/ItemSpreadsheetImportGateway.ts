@@ -1,3 +1,4 @@
+import { ERRO_IMPORTACAO_ITEM_ARQUIVO_NAO_SUPORTADO } from '../../domain/item/ItemImportacaoErro';
 import type { ItemImportacaoParseResult } from '../../domain/item/ItemImportacaoParser';
 
 export interface ItemSpreadsheetImportGateway {
@@ -8,16 +9,14 @@ export interface ItemSpreadsheetImportGateway {
  * 1.18.7: gateway de planilha isolado do build oficial.
  *
  * XLS/XLSX não pode impedir o app de instalar/gerar build. Enquanto o adaptador
- * robusto de Excel não entra, a usuária recebe orientação clara para CSV.
+ * robusto de Excel não entra, o gateway devolve erro semântico para a camada de apresentação.
  */
 export class BuildSafeItemSpreadsheetImportGateway implements ItemSpreadsheetImportGateway {
   async read(_file: File): Promise<ItemImportacaoParseResult> {
     return {
       linhas: [],
       colunasIgnoradas: [],
-      erros: [
-        'Esse arquivo ainda não abre aqui. Abra a planilha, escolha “Salvar como CSV” e tente importar de novo. Nenhum item foi importado.'
-      ]
+      erros: [ERRO_IMPORTACAO_ITEM_ARQUIVO_NAO_SUPORTADO]
     };
   }
 }
