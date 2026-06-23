@@ -210,7 +210,7 @@ export function createItemCatalogoUiApp(
       preview = criarPreviewImportacaoItem(parsed.linhas);
       if (rascunho) {
         try {
-          await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
+          await rascunho.salvar({ tipo: 'itens', registros: preview });
         } catch { /* best-effort */ }
       }
       await rerender('Prévia carregada.');
@@ -220,7 +220,7 @@ export function createItemCatalogoUiApp(
       preview = preview.map(item => item.index === index ? validarPreview({ ...item, ...patch }) : item);
       if (rascunho && preview.length > 0) {
         try {
-          await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
+          await rascunho.salvar({ tipo: 'itens', registros: preview });
         } catch { /* best-effort */ }
       }
       await rerender();
@@ -230,7 +230,7 @@ export function createItemCatalogoUiApp(
       preview = preview.map(item => validarPreview({ ...item, variacaoNome: categoria || item.variacaoNome || 'Padrão' }));
       if (rascunho && preview.length > 0) {
         try {
-          await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
+          await rascunho.salvar({ tipo: 'itens', registros: preview });
         } catch { /* best-effort */ }
       }
       await rerender();
@@ -240,7 +240,7 @@ export function createItemCatalogoUiApp(
       preview = preview.filter(item => item.valido);
       if (rascunho) {
         try {
-          await rascunho.salvar({ tipo: 'itens', previewCount: preview.length });
+          await rascunho.salvar({ tipo: 'itens', registros: preview });
         } catch { /* best-effort */ }
       }
       await rerender();

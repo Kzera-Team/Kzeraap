@@ -928,9 +928,11 @@ export function createKzeraAuthenticatedApp() {
   function bindModalRetomada(): void {
     rootRef?.querySelector('[data-retomada-sim]')?.addEventListener('click', async () => {
       modalRetomadaVisivel = false;
-      // Navega para a primeira tela com rascunho (se houver mais de um, o usuário pode navegar depois)
       const primeiro = rascunhosRetomada[0];
       if (primeiro) {
+        if (primeiro.tipo === 'perfis' && primeiro.previewRegistros?.length) {
+          await perfilApp.restaurarPreview(primeiro.previewRegistros);
+        }
         await navigate(telaParaRascunho(primeiro));
       } else {
         await render();

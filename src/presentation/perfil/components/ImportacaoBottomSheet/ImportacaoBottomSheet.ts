@@ -1,4 +1,5 @@
 // v0.19.27
+import './ImportacaoBottomSheet.css';
 import importacaoBottomSheetHtml from './ImportacaoBottomSheet.html?raw';
 
 const TEMPLATE_ID = 'importacao-bottom-sheet-template';

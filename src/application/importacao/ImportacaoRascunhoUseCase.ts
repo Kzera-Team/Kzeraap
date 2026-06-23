@@ -5,12 +5,12 @@ export type TipoRascunho = 'perfis' | 'itens' | 'transacoes';
 
 export interface SalvarRascunhoPerfilInput {
   tipo: 'perfis';
-  previewCount: number;
+  registros: unknown[];
 }
 
 export interface SalvarRascunhoItemInput {
   tipo: 'itens';
-  previewCount: number;
+  registros: unknown[];
 }
 
 export interface SalvarRascunhoTransacoesInput {
@@ -41,7 +41,8 @@ export class ImportacaoRascunhoUseCase {
         id: `rascunho-${input.tipo}`,
         tipo: input.tipo,
         tela: input.tipo === 'perfis' ? 'importacao-perfis' : 'importacao-itens',
-        previewCount: input.previewCount,
+        previewCount: input.registros.length,
+        previewRegistros: input.registros,
         updatedAt: agora
       };
     }

@@ -6,16 +6,20 @@ import { criarPerfilCard } from '../components/PerfilCard/PerfilCard';
 import { criarImportacaoFab } from '../components/ImportacaoFab/ImportacaoFab';
 import { criarBottomSheet } from '../components/ImportacaoBottomSheet/ImportacaoBottomSheet';
 import type { ModoImportacao } from '../components/ImportacaoBottomSheet/ImportacaoBottomSheet';
+import { buscarLocalidadesPorGrupo, grupoPadraoLocalidade } from '../../../domain/localidade/LocalidadeCatalogo';
 
 type StatusCard = 'ok' | 'warning' | 'error';
 
 function statusRegistro(registro: PerfilImportacaoPreviewRegistro): StatusCard {
   if (!registro.valido) return 'error';
-  if (!registro.bairro?.trim()) return 'warning';
+  const bairro = registro.bairro?.trim() ?? '';
+  if (!bairro) return 'warning';
+  const localidades = buscarLocalidadesPorGrupo(grupoPadraoLocalidade().id);
+  if (!localidades.includes(bairro)) return 'warning';
   return 'ok';
 }
 
-function atualizarResumoArquivo(root: HTMLElement, temPreview: boolean, quantidade: number): void {
+function atualizarResumoArquivo(root: HTMLElement, temPreview: boolean, quantidade: number, nomeArquivo?: string): void {
   const status = root.querySelector<HTMLElement>('[data-file-status]');
   const nome = root.querySelector<HTMLElement>('[data-file-name]');
   const meta = root.querySelector<HTMLElement>('[data-file-meta]');
@@ -23,7 +27,7 @@ function atualizarResumoArquivo(root: HTMLElement, temPreview: boolean, quantida
   const head = root.querySelector<HTMLElement>('[data-testid="perfil-import-preview-head"]');
 
   if (status) status.textContent = temPreview ? 'Arquivo selecionado' : 'Arquivo';
-  if (nome) nome.textContent = temPreview ? 'perfis_importacao.csv' : 'Escolher arquivo';
+  if (nome) nome.textContent = temPreview ? (nomeArquivo || 'arquivo.csv') : 'Escolher arquivo';
   if (meta) meta.textContent = temPreview ? `${quantidade} registro${quantidade === 1 ? '' : 's'} encontrado${quantidade === 1 ? '' : 's'}` : 'CSV de perfis';
   if (count) count.textContent = temPreview ? `${quantidade} perf${quantidade === 1 ? 'il' : 'is'} encontrado${quantidade === 1 ? '' : 's'}` : '';
   if (head) head.hidden = !temPreview;
@@ -76,14 +80,35 @@ function removerBottomSheet(root: HTMLElement): void {
   root.querySelector('.importacao-bottom-sheet')?.remove();
 }
 
+function coletarPatchDoCard(input: HTMLInputElement | HTMLSelectElement): Partial<PerfilImportacaoPreviewRegistro> {
+  const card = input.closest<HTMLElement>('[data-preview-index]');
+  if (!card) return {};
+
+  const nome = card.querySelector<HTMLInputElement>('[data-preview-field="nome"]')?.value ?? '';
+  const telefone = card.querySelector<HTMLInputElement>('[data-preview-field="telefone"]')?.value ?? '';
+  const bairro = card.querySelector<HTMLSelectElement>('[data-preview-field="bairro"]')?.value ?? '';
+  const conhecePessoalmente = card.querySelector<HTMLInputElement>('[data-preview-field="conhecePessoalmente"]')?.checked ?? false;
+
+  return {
+    nome,
+    telefone: normalizarTelefoneBrasil(telefone),
+    bairro,
+    conhecePessoalmente
+  };
+}
+
 export class PerfilImportacaoBinder {
   private filtroAtivo = 'todos';
+  private nomeArquivo: string | undefined;
 
   bind(root: HTMLElement, state: PerfilUiState, handlers: PerfilUiHandlers): void {
     const fileInput = root.querySelector('#perfil-import-file') as HTMLInputElement | null;
     fileInput?.addEventListener('change', async () => {
       const file = fileInput.files?.[0];
-      if (file) await handlers.onSelecionarArquivo(file);
+      if (file) {
+        this.nomeArquivo = file.name;
+        await handlers.onSelecionarArquivo(file);
+      }
     });
 
     const preview = root.querySelector('[data-testid="perfil-import-preview"]');
@@ -98,7 +123,7 @@ export class PerfilImportacaoBinder {
       error: statuses.filter(s => s === 'error').length,
     };
 
-    atualizarResumoArquivo(root, temPreview, state.importacaoPreview.length);
+    atualizarResumoArquivo(root, temPreview, state.importacaoPreview.length, this.nomeArquivo);
     atualizarFiltroStatus(root, temPreview, counts);
 
     // Remove existing FAB/sheet if re-binding
@@ -114,24 +139,12 @@ export class PerfilImportacaoBinder {
           async (modo: ModoImportacao) => {
             removerBottomSheet(root);
 
-            if (modo === 'validos') {
-              // Exclude warning and error entries before confirming
-              const indexesNaoValidos = statuses
-                .map((s, i) => (s !== 'ok' ? i : -1))
-                .filter((i): i is number => i !== -1)
-                .reverse();
-              for (const idx of indexesNaoValidos) {
-                await handlers.onAtualizarPreview(idx, { valido: false, erros: ['excluído do modo somente válidos'] });
-              }
-            } else {
-              // 'todos' = válidos + atenção — exclude only errors
-              const indexesErro = statuses
-                .map((s, i) => (s === 'error' ? i : -1))
-                .filter((i): i is number => i !== -1)
-                .reverse();
-              for (const idx of indexesErro) {
-                await handlers.onAtualizarPreview(idx, { valido: false, erros: ['não importável'] });
-              }
+            const indexesToExclude = modo === 'validos'
+              ? statuses.map((s, i) => (s !== 'ok' ? i : -1)).filter((i): i is number => i !== -1).reverse()
+              : statuses.map((s, i) => (s === 'error' ? i : -1)).filter((i): i is number => i !== -1).reverse();
+
+            for (const idx of indexesToExclude) {
+              await handlers.onAtualizarPreview(idx, { excluido: true });
             }
 
             await handlers.onConfirmarImportacao();
@@ -172,17 +185,16 @@ export class PerfilImportacaoBinder {
       input.addEventListener('blur', async () => {
         const index = Number(input.dataset.previewIndex || 0);
         const field = input.dataset.previewField;
-        if (field === 'nome') await handlers.onAtualizarPreview(index, { nome: input.value });
-        if (field === 'telefone') await handlers.onAtualizarPreview(index, { telefone: normalizarTelefoneBrasil(input.value) });
+        if (field === 'nome' || field === 'telefone') {
+          await handlers.onAtualizarPreview(index, coletarPatchDoCard(input));
+        }
       });
 
       input.addEventListener('change', async () => {
         const index = Number(input.dataset.previewIndex || 0);
-        if (input.dataset.previewField === 'conhecePessoalmente') {
-          await handlers.onAtualizarPreview(index, { conhecePessoalmente: (input as HTMLInputElement).checked });
-        }
-        if (input.dataset.previewField === 'bairro') {
-          await handlers.onAtualizarPreview(index, { bairro: input.value });
+        const field = input.dataset.previewField;
+        if (field === 'conhecePessoalmente' || field === 'bairro') {
+          await handlers.onAtualizarPreview(index, coletarPatchDoCard(input));
         }
       });
     });

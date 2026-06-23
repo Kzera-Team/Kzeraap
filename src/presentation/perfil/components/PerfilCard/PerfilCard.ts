@@ -13,12 +13,18 @@ function injetarTemplate(): void {
   const container = document.createElement('div');
   container.innerHTML = perfilCardHtml;
   const template = container.querySelector('template');
-  if (template) document.head.appendChild(template);
+  if (!template) return;
+  const style = template.content.querySelector('style');
+  if (style) document.head.appendChild(style.cloneNode(true));
+  document.head.appendChild(template);
 }
 
 function resolverStatus(registro: PerfilImportacaoPreviewRegistro): StatusCard {
   if (!registro.valido) return 'error';
-  if (!registro.bairro?.trim()) return 'warning';
+  const bairro = registro.bairro?.trim() ?? '';
+  if (!bairro) return 'warning';
+  const localidades = buscarLocalidadesPorGrupo(grupoPadraoLocalidade().id);
+  if (!localidades.includes(bairro)) return 'warning';
   return 'ok';
 }
 
