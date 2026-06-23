@@ -1,0 +1,78 @@
+<section class="perfil-ux kzera-screen kzera-module-screen" data-testid="perfil-app">
+
+  <div class="screen-header" data-testid="perfil-header">
+    <button class="menu-button" type="button" aria-label="Abrir menu">☰</button>
+    <h1>Perfis</h1>
+    <button class="btn-novo" type="button" data-action="novo-perfil" aria-label="Novo perfil" title="Novo perfil">+ Perfil</button>
+    <strong class="feedback-loading" data-testid="perfil-loading" hidden>Carregando...</strong>
+    <strong class="feedback-sucesso" data-testid="perfil-mensagem" hidden></strong>
+    <strong class="feedback-erro" data-testid="perfil-erro" hidden></strong>
+  </div>
+
+  <div data-perfil-list-panel>
+    <div class="search-wrap" data-testid="perfil-busca-card">
+      <span class="search-icon">🔍</span>
+      <input id="perfil-busca" type="text" placeholder="Buscar por nome…" />
+      <p class="filter-status" data-testid="perfil-resultados"></p>
+    </div>
+  </div>
+
+  <section class="kzera-card form-screen" data-perfil-form-panel hidden>
+    <button class="icon-button text-icon" type="button" data-action="voltar-perfis" aria-label="Voltar para perfis" title="Voltar para perfis">← Perfis</button>
+    <form class="form-sections kzera-form-card" data-testid="perfil-form">
+      <div class="kzera-section-title compact-title"><div><span class="eyebrow">Cadastro</span><h2>Novo perfil</h2></div></div>
+      <fieldset class="form-section" data-testid="perfil-form-identificacao">
+        <legend>Identificação</legend>
+        <input id="perfil-nome" placeholder="Nome obrigatório" />
+      </fieldset>
+      <fieldset class="form-section" data-testid="perfil-form-contato">
+        <legend>Contato</legend>
+        <input id="perfil-telefone" placeholder="Telefone" />
+        <input id="perfil-email" placeholder="E-mail" />
+      </fieldset>
+      <fieldset class="form-section" data-testid="perfil-form-localizacao">
+        <legend>Localização</legend>
+        <label><span>Região operacional</span><select id="perfil-municipio" data-localidade-grupo></select></label>
+        <label><span>Bairro/Localidade</span><select id="perfil-bairro" data-localidade-select></select></label>
+      </fieldset>
+      <fieldset class="form-section" data-testid="perfil-form-relacionamento">
+        <legend>Relacionamento</legend>
+        <label class="check-row"><input id="perfil-conhece" type="checkbox" /> Conheço pessoalmente</label>
+      </fieldset>
+      <button class="icon-button primary-icon text-icon" type="submit" aria-label="Criar perfil" title="Criar perfil">Criar perfil</button>
+    </form>
+  </section>
+
+  <div data-perfil-list-panel-continue>
+    <div class="tabs" data-testid="perfil-module-tabs" aria-label="Perfis">
+      <button type="button" class="tab active" data-perfil-view-tab="lista">Lista</button>
+      <button type="button" class="tab" data-perfil-view-tab="resumo">Resumo</button>
+      <button type="button" class="tab" data-perfil-view-tab="historico">Histórico</button>
+      <button type="button" class="tab" data-perfil-view-tab="duplicidades">Duplicidades</button>
+    </div>
+
+    <div class="list-section" data-testid="perfil-lista" data-perfil-view-panel="lista">
+      <div class="list-header">
+        <h2>Perfis cadastrados</h2>
+        <button class="btn-salvar" type="button" data-action="exportar" aria-label="Salvar lista de perfis" title="Salvar lista de perfis">⇩ Salvar lista</button>
+      </div>
+      <div data-slot="perfil-list"></div>
+    </div>
+
+    <section class="kzera-card" data-testid="perfil-dashboard" data-perfil-view-panel="resumo" hidden>
+      <div class="kzera-section-title compact-title"><div><span class="eyebrow">Resumo</span><h2>Resumo dos perfis</h2></div></div>
+      <div class="metric-grid kzera-metric-grid" data-slot="dashboard"></div>
+    </section>
+
+    <section class="kzera-card timeline-card" data-testid="perfil-timeline" data-perfil-view-panel="historico" hidden>
+      <div class="kzera-section-title compact-title"><div><span class="eyebrow">Histórico</span><h2>Movimentos do perfil</h2></div></div>
+      <div data-slot="timeline"></div>
+    </section>
+
+    <section class="kzera-card" data-testid="perfil-duplicidades" data-perfil-view-panel="duplicidades" hidden>
+      <div class="kzera-section-title compact-title"><div><span class="eyebrow">Duplicidades</span><h2>Possíveis duplicidades</h2></div></div>
+      <div class="duplicidade-list" data-slot="duplicidades"></div>
+    </section>
+  </div>
+
+</section>

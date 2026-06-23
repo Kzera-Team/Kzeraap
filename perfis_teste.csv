@@ -1,0 +1,8 @@
+Nome,Celular,E-mail,Bairro,Cidade,Observação
+Maria Santos,(61) 99999-1111,maria@email.com,Centro,Brasília,Cliente fiel
+João Silva,(61) 98888-2222,,Asa Norte,Brasília,Sem e-mail cadastrado
+Ana Costa,(61) 97777-3333,ana@email.com,,Brasília,Bairro não informado
+Pedro Lima,(61) 96666-4444,pedro@email.com,Sudoeste,Brasília,
+Carlos Mendes,,carlos@email.com,Taguatinga,Brasília,Sem celular — inválido
+,( 61) 95555-5555,,Ceilândia,,Sem nome — inválido
+Fernanda Reis,(61) 94444-6666,fernanda@email.com,Águas Claras,Brasília,"Observação com, vírgula"

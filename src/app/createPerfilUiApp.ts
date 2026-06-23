@@ -122,7 +122,7 @@ export function createPerfilUiApp(
       preview = importState.preview;
       if (rascunho) {
         try {
-          await rascunho.salvar({ tipo: 'perfis', previewCount: preview.length });
+          await rascunho.salvar({ tipo: 'perfis', registros: preview });
         } catch { /* rascunho é best-effort — não bloqueia o fluxo */ }
       }
       await rerender('Prévia de importação carregada.');
@@ -133,31 +133,49 @@ export function createPerfilUiApp(
       preview = importState.preview;
       if (rascunho && preview.length > 0) {
         try {
-          await rascunho.salvar({ tipo: 'perfis', previewCount: preview.length });
+          await rascunho.salvar({ tipo: 'perfis', registros: preview });
         } catch { /* best-effort */ }
       }
       await rerender();
     },
 
     async onConfirmarImportacao() {
-      const result = await module.fluxoImportacao.confirmar();
-      const rule = getIdentityRule?.();
-      if (rule?.parts?.length) {
-        for (const perfil of result.importados) {
-          if (perfil.bairro) {
-            try {
-              await module.definirCodigo.execute(perfil.id, rule);
-            } catch { /* duplicado ou bairro vazio — best-effort */ }
+      loading = true;
+      erro = undefined;
+      await rerender();
+      try {
+        const result = await module.fluxoImportacao.confirmar();
+        const rule = getIdentityRule?.();
+        if (rule?.parts?.length) {
+          for (const perfil of result.importados) {
+            if (perfil.bairro) {
+              try {
+                await module.definirCodigo.execute(perfil.id, rule);
+              } catch { /* best-effort */ }
+            }
           }
         }
+        const restantes = result.ignoradosInvalidos
+          .filter(r => !r.valido)
+          .map(r => ({ ...r, excluido: false as const }));
+        preview = restantes;
+        panelMode = 'lista';
+        if (rascunho) {
+          try {
+            if (restantes.length > 0) {
+              await rascunho.salvar({ tipo: 'perfis', registros: restantes });
+            } else {
+              await rascunho.descartar('perfis');
+            }
+          } catch { /* best-effort */ }
+        }
+        loading = false;
+        await rerender(`${result.importados.length} perfis importados.${restantes.length > 0 ? ` ${restantes.length} com erro ficaram no rascunho.` : ''}`);
+      } catch (error) {
+        loading = false;
+        erro = error instanceof Error ? error.message : 'Erro ao importar.';
+        await rerender();
       }
-      preview = [];
-      if (rascunho) {
-        try {
-          await rascunho.descartar('perfis');
-        } catch { /* best-effort */ }
-      }
-      await rerender(`${result.importados.length} perfis importados.`);
     },
 
     async onExportar() {
@@ -196,6 +214,9 @@ export function createPerfilUiApp(
           await rascunho.descartar('perfis');
         } catch { /* best-effort */ }
       }
+    },
+    async restaurarPreview(registros: unknown[]): Promise<void> {
+      preview = registros as PerfilUiState['importacaoPreview'];
     }
   };
 }

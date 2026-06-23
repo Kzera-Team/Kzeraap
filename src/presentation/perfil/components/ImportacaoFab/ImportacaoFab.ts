@@ -1,4 +1,5 @@
 // v0.19.27
+import './ImportacaoFab.css';
 import importacaoFabHtml from './ImportacaoFab.html?raw';
 
 const TEMPLATE_ID = 'importacao-fab-template';
@@ -8,7 +9,10 @@ function injetarTemplate(): void {
   const container = document.createElement('div');
   container.innerHTML = importacaoFabHtml;
   const template = container.querySelector('template');
-  if (template) document.head.appendChild(template);
+  if (!template) return;
+  const style = template.content.querySelector('style');
+  if (style) document.head.appendChild(style.cloneNode(true));
+  document.head.appendChild(template);
 }
 
 export interface ImportacaoFabCounts {
@@ -32,7 +36,7 @@ export function criarImportacaoFab(
   if (!template) throw new Error(`Template #${TEMPLATE_ID} não encontrado`);
 
   const clone = template.content.cloneNode(true) as DocumentFragment;
-  const button = clone.querySelector<HTMLButtonElement>('.fab-importar');
+  const button = (clone.querySelector<HTMLButtonElement>('.fab-importar') ?? clone.firstElementChild) as HTMLButtonElement | null;
   if (!button) throw new Error('Estrutura do template inválida: .fab-importar não encontrado');
 
   const countEl = button.querySelector<HTMLElement>('[data-fab-count]');
