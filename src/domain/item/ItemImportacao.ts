@@ -5,7 +5,7 @@ export interface ItemImportacaoLinha {
   nome: string;
   categoria?: string;
   variacaoNome?: string;
-  unidade: ItemUnidade;
+  unidade?: ItemUnidade;
   quantidadeLote?: number;
   custoLote?: number;
   valorLote?: number;
@@ -14,6 +14,7 @@ export interface ItemImportacaoLinha {
   descricao?: string;
   tags?: string[];
   observacao?: string;
+  errosImportacao?: string[];
 }
 
 export interface ItemImportacaoPreviewRegistro extends ItemImportacaoLinha {
@@ -24,9 +25,9 @@ export interface ItemImportacaoPreviewRegistro extends ItemImportacaoLinha {
 
 export function criarPreviewImportacaoItem(linhas: ItemImportacaoLinha[]): ItemImportacaoPreviewRegistro[] {
   return linhas.map((linha, index) => {
-    const erros: string[] = [];
+    const erros: string[] = [...(linha.errosImportacao || [])];
     if (!linha.nome?.trim()) erros.push('Nome é obrigatório.');
-    if (!linha.unidade) erros.push('Unidade da variação é obrigatória.');
+    if (!linha.unidade && !erros.some(erro => erro.includes('Unidade'))) erros.push('Unidade da variação é obrigatória.');
     const variacaoNome = linha.variacaoNome?.trim() || linha.categoria?.trim() || VARIACAO_PADRAO_ITEM;
     return {
       ...linha,
