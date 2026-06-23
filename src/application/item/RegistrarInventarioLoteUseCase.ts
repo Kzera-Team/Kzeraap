@@ -1,6 +1,6 @@
 import type { FracionamentoLote, ItemLote, LoteConferencia, LoteConferenciaLinha } from '../../domain/item/ItemCatalogo';
 import { estoqueBaseDisponivelDoLote, equivalenteDisponivelFracionamento } from '../../domain/item/ItemCatalogo';
-import { unidadeBanco } from '../../domain/item/UnidadeOperacional';
+import { exigirUnidadeOperacional, unidadeBanco } from '../../domain/item/UnidadeOperacional';
 import type { LoteOperacionalEditor } from './LoteOperacionalEditor';
 
 export interface RegistrarInventarioLoteUseCaseInput {
@@ -29,22 +29,21 @@ export class RegistrarInventarioLoteUseCase {
     if (input.guardadoContadoBase < 0) throw new Error('Inventário não aceita quantidade negativa.');
 
     return this.editor.edit(input, ({ lote, variacao, now }) => {
-      const linhas = this.criarLinhas(lote, input);
+      const unidadeOperacional = exigirUnidadeOperacional(variacao.unidade);
+      const linhas = this.criarLinhas(lote, input, unidadeBanco(unidadeOperacional));
       const conferencia = this.criarConferencia(lote, linhas, input, input.dataHora || now);
-      const unidadeInterna = unidadeBanco(variacao.unidade === 'ml' ? 'ml' : 'g');
 
       return {
         ...lote,
         fracionamentos: this.aplicarContagens(lote.fracionamentos, input),
-        conferencias: [conferencia, ...lote.conferencias.map(item => ({ ...item, linhas: item.linhas }))],
-        status: conferencia.divergenciaBase === 0 ? 'ativo' : 'divergente',
-        observacao: lote.observacao || `Unidade interna: ${unidadeInterna}`
+        conferencias: [conferencia, ...lote.conferencias],
+        status: conferencia.divergenciaBase === 0 ? 'ativo' : 'divergente'
       };
     });
   }
 
-  private criarLinhas(lote: ItemLote, input: RegistrarInventarioLoteUseCaseInput): LoteConferenciaLinha[] {
-    const linhas: LoteConferenciaLinha[] = [this.linhaGuardado(lote, input.guardadoContadoBase)];
+  private criarLinhas(lote: ItemLote, input: RegistrarInventarioLoteUseCaseInput, unidadeInterna: 'mg' | 'ml'): LoteConferenciaLinha[] {
+    const linhas: LoteConferenciaLinha[] = [this.linhaGuardado(lote, input.guardadoContadoBase, unidadeInterna)];
 
     for (const item of this.fracoesContadas(lote.fracionamentos, input)) {
       linhas.push(this.linhaFracao(item));
@@ -53,14 +52,14 @@ export class RegistrarInventarioLoteUseCase {
     return linhas;
   }
 
-  private linhaGuardado(lote: ItemLote, contadoBase: number): LoteConferenciaLinha {
+  private linhaGuardado(lote: ItemLote, contadoBase: number, unidadeInterna: 'mg' | 'ml'): LoteConferenciaLinha {
     return {
       id: this.idFactory(),
       origemTipo: 'guardado',
       origemId: lote.id,
       esperado: lote.quantidadeGuardada,
       conferido: contadoBase,
-      unidadeContagem: 'mg',
+      unidadeContagem: unidadeInterna,
       equivalenteBase: contadoBase,
       divergenciaBase: contadoBase - lote.quantidadeGuardada
     };
