@@ -80,6 +80,23 @@ function removerBottomSheet(root: HTMLElement): void {
   root.querySelector('.importacao-bottom-sheet')?.remove();
 }
 
+function coletarPatchDoCard(input: HTMLInputElement | HTMLSelectElement): Partial<PerfilImportacaoPreviewRegistro> {
+  const card = input.closest<HTMLElement>('[data-preview-index]');
+  if (!card) return {};
+
+  const nome = card.querySelector<HTMLInputElement>('[data-preview-field="nome"]')?.value ?? '';
+  const telefone = card.querySelector<HTMLInputElement>('[data-preview-field="telefone"]')?.value ?? '';
+  const bairro = card.querySelector<HTMLSelectElement>('[data-preview-field="bairro"]')?.value ?? '';
+  const conhecePessoalmente = card.querySelector<HTMLInputElement>('[data-preview-field="conhecePessoalmente"]')?.checked ?? false;
+
+  return {
+    nome,
+    telefone: normalizarTelefoneBrasil(telefone),
+    bairro,
+    conhecePessoalmente
+  };
+}
+
 export class PerfilImportacaoBinder {
   private filtroAtivo = 'todos';
   private nomeArquivo: string | undefined;
@@ -168,17 +185,16 @@ export class PerfilImportacaoBinder {
       input.addEventListener('blur', async () => {
         const index = Number(input.dataset.previewIndex || 0);
         const field = input.dataset.previewField;
-        if (field === 'nome') await handlers.onAtualizarPreview(index, { nome: input.value });
-        if (field === 'telefone') await handlers.onAtualizarPreview(index, { telefone: normalizarTelefoneBrasil(input.value) });
+        if (field === 'nome' || field === 'telefone') {
+          await handlers.onAtualizarPreview(index, coletarPatchDoCard(input));
+        }
       });
 
       input.addEventListener('change', async () => {
         const index = Number(input.dataset.previewIndex || 0);
-        if (input.dataset.previewField === 'conhecePessoalmente') {
-          await handlers.onAtualizarPreview(index, { conhecePessoalmente: (input as HTMLInputElement).checked });
-        }
-        if (input.dataset.previewField === 'bairro') {
-          await handlers.onAtualizarPreview(index, { bairro: input.value });
+        const field = input.dataset.previewField;
+        if (field === 'conhecePessoalmente' || field === 'bairro') {
+          await handlers.onAtualizarPreview(index, coletarPatchDoCard(input));
         }
       });
     });
