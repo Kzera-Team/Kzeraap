@@ -1,6 +1,6 @@
 import type { Repository } from '../application/ports/Repository';
 import type { Clock } from '../core/Clock';
-import type { ItemCatalogo, ItemLote, ItemVariacao } from '../domain/item/ItemCatalogo';
+import type { ItemCatalogo, ItemLote, ItemUnidade, ItemVariacao } from '../domain/item/ItemCatalogo';
 import type { Balanca } from '../domain/operacao/Balanca';
 import { criarPreviewImportacaoItem, type ItemImportacaoPreviewRegistro } from '../domain/item/ItemImportacao';
 import { BuildSafeItemSpreadsheetImportGateway } from '../infrastructure/importacao/ItemSpreadsheetImportGateway';
@@ -10,10 +10,18 @@ import { ItemCatalogoDomView, type ItemCatalogoUiState } from '../presentation/i
 import { releaseTransferPayload } from '../runtime/TransferScope';
 import type { ImportacaoRascunhoUseCase } from '../application/importacao/ImportacaoRascunhoUseCase';
 
+const UNIDADES_IMPORTACAO: ItemUnidade[] = ['un', 'g', 'mg', 'ml', 'kg', 'l'];
+
+function validarUnidadePreview(unidade: ItemImportacaoPreviewRegistro['unidade']): string | null {
+  if (!unidade) return 'Unidade é obrigatória.';
+  return UNIDADES_IMPORTACAO.includes(unidade) ? null : `Unidade inválida: ${unidade}.`;
+}
+
 function validarPreview(item: ItemImportacaoPreviewRegistro): ItemImportacaoPreviewRegistro {
-  const erros: string[] = [];
+  const erros: string[] = [...(item.errosImportacao || [])];
+  const erroUnidade = validarUnidadePreview(item.unidade);
   if (!item.nome?.trim()) erros.push('Nome é obrigatório.');
-  if (!item.unidade) erros.push('Unidade é obrigatória.');
+  if (erroUnidade && !erros.some(erro => erro.includes('Unidade'))) erros.push(erroUnidade);
   return { ...item, valido: erros.length === 0, erros };
 }
 
@@ -206,7 +214,21 @@ export function createItemCatalogoUiApp(
     },
 
     async onSelecionarArquivo(file: File) {
+      erro = undefined;
       const parsed = await parser.execute(file);
+
+      if (parsed.erros.length > 0) {
+        preview = [];
+        erro = parsed.erros.join(' ');
+        if (rascunho) {
+          try {
+            await rascunho.descartar('itens');
+          } catch { /* best-effort */ }
+        }
+        await rerender();
+        return;
+      }
+
       preview = criarPreviewImportacaoItem(parsed.linhas);
       if (rascunho) {
         try {
