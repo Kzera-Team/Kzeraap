@@ -8,6 +8,8 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { overflow: hidden; height: 100%; }
+
 :root {
   --purple:      #7B4DFF;
   --purple-dark: #5B2ECC;
@@ -26,8 +28,9 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   max-width: 414px;
   margin: 0 auto;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
   color: var(--text);
   position: relative;
 }
