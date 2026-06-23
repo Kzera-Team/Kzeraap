@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Fidelidade — Regerar</title>
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --purple:      #7B4DFF;
+  --purple-dark: #5B2ECC;
+  --bg:          #F7F3FF;
+  --white:       #ffffff;
+  --text:        #120B35;
+  --muted:       #766BA8;
+  --border:      #DDD6EE;
+  --green:       #087A36;
+  --green-bg:    #DDF8E7;
+  --green-bdr:   #A8E8BF;
+}
+
+body {
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  max-width: 414px;
+  margin: 0 auto;
+  min-height: 100vh;
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Conteúdo desfocado atrás do sheet */
+.bg-content {
+  opacity: 0.35;
+  pointer-events: none;
+  filter: blur(1px);
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  background: #120B35;
+}
+.hamburger { display: flex; flex-direction: column; gap: 4px; width: 28px; height: 28px; background: none; border: none; padding: 2px; cursor: pointer; justify-content: center; }
+.hamburger span { display: block; width: 18px; height: 2px; border-radius: 2px; background: #fff; }
+.app-header h1 { color: #fff; font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
+.spacer { width: 28px; }
+
+.bg-screen { padding: 24px 16px; }
+.bg-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+.bg-stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 20px 16px; }
+.bg-stat-label { font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+.bg-stat-value { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+.bg-stat-card.has-card { border-color: var(--green-bdr); background: var(--green-bg); }
+.bg-stat-card.has-card .bg-stat-value { color: var(--green); }
+.bg-stat-card.no-card .bg-stat-value { color: #B0A8D0; }
+.bg-btn { width: 100%; height: 54px; border-radius: 16px; border: none; background: linear-gradient(180deg, var(--purple) 0%, var(--purple-dark) 100%); color: #fff; font-size: 16px; font-weight: 800; }
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8,4,22,0.5);
+  z-index: 20;
+}
+
+/* Bottom sheet */
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 414px;
+  background: var(--bg);
+  border-radius: 28px 28px 0 0;
+  padding: 12px 16px 40px;
+  box-shadow: 0 -12px 48px rgba(18,8,45,0.3);
+  z-index: 30;
+}
+
+.sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: #C4BAE4; margin: 0 auto 20px; }
+.sheet-title { font-size: 20px; font-weight: 900; color: var(--text); letter-spacing: -0.3px; margin-bottom: 4px; }
+.sheet-desc { font-size: 13px; font-weight: 700; color: var(--muted); line-height: 1.5; margin-bottom: 20px; }
+
+.option-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+.option-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.option-btn.selected {
+  border-color: var(--purple);
+}
+
+.option-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-btn.selected .option-radio {
+  border-color: var(--purple);
+  background: var(--purple);
+}
+
+.option-btn.selected .option-radio::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.option-label { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+.option-sublabel { font-size: 12px; font-weight: 700; color: var(--muted); }
+
+.btn-primary { width: 100%; height: 54px; border-radius: 16px; border: none; background: linear-gradient(180deg, var(--purple) 0%, var(--purple-dark) 100%); color: #fff; font-size: 16px; font-weight: 800; font-family: inherit; cursor: pointer; box-shadow: 0 8px 24px rgba(91,46,204,0.35); margin-bottom: 8px; }
+.btn-cancel { width: 100%; height: 44px; border: none; background: transparent; color: var(--purple); font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; }
+
+</style>
+</head>
+<body>
+
+<!-- Conteúdo da tela atrás (desfocado) -->
+<div class="bg-content">
+  <div class="app-header">
+    <button class="hamburger"><span></span><span></span><span></span></button>
+    <h1>Dashboard Fidelidade</h1>
+    <div class="spacer"></div>
+  </div>
+  <div class="bg-screen">
+    <div class="bg-stat-row">
+      <div class="bg-stat-card has-card">
+        <div class="bg-stat-label">Com cartão gerado</div>
+        <div class="bg-stat-value">142</div>
+      </div>
+      <div class="bg-stat-card no-card">
+        <div class="bg-stat-label">Sem cartão</div>
+        <div class="bg-stat-value">38</div>
+      </div>
+    </div>
+    <button class="bg-btn">Regerar cartões</button>
+  </div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay"></div>
+
+<!-- Bottom sheet -->
+<div class="bottom-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">Regerar cartões</div>
+  <div class="sheet-desc">Escolha quais clientes terão os cartões regerados.</div>
+
+  <div class="option-list">
+    <button class="option-btn selected">
+      <div class="option-radio"></div>
+      <div>
+        <div class="option-label">Só quem não tem cartão</div>
+        <div class="option-sublabel">38 clientes</div>
+      </div>
+    </button>
+    <button class="option-btn">
+      <div class="option-radio"></div>
+      <div>
+        <div class="option-label">Todos os clientes</div>
+        <div class="option-sublabel">180 clientes · substitui cartões existentes</div>
+      </div>
+    </button>
+  </div>
+
+  <button class="btn-primary">Regerar</button>
+  <button class="btn-cancel">Cancelar</button>
+</div>
+
+</body>
+</html>
