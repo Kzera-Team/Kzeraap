@@ -17,22 +17,10 @@ Recado: ...
 Ação esperada: ...
 ```
 
-## Registro de ações rastreáveis
-
-Toda ação de risco executada pela Claudette deve ser registrada aqui antes de finalizar o turno.
-
-**Formato obrigatório:**
-```
-[DATA] [TIPO: Edit|Write|Bash|SendUserFile|Delegação]
-Ordem do líder: [resumo exato da instrução recebida]
-Agente destino (se delegação): [nome]
-Instrução repassada (se delegação): [exata]
-Arquivo/ação: [caminho ou descrição]
-```
-
 ## Recados pendentes
 
 _(vazio)_
+
 
 ## Lições registradas
 
