@@ -1,6 +1,6 @@
 import type { Repository } from '../ports/Repository';
 import type { Clock } from '../../core/Clock';
-import type { ItemCatalogo, ItemVariacao } from '../../domain/item/ItemCatalogo';
+import type { ItemCatalogo, ItemLote, ItemVariacao } from '../../domain/item/ItemCatalogo';
 import { VARIACAO_PADRAO_ITEM } from '../../domain/item/ItemCatalogo';
 import type { ItemImportacaoPreviewRegistro } from '../../domain/item/ItemImportacao';
 import { CriarCatalogoItemUseCase, type CriarCatalogoItemInput } from './CriarCatalogoItemUseCase';
@@ -20,31 +20,15 @@ export class ImportarCatalogoItensUseCase {
 
   private toInput(item: ItemImportacaoPreviewRegistro): CriarCatalogoItemInput {
     const now = this.clock.now().toISOString();
-    const variacaoNome = item.variacaoNome?.trim() || item.categoria?.trim() || VARIACAO_PADRAO_ITEM;
+    const variacaoNome = this.variacaoNome(item);
     const variacoes: ItemVariacao[] = [{
       id: this.idFactory(),
       nome: variacaoNome,
-      unidade: item.unidade,
+      unidade: item.unidade || 'un',
       status: 'ativo',
       createdAt: now,
       updatedAt: now,
-      lotes: [{
-        id: this.idFactory(),
-        nome: item.loteNome?.trim() || 'Lote importado',
-        valor: item.valorLote || 0,
-        custo: item.custoLote || 0,
-        custoTotal: item.custoLote || 0,
-        custoUnitario: item.quantidadeLote ? (item.custoLote || 0) / item.quantidadeLote : 0,
-        quantidade: item.quantidadeLote || 0,
-        quantidadeGuardada: item.quantidadeLote || 0,
-        dataLancamento: now,
-        fracionamentos: [],
-        retiradasInternas: [],
-        conferencias: [],
-        status: 'ativo',
-        createdAt: now,
-        updatedAt: now
-      }]
+      lotes: [this.criarLote(item, now)]
     }];
 
     const input: CriarCatalogoItemInput = {
@@ -60,13 +44,98 @@ export class ImportarCatalogoItensUseCase {
     return input;
   }
 
+  private criarLote(item: ItemImportacaoPreviewRegistro, now: string): ItemLote {
+    const quantidade = item.quantidadeLote || 0;
+    const custo = item.custoLote || 0;
+
+    return {
+      id: this.idFactory(),
+      nome: item.loteNome?.trim() || 'Lote importado',
+      valor: item.valorLote || 0,
+      custo,
+      custoTotal: custo,
+      custoUnitario: quantidade ? custo / quantidade : 0,
+      quantidade,
+      quantidadeGuardada: quantidade,
+      dataLancamento: now,
+      fracionamentos: [],
+      retiradasInternas: [],
+      conferencias: [],
+      status: 'ativo',
+      createdAt: now,
+      updatedAt: now
+    };
+  }
+
+  private variacaoNome(item: ItemImportacaoPreviewRegistro): string {
+    return item.variacaoNome?.trim() || item.categoria?.trim() || VARIACAO_PADRAO_ITEM;
+  }
+
+  private normalizar(valor: string): string {
+    return valor
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+  }
+
+  private nomesIguais(a: string, b: string): boolean {
+    return this.normalizar(a) === this.normalizar(b);
+  }
+
+  private mesclarTags(atual: string[], novas: string[] = []): string[] {
+    return Array.from(new Set([...atual, ...novas]));
+  }
+
+  private async importarOuAtualizar(item: ItemImportacaoPreviewRegistro, existentes: ItemCatalogo[]): Promise<ItemCatalogo> {
+    const existente = existentes.find(atual => this.nomesIguais(atual.nome, item.nome));
+    if (!existente) return this.criar.execute(this.toInput(item));
+
+    const now = this.clock.now().toISOString();
+    const variacaoNome = this.variacaoNome(item);
+    const variacaoExistente = existente.variacoes.find(variacao => this.nomesIguais(variacao.nome, variacaoNome));
+    const lote = this.criarLote(item, now);
+
+    const variacoes = variacaoExistente
+      ? existente.variacoes.map(variacao => variacao.id === variacaoExistente.id
+        ? { ...variacao, lotes: [...variacao.lotes, lote], updatedAt: now }
+        : variacao)
+      : [...existente.variacoes, {
+        id: this.idFactory(),
+        nome: variacaoNome,
+        unidade: item.unidade || 'un',
+        status: 'ativo' as const,
+        createdAt: now,
+        updatedAt: now,
+        lotes: [lote]
+      }];
+
+    const atualizado: ItemCatalogo = {
+      ...existente,
+      categoria: existente.categoria || item.categoriaReal || '',
+      tags: this.mesclarTags(existente.tags, item.tags),
+      variacoes,
+      updatedAt: now
+    };
+
+    if (!atualizado.descricao && item.descricao !== undefined) atualizado.descricao = item.descricao;
+    if (!atualizado.observacao && item.observacao !== undefined) atualizado.observacao = item.observacao;
+
+    const salvo = await this.items.save(atualizado);
+    const index = existentes.findIndex(atual => atual.id === salvo.id);
+    if (index >= 0) existentes[index] = salvo;
+    return salvo;
+  }
+
   async execute(preview: ItemImportacaoPreviewRegistro[]): Promise<ImportarCatalogoItensResultado> {
     const importados: ItemCatalogo[] = [];
     const rejeitados = preview.filter(item => !item.valido);
     const validos = preview.filter(item => item.valido);
+    const existentes = await this.items.list();
 
     try {
-      for (const item of validos) importados.push(await this.criar.execute(this.toInput(item)));
+      for (const item of validos) importados.push(await this.importarOuAtualizar(item, existentes));
       return { importados, rejeitados };
     } finally {
       releaseObject(validos);
