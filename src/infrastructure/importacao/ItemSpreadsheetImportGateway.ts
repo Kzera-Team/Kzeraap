@@ -16,7 +16,7 @@ export class BuildSafeItemSpreadsheetImportGateway implements ItemSpreadsheetImp
       linhas: [],
       colunasIgnoradas: [],
       erros: [
-        'Planilha Excel temporariamente bloqueada nesta versão para proteger a instalação. Exporte como CSV e importe novamente.'
+        'Esse arquivo ainda não abre aqui. Abra a planilha, escolha “Salvar como CSV” e tente importar de novo. Nenhum item foi importado.'
       ]
     };
   }
