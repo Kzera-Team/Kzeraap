@@ -10,6 +10,11 @@ export interface AplicarDecisoesImportacaoItensResultado {
   rejeitados: ItemImportacaoNormalizadaPreview[];
 }
 
+type ResultadoAplicacaoItem =
+  | { status: 'importado'; item: ItemCatalogo }
+  | { status: 'ignorado'; item: ItemImportacaoNormalizadaPreview }
+  | { status: 'rejeitado'; item: ItemImportacaoNormalizadaPreview };
+
 export class AplicarDecisoesImportacaoItensUseCase {
   constructor(
     private readonly items: Repository<ItemCatalogo>,
@@ -25,40 +30,33 @@ export class AplicarDecisoesImportacaoItensUseCase {
     };
 
     for (const item of preview) {
-      const importado = await this.aplicarItem(item, resultado);
-      if (importado) resultado.importados.push(importado);
+      this.adicionarResultado(resultado, await this.aplicarItem(item));
     }
 
     return resultado;
   }
 
-  private async aplicarItem(
-    item: ItemImportacaoNormalizadaPreview,
+  private adicionarResultado(
     resultado: AplicarDecisoesImportacaoItensResultado,
-  ): Promise<ItemCatalogo | null> {
-    if (item.decisao === 'ignorar') {
-      resultado.ignorados.push(item);
-      return null;
-    }
+    aplicacao: ResultadoAplicacaoItem,
+  ): void {
+    if (aplicacao.status === 'importado') resultado.importados.push(aplicacao.item);
+    if (aplicacao.status === 'ignorado') resultado.ignorados.push(aplicacao.item);
+    if (aplicacao.status === 'rejeitado') resultado.rejeitados.push(aplicacao.item);
+  }
 
-    if (!this.itemPodeSerImportado(item)) {
-      resultado.rejeitados.push(item);
-      return null;
-    }
-
-    if (item.decisao === 'criar_item') return this.criarItem(item);
+  private async aplicarItem(item: ItemImportacaoNormalizadaPreview): Promise<ResultadoAplicacaoItem> {
+    if (item.decisao === 'ignorar') return { status: 'ignorado', item };
+    if (!this.itemPodeSerImportado(item)) return { status: 'rejeitado', item };
+    if (item.decisao === 'criar_item') return { status: 'importado', item: await this.criarItem(item) };
 
     const destino = await this.buscarItemDestino(item);
-    if (!destino) {
-      resultado.rejeitados.push(this.comErro(item, 'Item de destino não encontrado.'));
-      return null;
-    }
-
+    if (!destino) return { status: 'rejeitado', item: this.comErro(item, 'Item de destino não encontrado.') };
     if (item.decisao === 'criar_variacao_em_item_existente') {
-      return this.criarVariacao(destino, item);
+      return { status: 'importado', item: await this.criarVariacao(destino, item) };
     }
 
-    return this.adicionarLote(destino, item, resultado);
+    return this.adicionarLote(destino, item);
   }
 
   private itemPodeSerImportado(item: ItemImportacaoNormalizadaPreview): boolean {
@@ -100,11 +98,9 @@ export class AplicarDecisoesImportacaoItensUseCase {
   private async adicionarLote(
     destino: ItemCatalogo,
     item: ItemImportacaoNormalizadaPreview,
-    resultado: AplicarDecisoesImportacaoItensResultado,
-  ): Promise<ItemCatalogo | null> {
+  ): Promise<ResultadoAplicacaoItem> {
     if (!item.variacaoDestinoId) {
-      resultado.rejeitados.push(this.comErro(item, 'Variação de destino não encontrada.'));
-      return null;
+      return { status: 'rejeitado', item: this.comErro(item, 'Variação de destino não encontrada.') };
     }
 
     const now = this.clock.now().toISOString();
@@ -119,14 +115,14 @@ export class AplicarDecisoesImportacaoItensUseCase {
       updatedAt: now,
     };
 
-    return this.items.save(atualizado);
+    return { status: 'importado', item: await this.items.save(atualizado) };
   }
 
   private criarVariacaoCatalogo(item: ItemImportacaoNormalizadaPreview, now: string): ItemVariacao {
     return {
       id: this.idFactory(),
       nome: this.nomeVariacao(item),
-      unidade: item.unidade!,
+      unidade: this.unidade(item),
       lotes: [this.criarLote(item, now)],
       status: 'ativo',
       createdAt: now,
@@ -155,6 +151,11 @@ export class AplicarDecisoesImportacaoItensUseCase {
       createdAt: now,
       updatedAt: now,
     };
+  }
+
+  private unidade(item: ItemImportacaoNormalizadaPreview): ItemVariacao['unidade'] {
+    if (!item.unidade) throw new Error('Item importado sem unidade válida.');
+    return item.unidade;
   }
 
   private nomeItem(item: ItemImportacaoNormalizadaPreview): string {
