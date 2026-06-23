@@ -7,6 +7,7 @@ import { criarImportacaoFab } from '../components/ImportacaoFab/ImportacaoFab';
 import { criarBottomSheet } from '../components/ImportacaoBottomSheet/ImportacaoBottomSheet';
 import type { ModoImportacao } from '../components/ImportacaoBottomSheet/ImportacaoBottomSheet';
 import { buscarLocalidadesPorGrupo, grupoPadraoLocalidade } from '../../../domain/localidade/LocalidadeCatalogo';
+import { coletarPatchDoCard } from './PerfilImportacaoCardPatch';
 
 type StatusCard = 'ok' | 'warning' | 'error';
 
@@ -78,23 +79,6 @@ function wiredFilterButtons(root: HTMLElement, preview: Element, filtroAtivo: st
 function removerBottomSheet(root: HTMLElement): void {
   root.querySelector('.importacao-overlay')?.remove();
   root.querySelector('.importacao-bottom-sheet')?.remove();
-}
-
-function coletarPatchDoCard(input: HTMLInputElement | HTMLSelectElement): Partial<PerfilImportacaoPreviewRegistro> {
-  const card = input.closest<HTMLElement>('[data-preview-index]');
-  if (!card) return {};
-
-  const nome = card.querySelector<HTMLInputElement>('[data-preview-field="nome"]')?.value ?? '';
-  const telefone = card.querySelector<HTMLInputElement>('[data-preview-field="telefone"]')?.value ?? '';
-  const bairro = card.querySelector<HTMLSelectElement>('[data-preview-field="bairro"]')?.value ?? '';
-  const conhecePessoalmente = card.querySelector<HTMLInputElement>('[data-preview-field="conhecePessoalmente"]')?.checked ?? false;
-
-  return {
-    nome,
-    telefone: normalizarTelefoneBrasil(telefone),
-    bairro,
-    conhecePessoalmente
-  };
 }
 
 export class PerfilImportacaoBinder {
