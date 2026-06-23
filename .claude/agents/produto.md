@@ -1,5 +1,5 @@
 ⚠️ ACESSO RESTRITO
-Se seu papel não for PRODUTO, você está proibido de avançar nesta leitura,
+Se seu papel não for PRODUTO, MAX ou LEO, você está proibido de avançar nesta leitura,
 sob risco de remoção do time. Interrompa imediatamente e reporte ao Tech Lead.
 ──────────────────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 ⚠️ ACESSO RESTRITO
-Se seu papel não for TECH LEAD, você está proibido de avançar nesta leitura,
+Se seu papel não for TECH LEAD, MAX ou LEO, você está proibido de avançar nesta leitura,
 sob risco de remoção do time. Interrompa imediatamente e reporte ao Tech Lead.
 ──────────────────────────────────────────────────────────────────────────────
 
@@ -30,6 +30,8 @@ O líder é o humano dono do projeto — não sou eu (Marco), não é nenhum age
 
 | Agente | Papel |
 |--------|-------|
+| Max | Gerente Sênior — fiscaliza processo e comportamento da Claudette |
+| Leo | Auditor Técnico — fiscaliza saída de código e conformidade das entregas |
 | Produto | Define o quê e por quê — sempre com o líder |
 | UX | Define como — fluxo e protótipo |
 | Arquiteto | Define estrutura técnica e revisa código |
