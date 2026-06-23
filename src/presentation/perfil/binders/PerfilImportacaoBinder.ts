@@ -87,11 +87,6 @@ export class PerfilImportacaoBinder {
     });
 
     const preview = root.querySelector('[data-testid="perfil-import-preview"]');
-    const note = root.querySelector<HTMLElement>('[data-testid="perfil-import-note"]');
-
-    // Remove inline confirmar button — FAB takes over
-    const confirmarInline = root.querySelector('[data-action="confirmar-importacao"]');
-    if (confirmarInline) confirmarInline.remove();
 
     if (!preview) return;
 
@@ -102,12 +97,9 @@ export class PerfilImportacaoBinder {
       warning: statuses.filter(s => s === 'warning').length,
       error: statuses.filter(s => s === 'error').length,
     };
-    const temErro = counts.error > 0;
 
     atualizarResumoArquivo(root, temPreview, state.importacaoPreview.length);
     atualizarFiltroStatus(root, temPreview, counts);
-
-    if (note) note.hidden = !temErro;
 
     // Remove existing FAB/sheet if re-binding
     root.querySelector('.fab-importar')?.remove();
