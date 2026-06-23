@@ -122,7 +122,7 @@ export function createPerfilUiApp(
       preview = importState.preview;
       if (rascunho) {
         try {
-          await rascunho.salvar({ tipo: 'perfis', previewCount: preview.length });
+          await rascunho.salvar({ tipo: 'perfis', registros: preview });
         } catch { /* rascunho é best-effort — não bloqueia o fluxo */ }
       }
       await rerender('Prévia de importação carregada.');
@@ -133,7 +133,7 @@ export function createPerfilUiApp(
       preview = importState.preview;
       if (rascunho && preview.length > 0) {
         try {
-          await rascunho.salvar({ tipo: 'perfis', previewCount: preview.length });
+          await rascunho.salvar({ tipo: 'perfis', registros: preview });
         } catch { /* best-effort */ }
       }
       await rerender();
@@ -196,6 +196,9 @@ export function createPerfilUiApp(
           await rascunho.descartar('perfis');
         } catch { /* best-effort */ }
       }
+    },
+    async restaurarPreview(registros: unknown[]): Promise<void> {
+      preview = registros as PerfilUiState['importacaoPreview'];
     }
   };
 }
