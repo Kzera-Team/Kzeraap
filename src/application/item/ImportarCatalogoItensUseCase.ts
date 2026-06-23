@@ -3,6 +3,7 @@ import type { Clock } from '../../core/Clock';
 import type { ItemCatalogo, ItemLote, ItemVariacao } from '../../domain/item/ItemCatalogo';
 import { VARIACAO_PADRAO_ITEM } from '../../domain/item/ItemCatalogo';
 import type { ItemImportacaoPreviewRegistro } from '../../domain/item/ItemImportacao';
+import { nomesItemImportacaoIguais } from '../../domain/item/ItemImportacaoNormalizacao';
 import { CriarCatalogoItemUseCase, type CriarCatalogoItemInput } from './CriarCatalogoItemUseCase';
 import { releaseObject } from '../../runtime/RuntimeCleanup';
 
@@ -71,30 +72,17 @@ export class ImportarCatalogoItensUseCase {
     return item.variacaoNome?.trim() || item.categoria?.trim() || VARIACAO_PADRAO_ITEM;
   }
 
-  private normalizar(valor: string): string {
-    return valor
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .trim()
-      .replace(/\s+/g, ' ')
-      .toLowerCase();
-  }
-
-  private nomesIguais(a: string, b: string): boolean {
-    return this.normalizar(a) === this.normalizar(b);
-  }
-
   private mesclarTags(atual: string[], novas: string[] = []): string[] {
     return Array.from(new Set([...atual, ...novas]));
   }
 
   private async importarOuAtualizar(item: ItemImportacaoPreviewRegistro, existentes: ItemCatalogo[]): Promise<ItemCatalogo> {
-    const existente = existentes.find(atual => this.nomesIguais(atual.nome, item.nome));
+    const existente = existentes.find(atual => nomesItemImportacaoIguais(atual.nome, item.nome));
     if (!existente) return this.criar.execute(this.toInput(item));
 
     const now = this.clock.now().toISOString();
     const variacaoNome = this.variacaoNome(item);
-    const variacaoExistente = existente.variacoes.find(variacao => this.nomesIguais(variacao.nome, variacaoNome));
+    const variacaoExistente = existente.variacoes.find(variacao => nomesItemImportacaoIguais(variacao.nome, variacaoNome));
     const lote = this.criarLote(item, now);
 
     const variacoes = variacaoExistente
