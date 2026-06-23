@@ -1,4 +1,5 @@
 import type { ItemCatalogoUiHandlers, ItemCatalogoUiState } from '../ItemCatalogoViewTypes';
+import type { ItemUnidade } from '../../../domain/item/ItemCatalogo';
 import { escapeHtml, inputValue } from '../../shared/ui/Html';
 import { badge } from '../../shared/ui/Badge';
 
@@ -36,6 +37,7 @@ export class ItemImportacaoBinder {
         ${badge(item.valido ? '✓ válido' : '✕ erro', item.valido ? 'success' : 'danger')}
         <input id="preview-nome-${item.index}" value="${escapeHtml(item.nome || '')}" placeholder="Item" data-preview-index="${item.index}" data-preview-field="nome" />
         <input id="preview-variacao-${item.index}" value="${escapeHtml(item.variacaoNome || item.categoria || 'Padrão')}" placeholder="Variação" data-preview-index="${item.index}" data-preview-field="variacaoNome" />
+        <input id="preview-unidade-${item.index}" value="${escapeHtml(item.unidade || '')}" placeholder="Unidade" data-preview-index="${item.index}" data-preview-field="unidade" />
         <input id="preview-quantidade-${item.index}" value="${escapeHtml(String(item.quantidadeLote ?? 0))}" type="number" step="0.001" placeholder="Quantidade" data-preview-index="${item.index}" data-preview-field="quantidadeLote" />
         <input id="preview-custo-${item.index}" value="${escapeHtml(String(item.custoLote ?? 0))}" type="number" step="0.01" placeholder="Custo" data-preview-index="${item.index}" data-preview-field="custoLote" />
         <input id="preview-preco-${item.index}" value="${escapeHtml(String(item.valorLote ?? 0))}" type="number" step="0.01" placeholder="Valor" data-preview-index="${item.index}" data-preview-field="valorLote" />
@@ -49,6 +51,7 @@ export class ItemImportacaoBinder {
         const field = input.dataset.previewField;
         if (field === 'nome') await handlers.onAtualizarPreview(index, { nome: input.value });
         if (field === 'variacaoNome') await handlers.onAtualizarPreview(index, { variacaoNome: input.value });
+        if (field === 'unidade') await handlers.onAtualizarPreview(index, { unidade: input.value as ItemUnidade, errosImportacao: [] });
         if (field === 'quantidadeLote') await handlers.onAtualizarPreview(index, { quantidadeLote: Number(input.value || 0) });
         if (field === 'custoLote') await handlers.onAtualizarPreview(index, { custoLote: Number(input.value || 0) });
         if (field === 'valorLote') await handlers.onAtualizarPreview(index, { valorLote: Number(input.value || 0) });
