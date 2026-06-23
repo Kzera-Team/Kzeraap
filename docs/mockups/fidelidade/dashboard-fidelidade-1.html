@@ -24,10 +24,8 @@
 body {
   background: var(--bg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  max-width: 414px;
-  margin: 0 auto;
-  min-height: 100vh;
   color: var(--text);
+  min-height: 100vh;
 }
 
 .app-header {
@@ -47,7 +45,6 @@ body {
 
 .screen { padding: 24px 16px 60px; }
 
-/* Stat cards */
 .stat-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -80,15 +77,10 @@ body {
   line-height: 1;
 }
 
-.stat-card.has-card .stat-value  { color: var(--green); }
-.stat-card.no-card .stat-value   { color: #B0A8D0; }
+.stat-card.has-card .stat-value { color: var(--green); }
+.stat-card.no-card .stat-value  { color: #B0A8D0; }
+.stat-card.has-card { border-color: var(--green-bdr); background: var(--green-bg); }
 
-.stat-card.has-card {
-  border-color: var(--green-bdr);
-  background: var(--green-bg);
-}
-
-/* Actions */
 .btn-primary {
   width: 100%;
   height: 54px;
@@ -114,7 +106,6 @@ body {
 </div>
 
 <div class="screen">
-
   <div class="stat-row">
     <div class="stat-card has-card">
       <div class="stat-label">Com cartão gerado</div>
@@ -125,9 +116,7 @@ body {
       <div class="stat-value">38</div>
     </div>
   </div>
-
   <button class="btn-primary">Regerar cartões</button>
-
 </div>
 
 </body>

@@ -8,8 +8,6 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { overflow: hidden; height: 100%; }
-
 :root {
   --purple:      #7B4DFF;
   --purple-dark: #5B2ECC;
@@ -26,15 +24,11 @@ html { overflow: hidden; height: 100%; }
 body {
   background: var(--bg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  max-width: 414px;
-  margin: 0 auto;
-  height: 100%;
   color: var(--text);
   overflow: hidden;
-  overscroll-behavior: none;
+  height: 100vh;
 }
 
-/* Conteúdo desfocado atrás do sheet */
 .bg-content {
   opacity: 0.35;
   pointer-events: none;
@@ -63,7 +57,6 @@ body {
 .bg-stat-card.no-card .bg-stat-value { color: #B0A8D0; }
 .bg-btn { width: 100%; height: 54px; border-radius: 16px; border: none; background: linear-gradient(180deg, var(--purple) 0%, var(--purple-dark) 100%); color: #fff; font-size: 16px; font-weight: 800; }
 
-/* Overlay */
 .overlay {
   position: fixed;
   inset: 0;
@@ -71,14 +64,11 @@ body {
   z-index: 20;
 }
 
-/* Bottom sheet */
 .bottom-sheet {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 414px;
+  left: 0;
+  right: 0;
   background: var(--bg);
   border-radius: 28px 28px 0 0;
   padding: 12px 16px 40px;
@@ -105,10 +95,7 @@ body {
   align-items: center;
   gap: 14px;
 }
-
-.option-btn.selected {
-  border-color: var(--purple);
-}
+.option-btn.selected { border-color: var(--purple); }
 
 .option-radio {
   width: 20px;
@@ -120,19 +107,8 @@ body {
   align-items: center;
   justify-content: center;
 }
-
-.option-btn.selected .option-radio {
-  border-color: var(--purple);
-  background: var(--purple);
-}
-
-.option-btn.selected .option-radio::after {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #fff;
-}
+.option-btn.selected .option-radio { border-color: var(--purple); background: var(--purple); }
+.option-btn.selected .option-radio::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #fff; }
 
 .option-label { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
 .option-sublabel { font-size: 12px; font-weight: 700; color: var(--muted); }
@@ -144,7 +120,6 @@ body {
 </head>
 <body>
 
-<!-- Conteúdo da tela atrás (desfocado) -->
 <div class="bg-content">
   <div class="app-header">
     <button class="hamburger"><span></span><span></span><span></span></button>
@@ -166,10 +141,8 @@ body {
   </div>
 </div>
 
-<!-- Overlay -->
 <div class="overlay"></div>
 
-<!-- Bottom sheet -->
 <div class="bottom-sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-title">Regerar cartões</div>
