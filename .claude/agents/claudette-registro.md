@@ -32,3 +32,11 @@ Ações:
   - Edit: /root/.claude/stop-hook-max-review.py (REGISTRO_PATH e verificação → claudette-registro)
   - Bash: git commit + push
 ```
+
+---
+
+```
+[2026-06-23] [TIPO: Write]
+Ordem do líder: "Sim, por favor" — aprovação para Max revisar e enxugar claudette.md
+Arquivo/ação: .claude/agents/claudette.md — reescrita com 6 proibições diretas, removidas redundâncias
+```
