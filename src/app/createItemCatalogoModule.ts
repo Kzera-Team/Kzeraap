@@ -12,8 +12,13 @@ import { ExportarCatalogoItensUseCase } from '../application/item/ExportarCatalo
 import { ImportarCatalogoItensUseCase } from '../application/item/ImportarCatalogoItensUseCase';
 import { RegistrarFracionamentoLoteUseCase } from '../application/item/RegistrarFracionamentoLoteUseCase';
 import { PesagemRapidaFracionamentoUseCase } from '../application/item/PesagemRapidaFracionamentoUseCase';
+import { LoteOperacionalEditor } from '../application/item/LoteOperacionalEditor';
+import { RegistrarInventarioLoteUseCase } from '../application/item/RegistrarInventarioLoteUseCase';
+import { RegistrarSaidaInternaLoteUseCase } from '../application/item/RegistrarSaidaInternaLoteUseCase';
 
 export function createItemCatalogoModule(items: Repository<ItemCatalogo>, balancas: Repository<Balanca>, clock: Clock, idFactory: () => string) {
+  const loteEditor = new LoteOperacionalEditor(items, clock);
+
   return {
     criar: new CriarCatalogoItemUseCase(items, clock, idFactory),
     listar: new ListarCatalogoItensUseCase(items),
@@ -24,6 +29,8 @@ export function createItemCatalogoModule(items: Repository<ItemCatalogo>, balanc
     exportar: new ExportarCatalogoItensUseCase(items),
     importar: new ImportarCatalogoItensUseCase(items, clock, idFactory),
     registrarFracionamento: new RegistrarFracionamentoLoteUseCase(items, clock, idFactory),
-    pesagemRapida: new PesagemRapidaFracionamentoUseCase(items, balancas, clock, idFactory)
+    pesagemRapida: new PesagemRapidaFracionamentoUseCase(items, balancas, clock, idFactory),
+    registrarInventario: new RegistrarInventarioLoteUseCase(loteEditor, idFactory),
+    registrarSaidaInterna: new RegistrarSaidaInternaLoteUseCase(loteEditor, idFactory)
   };
 }
