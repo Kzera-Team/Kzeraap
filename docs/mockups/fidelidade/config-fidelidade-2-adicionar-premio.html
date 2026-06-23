@@ -8,6 +8,8 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body { overflow: hidden; }
+
 :root {
   --purple:      #7B4DFF;
   --purple-dark: #5B2ECC;
@@ -24,9 +26,11 @@
 body {
   background: var(--bg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  overflow: hidden;
-  height: 100vh;
   color: var(--text);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overscroll-behavior: none;
 }
 
 .bg-content {
@@ -154,5 +158,8 @@ body {
   <button class="btn-cancel">Cancelar</button>
 </div>
 
+<script>
+document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+</script>
 </body>
 </html>
