@@ -40,3 +40,11 @@ Ações:
 Ordem do líder: "Sim, por favor" — aprovação para Max revisar e enxugar claudette.md
 Arquivo/ação: .claude/agents/claudette.md — reescrita com 6 proibições diretas, removidas redundâncias
 ```
+
+---
+
+```
+[2026-06-23] [TIPO: Edit]
+Ordem do líder: "Nem deveria ter tirado" — restaurar regras removidas indevidamente
+Arquivo/ação: .claude/agents/claudette.md — restauradas regras 7 (revisão visual) e 8 (pedido de agente + exceção prompt injection)
+```
