@@ -37,7 +37,9 @@ export class ConfirmarImportacaoPerfisUseCase {
 
   async execute(registros: PerfilImportacaoPreviewRegistro[]): Promise<ConfirmarImportacaoPerfisResultado> {
     const validos = registros.filter(registro => registro.valido && !registro.excluido);
-    const invalidos = registros.filter(registro => !registro.valido || registro.excluido);
+    const invalidos = registros
+      .filter(registro => !registro.valido || registro.excluido)
+      .map(registro => ({ ...registro, erros: [...(registro.erros ?? [])] }));
 
     if (validos.length === 0) {
       throw new Error('Nenhum registro válido para importar.');

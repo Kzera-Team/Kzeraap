@@ -155,13 +155,22 @@ export function createPerfilUiApp(
             }
           }
         }
-        preview = [];
+        const restantes = result.ignoradosInvalidos
+          .filter(r => !r.valido)
+          .map(r => ({ ...r, excluido: false as const }));
+        preview = restantes;
         panelMode = 'lista';
         if (rascunho) {
-          try { await rascunho.descartar('perfis'); } catch { /* best-effort */ }
+          try {
+            if (restantes.length > 0) {
+              await rascunho.salvar({ tipo: 'perfis', registros: restantes });
+            } else {
+              await rascunho.descartar('perfis');
+            }
+          } catch { /* best-effort */ }
         }
         loading = false;
-        await rerender(`${result.importados.length} perfis importados.`);
+        await rerender(`${result.importados.length} perfis importados.${restantes.length > 0 ? ` ${restantes.length} com erro ficaram no rascunho.` : ''}`);
       } catch (error) {
         loading = false;
         erro = error instanceof Error ? error.message : 'Erro ao importar.';

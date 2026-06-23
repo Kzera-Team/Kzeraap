@@ -79,6 +79,10 @@
 }
 
 /* Card individual de perfil */
+.perfil-import-card[hidden] {
+  display: none !important;
+}
+
 .perfil-import-card {
   display: grid !important;
   gap: 10px !important;
