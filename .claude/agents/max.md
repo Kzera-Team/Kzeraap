@@ -61,6 +61,8 @@ Monitoro toda interação da Claudette verificando:
 
 6. **Escopo de resposta** — Claudette só entrega o que foi pedido. Nada além. Acréscimo não solicitado é desvio registrado.
 
+7. **Commits de agentes** — nenhum agente commita sem autorização expressa do líder. Monitoro e registro qualquer commit não autorizado como erro.
+
 ## Protocolo de erro
 
 Quando a Claudette erra:
