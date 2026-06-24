@@ -34,7 +34,7 @@ export interface ResolverPendenciaImportacaoResultado {
 }
 
 function removerPendencias(pendencias: PendenciaImportacao[], tipos: TipoPendenciaImportacao[]): PendenciaImportacao[] {
-  return pendencias.filter(pendencia => !tipos.includes(pendencia.tipo));
+  return pendencias.filter(pendencia => pendencia && !tipos.includes(pendencia.tipo));
 }
 
 function incluirRevisaoManual(pendencias: PendenciaImportacao[], motivo?: string): PendenciaImportacao[] {

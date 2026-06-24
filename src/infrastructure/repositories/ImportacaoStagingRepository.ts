@@ -13,7 +13,7 @@ import type {
 } from '../../domain/importacao/ImportacaoTransacoesFinanceiro';
 
 function tiposPendencia(pendencias: Array<{ tipo: TipoPendenciaImportacao }>): TipoPendenciaImportacao[] {
-  return Array.from(new Set(pendencias.map(p => p.tipo)));
+  return Array.from(new Set(pendencias.filter(p => p).map(p => p.tipo)));
 }
 
 function toTransacaoRecord(registro: RegistroImportacaoTransacao, payloadProtegido: string): RegistroImportacaoTransacaoRecord {

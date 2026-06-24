@@ -367,9 +367,9 @@ export function normalizarMovimentoImportado(row: Record<string, string>): Dados
 
 export function statusRegistroPorPendencias(pendencias: PendenciaImportacao[]): StatusRegistroImportacao {
   if (!pendencias.length) return 'validado';
-  if (pendencias.some(p => p.tipo === 'cliente_nao_encontrado')) return 'pendente_cliente';
-  if (pendencias.some(p => p.tipo === 'item_nao_encontrado' || p.tipo === 'descricao_invalida')) return 'pendente_item';
-  if (pendencias.some(p => p.tipo === 'financeiro_divergente' || p.tipo === 'transacao_nao_encontrada')) return 'pendente_financeiro';
+  if (pendencias.some(p => p?.tipo === 'cliente_nao_encontrado')) return 'pendente_cliente';
+  if (pendencias.some(p => p?.tipo === 'item_nao_encontrado' || p?.tipo === 'descricao_invalida')) return 'pendente_item';
+  if (pendencias.some(p => p?.tipo === 'financeiro_divergente' || p?.tipo === 'transacao_nao_encontrada')) return 'pendente_financeiro';
   return 'erro';
 }
 
@@ -379,9 +379,9 @@ export function resumirRegistrosImportacao(registros: Array<{ status: StatusRegi
     validos: registros.filter(r => r.status === 'validado').length,
     pendentes: registros.filter(r => r.status.startsWith('pendente')).length,
     erros: registros.filter(r => r.status === 'erro').length,
-    pendentesPerfil: registros.filter(r => r.pendencias.some(p => p.tipo === 'cliente_nao_encontrado')).length,
-    pendentesItem: registros.filter(r => r.pendencias.some(p => p.tipo === 'item_nao_encontrado' || p.tipo === 'descricao_invalida')).length,
-    pendentesFinanceiro: registros.filter(r => r.pendencias.some(p => p.tipo === 'financeiro_divergente' || p.tipo === 'transacao_nao_encontrada')).length
+    pendentesPerfil: registros.filter(r => r.pendencias.some(p => p?.tipo === 'cliente_nao_encontrado')).length,
+    pendentesItem: registros.filter(r => r.pendencias.some(p => p?.tipo === 'item_nao_encontrado' || p?.tipo === 'descricao_invalida')).length,
+    pendentesFinanceiro: registros.filter(r => r.pendencias.some(p => p?.tipo === 'financeiro_divergente' || p?.tipo === 'transacao_nao_encontrada')).length
   };
 }
 

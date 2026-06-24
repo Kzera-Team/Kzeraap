@@ -89,7 +89,7 @@ function somaFinanceiros(registros: RegistroImportacaoFinanceira[]): number {
 }
 
 function pendenciaBloqueante(pendencia: PendenciaImportacao): boolean {
-  return !['financeiro_divergente', 'transacao_nao_encontrada'].includes(pendencia.tipo);
+  return !['financeiro_divergente', 'transacao_nao_encontrada'].includes(pendencia?.tipo);
 }
 
 export type TipoAprovacaoMassaConciliacao = 'referencia' | 'pagamento_posterior';
