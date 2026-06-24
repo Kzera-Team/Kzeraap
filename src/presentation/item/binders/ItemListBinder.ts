@@ -2,10 +2,17 @@ import type { ItemCatalogoUiHandlers, ItemCatalogoUiState } from '../ItemCatalog
 import { inputValue } from '../../shared/ui/Html';
 import { ItemCardRenderer } from '../renderers/ItemCardRenderer';
 import { ItemEditCardRenderer } from '../renderers/ItemEditCardRenderer';
-import { emptyState } from '../../shared/ui/EmptyState';
 
 function tagsFrom(value: string): string[] {
   return value.split(',').map(tag => tag.trim()).filter(Boolean);
+}
+
+function createEmptyState(message: string): HTMLElement {
+  const empty = document.createElement('p');
+  empty.classList.add('empty-state');
+  empty.dataset['testid'] = 'empty-state';
+  empty.textContent = message;
+  return empty;
 }
 
 export class ItemListBinder {
@@ -19,13 +26,13 @@ export class ItemListBinder {
     if (!slot) return;
 
     if (!state.items.length) {
-      slot.innerHTML = emptyState('Nenhum item encontrado.');
+      slot.replaceChildren(createEmptyState('Nenhum item encontrado.'));
       return;
     }
 
-    slot.innerHTML = state.items.map(item =>
+    slot.replaceChildren(...state.items.map(item =>
       state.editandoItemId === item.id ? this.editCardRenderer.render(item) : this.cardRenderer.render(item)
-    ).join('');
+    ));
 
     slot.querySelectorAll<HTMLButtonElement>('[data-item-edit-tab]').forEach(button => {
       button.addEventListener('click', () => {
