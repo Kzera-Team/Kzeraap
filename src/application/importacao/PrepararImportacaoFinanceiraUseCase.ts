@@ -26,6 +26,12 @@ export interface PrepararImportacaoFinanceiraResultado {
   resumo: ResumoStagingImportacao;
 }
 
+const TAMANHO_BLOCO_IMPORTACAO = 50;
+
+function liberarThreadImportacao(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
 export class PrepararImportacaoFinanceiraUseCase {
   constructor(
     private readonly lotes: Repository<LoteImportacaoFinanceira>,
@@ -45,6 +51,7 @@ export class PrepararImportacaoFinanceiraUseCase {
     const registros: RegistroImportacaoFinanceira[] = [];
 
     for (const [index, row] of parsed.rows.entries()) {
+      if (index > 0 && index % TAMANHO_BLOCO_IMPORTACAO === 0) await liberarThreadImportacao();
       const pendencias: PendenciaImportacao[] = [];
       try {
         const normalizados = normalizarMovimentoImportado(row);
