@@ -4,7 +4,7 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const files = [
-  'src/presentation/perfil/templates/PerfilTemplate.ts',
+  'src/presentation/perfil/templates/PerfilTemplate.html',
   'src/presentation/item/templates/ItemCatalogoTemplate.ts',
   'src/presentation/configuracoes/ConfiguracoesOperacionaisView.ts',
   'src/app/createKzeraAuthenticatedApp.ts'
@@ -44,7 +44,7 @@ for (const relative of files) {
   }
 }
 
-const perfilTemplate = fs.readFileSync(path.join(root, 'src/presentation/perfil/templates/PerfilTemplate.ts'), 'utf8');
+const perfilTemplate = fs.readFileSync(path.join(root, 'src/presentation/perfil/templates/PerfilTemplate.html'), 'utf8');
 assert(perfilTemplate.includes('<span class="eyebrow">Área de trabalho</span><h1>Perfis</h1>'), 'Tela Perfis deve diferenciar apoio visual e título');
 assert(!perfilTemplate.includes('<span class="eyebrow">Perfis</span><h1>Perfis</h1>'), 'Tela Perfis não pode repetir título em sequência');
 

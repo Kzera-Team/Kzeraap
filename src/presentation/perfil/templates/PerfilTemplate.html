@@ -1,11 +1,4 @@
-import { listarGruposLocalidade, grupoPadraoLocalidade } from '../../../domain/localidade/LocalidadeCatalogo';
-
-const grupos = listarGruposLocalidade();
-const grupoPadrao = grupoPadraoLocalidade();
-const grupoOptions = grupos.map(grupo => `<option value="${grupo.id}" ${grupo.id === grupoPadrao.id ? 'selected' : ''}>${grupo.nome}</option>`).join('');
-const localidadeOptions = grupoPadrao.localidades.map(localidade => `<option value="${localidade}">${localidade}</option>`).join('');
-
-export const PERFIL_TEMPLATE = `<section class="kzera-screen kzera-module-screen perfil-ux" data-testid="perfil-app">
+<section class="kzera-screen kzera-module-screen perfil-ux" data-testid="perfil-app">
   <header class="kzera-operational-header" data-testid="perfil-header">
     <div class="kzera-operational-title"><span class="eyebrow">Área de trabalho</span><h1>Perfis</h1><p class="form-hint">Sem pressa: busque ou crie um perfil.</p></div>
     <div class="kzera-operational-actions">
@@ -40,8 +33,8 @@ export const PERFIL_TEMPLATE = `<section class="kzera-screen kzera-module-screen
       </fieldset>
       <fieldset class="form-section" data-testid="perfil-form-localizacao">
         <legend>Localização</legend>
-        <label><span>Região operacional</span><select id="perfil-municipio" data-localidade-grupo>${grupoOptions}</select></label>
-        <label><span>Bairro/Localidade</span><select id="perfil-bairro" data-localidade-select>${localidadeOptions}</select></label>
+        <label><span>Região operacional</span><select id="perfil-municipio" data-localidade-grupo></select></label>
+        <label><span>Bairro/Localidade</span><select id="perfil-bairro" data-localidade-select></select></label>
       </fieldset>
       <fieldset class="form-section" data-testid="perfil-form-relacionamento">
         <legend>Relacionamento</legend>
@@ -82,4 +75,4 @@ export const PERFIL_TEMPLATE = `<section class="kzera-screen kzera-module-screen
       <div class="duplicidade-list" data-slot="duplicidades"></div>
     </section>
   </div>
-</section>`;
+</section>

@@ -16,7 +16,7 @@ export class PerfilListBinder {
       return;
     }
 
-    slot.innerHTML = state.perfis.map(perfil => this.cardRenderer.render(perfil)).join('');
+    state.perfis.forEach(perfil => slot.appendChild(this.cardRenderer.render(perfil)));
 
     slot.querySelectorAll<HTMLButtonElement>('button[data-action]').forEach(button => {
       button.addEventListener('click', async () => {

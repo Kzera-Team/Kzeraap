@@ -1,15 +1,8 @@
 // v0.19.27
 import importacaoBottomSheetHtml from './ImportacaoBottomSheet.html?raw';
+import { injetarTemplate } from '../../../shared/ui/InjetarTemplate';
 
 const TEMPLATE_ID = 'importacao-bottom-sheet-template';
-
-function injetarTemplate(): void {
-  if (document.getElementById(TEMPLATE_ID)) return;
-  const container = document.createElement('div');
-  container.innerHTML = importacaoBottomSheetHtml;
-  const template = container.querySelector('template');
-  if (template) document.head.appendChild(template);
-}
 
 export interface BottomSheetCounts {
   ok: number;
@@ -29,7 +22,7 @@ export function criarBottomSheet(
   onConfirmar: (modo: ModoImportacao) => void,
   onCancelar: () => void
 ): ImportacaoBottomSheetElement {
-  injetarTemplate();
+  injetarTemplate(TEMPLATE_ID, importacaoBottomSheetHtml);
 
   const template = document.getElementById(TEMPLATE_ID) as HTMLTemplateElement | null;
   if (!template) throw new Error(`Template #${TEMPLATE_ID} não encontrado`);

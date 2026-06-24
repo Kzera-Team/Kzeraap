@@ -10,7 +10,7 @@ assert(appVersion.includes("APP_VERSION = '1.19.5'"), 'versão deve ser 1.19.3')
 const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
 const uiFiles = [
   'src/app/createKzeraAuthenticatedApp.ts',
-  'src/presentation/perfil/templates/PerfilTemplate.ts',
+  'src/presentation/perfil/templates/PerfilTemplate.html',
   'src/presentation/perfil/PerfilDomView.ts',
   'src/presentation/perfil/renderers/PerfilCardRenderer.ts',
   'src/presentation/perfil/binders/PerfilListBinder.ts',

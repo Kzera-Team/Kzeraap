@@ -1,0 +1,14 @@
+<template id="perfil-list-card-template">
+  <article class="kzera-entity-card perfil-card" data-testid="perfil-card">
+    <div class="perfil-card-header">
+      <div>
+        <h3 data-slot="nome"></h3>
+        <p class="perfil-meta" data-slot="meta"></p>
+      </div>
+      <div data-slot="status-badge"></div>
+    </div>
+    <div class="perfil-info-grid kzera-info-grid" data-slot="info-grid"></div>
+    <div class="tag-row kzera-tag-row" data-slot="tags"></div>
+    <div class="action-row kzera-action-row" data-slot="actions"></div>
+  </article>
+</template>

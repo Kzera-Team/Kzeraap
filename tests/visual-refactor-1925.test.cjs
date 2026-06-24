@@ -1,6 +1,6 @@
 const fs=require('fs');function assert(c,m){if(!c)throw new Error(m)};
 const app=fs.readFileSync('src/app/createKzeraAuthenticatedApp.ts','utf8');
-const perfil=fs.readFileSync('src/presentation/perfil/templates/PerfilTemplate.ts','utf8');
+const perfil=fs.readFileSync('src/presentation/perfil/templates/PerfilTemplate.html','utf8');
 const item=fs.readFileSync('src/presentation/item/templates/ItemCatalogoTemplate.ts','utf8');
 assert(app.includes('kzera-home-actions'),'Dashboard deve usar ações compactas premium em vez de grid/card gigante');
 assert(app.includes('kzera-drawer'),'Dashboard deve ter menu lateral recolhível');

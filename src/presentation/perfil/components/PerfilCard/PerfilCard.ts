@@ -3,18 +3,11 @@ import type { PerfilImportacaoPreviewRegistro } from '../../../../domain/perfil/
 import { normalizarTelefoneBrasil } from '../../../../domain/perfil/PerfilImportacao';
 import { buscarLocalidadesPorGrupo, grupoPadraoLocalidade } from '../../../../domain/localidade/LocalidadeCatalogo';
 import perfilCardHtml from './PerfilCard.html?raw';
+import { injetarTemplate } from '../../../shared/ui/InjetarTemplate';
 
 type StatusCard = 'ok' | 'warning' | 'error';
 
 const TEMPLATE_ID = 'perfil-card-template';
-
-function injetarTemplate(): void {
-  if (document.getElementById(TEMPLATE_ID)) return;
-  const container = document.createElement('div');
-  container.innerHTML = perfilCardHtml;
-  const template = container.querySelector('template');
-  if (template) document.head.appendChild(template);
-}
 
 function resolverStatus(registro: PerfilImportacaoPreviewRegistro): StatusCard {
   if (!registro.valido) return 'error';
@@ -35,7 +28,7 @@ function resolverMensagemAjuda(registro: PerfilImportacaoPreviewRegistro, status
 }
 
 export function criarPerfilCard(registro: PerfilImportacaoPreviewRegistro): HTMLElement {
-  injetarTemplate();
+  injetarTemplate(TEMPLATE_ID, perfilCardHtml);
 
   const template = document.getElementById(TEMPLATE_ID) as HTMLTemplateElement | null;
   if (!template) throw new Error(`Template #${TEMPLATE_ID} não encontrado`);

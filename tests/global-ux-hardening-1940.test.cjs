@@ -1,7 +1,7 @@
 const fs=require('fs');
 function read(f){return fs.readFileSync(f,'utf8')}
 function assert(c,m){if(!c)throw new Error(m)}
-const perfil=read('src/presentation/perfil/templates/PerfilTemplate.ts');
+const perfil=read('src/presentation/perfil/templates/PerfilTemplate.html');
 const item=read('src/presentation/item/templates/ItemCatalogoTemplate.ts');
 const perfilCard=read('src/presentation/perfil/renderers/PerfilCardRenderer.ts');
 const itemEdit=read('src/presentation/item/renderers/ItemEditCardRenderer.ts');

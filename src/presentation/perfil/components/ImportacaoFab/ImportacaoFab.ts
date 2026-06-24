@@ -1,15 +1,8 @@
 // v0.19.27
 import importacaoFabHtml from './ImportacaoFab.html?raw';
+import { injetarTemplate } from '../../../shared/ui/InjetarTemplate';
 
 const TEMPLATE_ID = 'importacao-fab-template';
-
-function injetarTemplate(): void {
-  if (document.getElementById(TEMPLATE_ID)) return;
-  const container = document.createElement('div');
-  container.innerHTML = importacaoFabHtml;
-  const template = container.querySelector('template');
-  if (template) document.head.appendChild(template);
-}
 
 export interface ImportacaoFabCounts {
   ok: number;
@@ -26,7 +19,7 @@ export function criarImportacaoFab(
   counts: ImportacaoFabCounts,
   onOpen: () => void
 ): ImportacaoFabElement {
-  injetarTemplate();
+  injetarTemplate(TEMPLATE_ID, importacaoFabHtml);
 
   const template = document.getElementById(TEMPLATE_ID) as HTMLTemplateElement | null;
   if (!template) throw new Error(`Template #${TEMPLATE_ID} não encontrado`);

@@ -1,4 +1,4 @@
-import { PERFIL_TEMPLATE } from './templates/PerfilTemplate';
+import perfilTemplateHtml from './templates/PerfilTemplate.html?raw';
 import perfilImportacaoTemplateHtml from './templates/PerfilImportacaoTemplate.html?raw';
 import { bindFeedback } from '../shared/ui/FeedbackBinder';
 import { PerfilFormBinder } from './binders/PerfilFormBinder';
@@ -9,7 +9,7 @@ import { PerfilDuplicidadeBinder } from './binders/PerfilDuplicidadeBinder';
 import { PerfilDashboardRenderer } from './renderers/PerfilDashboardRenderer';
 import { PerfilTimelineRenderer } from './renderers/PerfilTimelineRenderer';
 import type { PerfilUiHandlers, PerfilUiState } from './PerfilViewTypes';
-import{buscarLocalidadesPorGrupo}from'../../domain/localidade/LocalidadeCatalogo';
+import { buscarLocalidadesPorGrupo, listarGruposLocalidade, grupoPadraoLocalidade } from '../../domain/localidade/LocalidadeCatalogo';
 
 export type { PerfilTimelineItem, PerfilUiHandlers, PerfilUiState } from './PerfilViewTypes';
 
@@ -64,10 +64,26 @@ export class PerfilDomView {
     const grupo = root.querySelector<HTMLSelectElement>('[data-localidade-grupo]');
     const bairro = root.querySelector<HTMLSelectElement>('[data-localidade-select]');
     if (!grupo || !bairro) return;
+
+    const grupoPadrao = grupoPadraoLocalidade();
+    for (const g of listarGruposLocalidade()) {
+      const opt = document.createElement('option');
+      opt.value = g.id;
+      opt.textContent = g.nome;
+      opt.selected = g.id === grupoPadrao.id;
+      grupo.appendChild(opt);
+    }
+
     const update = () => {
       const current = bairro.value;
-      const localidades = buscarLocalidadesPorGrupo(grupo.value);
-      bairro.innerHTML = localidades.map(localidade => `<option value="${localidade}" ${localidade === current ? 'selected' : ''}>${localidade}</option>`).join('');
+      bairro.replaceChildren();
+      for (const localidade of buscarLocalidadesPorGrupo(grupo.value)) {
+        const opt = document.createElement('option');
+        opt.value = localidade;
+        opt.textContent = localidade;
+        opt.selected = localidade === current;
+        bairro.appendChild(opt);
+      }
     };
     grupo.addEventListener('change', update);
     update();
@@ -81,7 +97,7 @@ export class PerfilDomView {
       return;
     }
 
-    root.innerHTML = PERFIL_TEMPLATE;
+    root.innerHTML = perfilTemplateHtml;
 
     bindFeedback(root, {
       loading: '[data-testid="perfil-loading"]',
@@ -113,5 +129,3 @@ export class PerfilDomView {
   }
 }
 
-
-//bindCreateScreen(root)onCriarPerfil onSelecionarArquivo onConfirmarImportacao onDefinirCodigo onExportar
