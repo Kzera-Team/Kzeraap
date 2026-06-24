@@ -1,12 +1,10 @@
 import type { PrepararImportacaoTransacoesUseCase } from '../../application/importacao/PrepararImportacaoTransacoesUseCase';
 import type { PrepararImportacaoFinanceiraUseCase } from '../../application/importacao/PrepararImportacaoFinanceiraUseCase';
 import type { ListarStagingImportacaoUseCase, StagingImportacaoResumo } from '../../application/importacao/ListarStagingImportacaoUseCase';
-import type { ConciliarTransacoesFinanceiroUseCase, ItemConciliacaoImportacao, ResultadoConciliacaoImportacao, StatusConciliacaoImportacao } from '../../application/importacao/ConciliarTransacoesFinanceiroUseCase';
+import type { ConciliarTransacoesFinanceiroUseCase, ResultadoConciliacaoImportacao } from '../../application/importacao/ConciliarTransacoesFinanceiroUseCase';
 import type { ResolverPendenciaImportacaoUseCase } from '../../application/importacao/ResolverPendenciaImportacaoUseCase';
 import type { ConfirmarImportacaoHistoricaFinanceiraUseCase, ConfirmarImportacaoHistoricaFinanceiraResultado } from '../../application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase';
 import { releaseObject } from '../../runtime/RuntimeCleanup';
-import { escapeHtml } from '../shared/ui/Html';
-import { renderImportacaoTabs } from './components/ImportacaoTabs';
 import type { RegistroImportacaoFinanceira, RegistroImportacaoTransacao, ResumoStagingImportacao } from '../../domain/importacao/ImportacaoTransacoesFinanceiro';
 
 export interface ImportacaoTransacoesFinanceiroDeps {
@@ -16,19 +14,18 @@ export interface ImportacaoTransacoesFinanceiroDeps {
   conciliar: ConciliarTransacoesFinanceiroUseCase;
   resolverPendencia: ResolverPendenciaImportacaoUseCase;
   confirmarHistoricoFinanceiro: ConfirmarImportacaoHistoricaFinanceiraUseCase;
-  /** Callback opcional para salvar/descartar o marcador de retomada de transações */
   onRascunhoAtualizado?: (acao: 'salvar' | 'descartar') => Promise<void>;
 }
 
-const STATUS_CONCILIACAO_LABEL: Record<StatusConciliacaoImportacao, string> = {
-  conciliado: 'Conciliado',
-  pendente_sem_financeiro: 'Pendente sem financeiro',
-  pendente_sem_transacao: 'Pendente sem transação',
-  divergencia_valor: 'Diferença de valor',
-  divergencia_perfil: 'Diferença de perfil',
-  divergencia_pagamento: 'Diferença de pagamento',
-  pagamento_posterior_provavel: 'Pagamento posterior provável',
-  revisao_manual: 'Revisão manual'
+type RegistroVisual = {
+  tipo: 'transacao' | 'financeiro';
+  id: string;
+  linha: number;
+  titulo: string;
+  meta: string;
+  prioridade: 'warn' | 'danger';
+  acaoPrimaria: string;
+  acaoSecundaria: string;
 };
 
 export class ImportacaoTransacoesFinanceiroView {
@@ -39,9 +36,6 @@ export class ImportacaoTransacoesFinanceiroView {
   private previaConfirmacao: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
   private lotesConfirmacao: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
   private confirmacaoArmada = false;
-  private revisaoRetomadaLoteId: string | null = null;
-
-  private readonly limiteRenderizacaoMobile = 80;
 
   constructor(private readonly deps: ImportacaoTransacoesFinanceiroDeps) {}
 
@@ -56,7 +50,6 @@ export class ImportacaoTransacoesFinanceiroView {
     this.lotesConfirmacao = null;
     this.mensagem = '';
     this.confirmacaoArmada = false;
-    this.revisaoRetomadaLoteId = null;
     if (this.root) this.root.innerHTML = '';
   }
 
@@ -65,293 +58,500 @@ export class ImportacaoTransacoesFinanceiroView {
     await this.render();
   }
 
-  private resumoCards(label: string, resumo: ResumoStagingImportacao): string {
-    return `<div class="import-summary" aria-label="Resumo ${escapeHtml(label)}">
-      <strong>${escapeHtml(label)}</strong>
-      <span>Total: ${resumo.total}</span>
-      <span>Válidos: ${resumo.validos}</span>
-      <span>Pendentes: ${resumo.pendentes}</span>
-      <span>Perfil: ${resumo.pendentesPerfil}</span>
-      <span>Item: ${resumo.pendentesItem}</span>
-      <span>Financeiro: ${resumo.pendentesFinanceiro}</span>
+  private escape(value: unknown): string {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  private dinheiro(valor: number): string {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
+  }
+
+  private compacto(valor: number): string {
+    const abs = Math.abs(valor || 0);
+    if (abs >= 1000) return `${(valor / 1000).toFixed(1).replace('.', ',')}k`;
+    return String(Math.round(valor || 0));
+  }
+
+  private somaTransacoes(staging: StagingImportacaoResumo, campo: 'total' | 'lucro' | 'custo' | 'valorPago'): number {
+    return staging.registrosTransacoes.reduce((total, registro) => total + Number(registro.dadosNormalizados?.[campo] || 0), 0);
+  }
+
+  private pendenciasTotais(staging: StagingImportacaoResumo): number {
+    return staging.resumoTransacoes.pendentes + staging.resumoFinanceiro.pendentes + staging.resumoTransacoes.erros + staging.resumoFinanceiro.erros;
+  }
+
+  private confirmaveisTotais(staging: StagingImportacaoResumo): number {
+    return staging.resumoTransacoes.validos + staging.resumoFinanceiro.validos;
+  }
+
+  private arquivoAtual(staging: StagingImportacaoResumo): string {
+    const transacoes = staging.lotesTransacoes.at(-1)?.nomeArquivo;
+    const financeiro = staging.lotesFinanceiros.at(-1)?.nomeArquivo;
+    return transacoes || financeiro || 'Nenhum arquivo';
+  }
+
+  private statusArquivo(staging: StagingImportacaoResumo): string {
+    const total = staging.totalRegistrosTransacoes + staging.totalRegistrosFinanceiros;
+    const valor = this.somaTransacoes(staging, 'total');
+    return `${total} linhas · ${this.dinheiro(valor)}`;
+  }
+
+  private tituloPendencia(registro: RegistroImportacaoTransacao | RegistroImportacaoFinanceira): string {
+    const tipo = registro.pendencias[0]?.tipo;
+    if (tipo === 'cliente_nao_encontrado') return 'Perfil não encontrado';
+    if (tipo === 'item_nao_encontrado') return 'Item não encontrado';
+    if (tipo === 'transacao_nao_encontrada') return 'Transação não encontrada';
+    if (tipo === 'financeiro_divergente') return 'Possível duplicidade';
+    if (tipo === 'valor_invalido') return 'Valor inválido';
+    return registro.pendencias[0]?.mensagem || 'Revisar linha';
+  }
+
+  private metaTransacao(registro: RegistroImportacaoTransacao): string {
+    const nome = registro.clienteNomeImportado || registro.dadosNormalizados?.clienteNome || 'Sem perfil';
+    const valor = registro.dadosNormalizados?.total !== undefined ? this.dinheiro(registro.dadosNormalizados.total) : 'sem valor';
+    const pagamento = registro.dadosNormalizados?.tiposPagamento?.[0] || 'pagamento';
+    return `${nome} · ${valor} · ${pagamento}`;
+  }
+
+  private metaFinanceiro(registro: RegistroImportacaoFinanceira): string {
+    const nome = registro.clienteNomeImportado || registro.dadosNormalizados?.clienteNome || 'Sem perfil';
+    const valor = registro.dadosNormalizados?.valor !== undefined ? this.dinheiro(registro.dadosNormalizados.valor) : 'sem valor';
+    const ref = registro.numeroTransacaoReferenciado ? `#${registro.numeroTransacaoReferenciado}` : 'sem transação';
+    return `${nome} · ${valor} · ${ref}`;
+  }
+
+  private registrosPendentes(staging: StagingImportacaoResumo): RegistroVisual[] {
+    const transacoes = staging.registrosTransacoes
+      .filter(registro => registro.status !== 'validado' && registro.status !== 'confirmado')
+      .map<RegistroVisual>(registro => {
+        const titulo = this.tituloPendencia(registro);
+        const item = registro.pendencias.some(p => p.tipo === 'item_nao_encontrado');
+        return {
+          tipo: 'transacao',
+          id: registro.id,
+          linha: registro.linha,
+          titulo,
+          meta: this.metaTransacao(registro),
+          prioridade: item ? 'danger' : 'warn',
+          acaoPrimaria: item ? 'Mapear' : 'Vincular',
+          acaoSecundaria: item ? 'Abrir cadastro' : 'Ignorar'
+        };
+      });
+
+    const financeiro = staging.registrosFinanceiros
+      .filter(registro => registro.status !== 'validado' && registro.status !== 'confirmado')
+      .map<RegistroVisual>(registro => ({
+        tipo: 'financeiro',
+        id: registro.id,
+        linha: registro.linha,
+        titulo: this.tituloPendencia(registro),
+        meta: this.metaFinanceiro(registro),
+        prioridade: registro.status === 'erro' ? 'danger' : 'warn',
+        acaoPrimaria: 'Comparar',
+        acaoSecundaria: 'Remover'
+      }));
+
+    return [...transacoes, ...financeiro].slice(-3).reverse();
+  }
+
+  private css(): string {
+    return `<style data-import-transacoes-mockup-css>
+      .import-transacoes-mockup {
+        --purple: #7B4DFF;
+        --purple-dark: #5B2ECC;
+        --bg: #F7F3FF;
+        --white: #ffffff;
+        --text: #120B35;
+        --muted: #766BA8;
+        --border: #DDD6EE;
+        --green: #087A36;
+        --green-bg: #DDF8E7;
+        --green-bdr: #A8E8BF;
+        --danger: #C62828;
+        --danger-bg: #FFF5F5;
+        --danger-bdr: #FFCDD2;
+        --warn: #8B4500;
+        --warn-bg: #FFF8E1;
+        --warn-bdr: #FFD54F;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      }
+      .import-transacoes-mockup * { box-sizing: border-box; }
+      .import-transacoes-mockup .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .import-transacoes-mockup .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px 12px;
+        background: #120B35;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .import-transacoes-mockup .hamburger {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 28px;
+        height: 28px;
+        background: none;
+        border: none;
+        padding: 2px;
+        cursor: pointer;
+        justify-content: center;
+      }
+      .import-transacoes-mockup .hamburger span {
+        display: block;
+        width: 18px;
+        height: 2px;
+        border-radius: 2px;
+        background: #fff;
+      }
+      .import-transacoes-mockup .header-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.02em;
+      }
+      .import-transacoes-mockup .btn-header {
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.22);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        font-family: inherit;
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+      .import-transacoes-mockup .screen { padding: 20px 16px 96px; }
+      .import-transacoes-mockup .section-head {
+        font-size: 13px;
+        font-weight: 900;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 10px;
+      }
+      .import-transacoes-mockup .card,
+      .import-transacoes-mockup .stat-card,
+      .import-transacoes-mockup .issue-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 10px rgba(30,14,70,0.06);
+      }
+      .import-transacoes-mockup .card {
+        border-radius: 18px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      .import-transacoes-mockup .file-row,
+      .import-transacoes-mockup .issue-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .import-transacoes-mockup .file-name {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+      .import-transacoes-mockup .file-meta,
+      .import-transacoes-mockup .issue-meta {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-top: 3px;
+        line-height: 1.35;
+      }
+      .import-transacoes-mockup .upload-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .import-transacoes-mockup .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        border-radius: 8px;
+        padding: 4px 9px;
+        font-size: 12px;
+        font-weight: 900;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        background: #F0EDF8;
+      }
+      .import-transacoes-mockup .badge.ok { color: var(--green); background: var(--green-bg); border-color: var(--green-bdr); }
+      .import-transacoes-mockup .badge.warn { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-bdr); }
+      .import-transacoes-mockup .badge.danger { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-bdr); }
+      .import-transacoes-mockup .stat-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .import-transacoes-mockup .stat-card {
+        border-radius: 20px;
+        padding: 16px;
+      }
+      .import-transacoes-mockup .stat-card.warn { background: var(--warn-bg); border-color: var(--warn-bdr); }
+      .import-transacoes-mockup .stat-card.ok { background: var(--green-bg); border-color: var(--green-bdr); }
+      .import-transacoes-mockup .stat-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
+        line-height: 1.3;
+        min-height: 32px;
+      }
+      .import-transacoes-mockup .stat-value {
+        font-size: 40px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: var(--text);
+      }
+      .import-transacoes-mockup .stat-card.ok .stat-value { color: var(--green); }
+      .import-transacoes-mockup .stat-card.warn .stat-value { color: var(--warn); }
+      .import-transacoes-mockup .tabs {
+        display: flex;
+        overflow-x: auto;
+        scrollbar-width: none;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .import-transacoes-mockup .tabs::-webkit-scrollbar { display: none; }
+      .import-transacoes-mockup .tab {
+        flex-shrink: 0;
+        padding: 8px 14px;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--muted);
+        background: none;
+        border: none;
+        border-bottom: 2.5px solid transparent;
+        cursor: pointer;
+        font-family: inherit;
+        white-space: nowrap;
+        margin-bottom: -1px;
+      }
+      .import-transacoes-mockup .tab.active { color: var(--purple-dark); border-bottom-color: var(--purple); }
+      .import-transacoes-mockup .issue-list { display: flex; flex-direction: column; gap: 8px; }
+      .import-transacoes-mockup .issue-card {
+        border-radius: 16px;
+        padding: 14px;
+      }
+      .import-transacoes-mockup .issue-title {
+        font-size: 15px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        margin: 0;
+      }
+      .import-transacoes-mockup .issue-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .import-transacoes-mockup .btn {
+        min-height: 44px;
+        border-radius: 13px;
+        border: 1px solid var(--border);
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        padding: 0 10px;
+      }
+      .import-transacoes-mockup .btn-soft { color: var(--purple-dark); background: #F5F0FF; border-color: #C4BAE4; }
+      .import-transacoes-mockup .btn-danger { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-bdr); }
+      .import-transacoes-mockup .toast {
+        margin-bottom: 12px;
+        border: 1px solid var(--green-bdr);
+        background: var(--green-bg);
+        color: var(--green);
+        border-radius: 14px;
+        padding: 10px 12px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .import-transacoes-mockup .bottom-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 12px 16px 18px;
+        background: linear-gradient(180deg, rgba(247,243,255,0.20), rgba(247,243,255,0.98) 35%);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(221,214,238,0.75);
+      }
+      .import-transacoes-mockup .btn-primary {
+        width: 100%;
+        height: 54px;
+        border-radius: 16px;
+        border: none;
+        background: linear-gradient(180deg, var(--purple) 0%, var(--purple-dark) 100%);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 800;
+        font-family: inherit;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(91,46,204,0.35);
+      }
+    </style>`;
+  }
+
+  private uploadForms(staging: StagingImportacaoResumo): string {
+    const arquivo = this.arquivoAtual(staging);
+    const status = this.statusArquivo(staging);
+    return `<section class="card">
+      <div class="file-row">
+        <div>
+          <div class="file-name">${this.escape(arquivo)}</div>
+          <div class="file-meta">${this.escape(status)}</div>
+        </div>
+        <span class="badge warn">Prévia</span>
+      </div>
+      <div class="upload-actions">
+        <form data-import-transacoes>
+          <input class="sr-only" name="nomeArquivo" value="transacoes.csv" data-nome-arquivo-transacoes />
+          <input class="sr-only" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-transacoes aria-label="Escolher arquivo de transações" />
+          <textarea class="sr-only" name="conteudo" rows="1" data-conteudo-transacoes></textarea>
+          <button class="btn btn-soft" type="button" data-pick-transacoes>Transações</button>
+          <button class="sr-only" type="submit" data-submit-transacoes>Preparar transações</button>
+        </form>
+        <form data-import-financeiro>
+          <input class="sr-only" name="nomeArquivo" value="financeiro.csv" data-nome-arquivo-financeiro />
+          <input class="sr-only" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-financeiro aria-label="Escolher arquivo financeiro" />
+          <textarea class="sr-only" name="conteudo" rows="1" data-conteudo-financeiro></textarea>
+          <button class="btn btn-soft" type="button" data-pick-financeiro>Financeiro</button>
+          <button class="sr-only" type="submit" data-submit-financeiro>Preparar financeiro</button>
+        </form>
+      </div>
+    </section>`;
+  }
+
+  private resumoView(staging: StagingImportacaoResumo): string {
+    const receita = this.somaTransacoes(staging, 'total');
+    const lucro = this.somaTransacoes(staging, 'lucro');
+    return `<div class="section-head">Resumo</div>
+      <div class="stat-row">
+        <div class="stat-card ok"><div class="stat-label">Confirmáveis</div><div class="stat-value">${this.confirmaveisTotais(staging)}</div></div>
+        <div class="stat-card warn"><div class="stat-label">Pendências</div><div class="stat-value">${this.pendenciasTotais(staging)}</div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-label">Receita</div><div class="stat-value">${this.escape(this.compacto(receita))}</div></div>
+        <div class="stat-card"><div class="stat-label">Lucro</div><div class="stat-value">${this.escape(this.compacto(lucro))}</div></div>
+      </div>`;
+  }
+
+  private tabs(staging: StagingImportacaoResumo): string {
+    const r = staging.resumoTransacoes;
+    const f = staging.resumoFinanceiro;
+    return `<div class="tabs">
+      <button class="tab active">Todas ${this.pendenciasTotais(staging)}</button>
+      <button class="tab">Perfil ${r.pendentesPerfil + f.pendentesPerfil}</button>
+      <button class="tab">Item ${r.pendentesItem + f.pendentesItem}</button>
+      <button class="tab">Valor ${r.erros + f.erros}</button>
+      <button class="tab">Financeiro ${r.pendentesFinanceiro + f.pendentesFinanceiro}</button>
     </div>`;
   }
 
-  private statusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      pendente_cliente: 'Pendente: Perfil',
-      pendente_item: 'Pendente: Item',
-      pendente_financeiro: 'Pendente: Financeiro',
-      validado: 'Validado',
-      confirmado: 'Confirmado',
-      ignorado: 'Ignorado',
-      erro: 'Revisão'
-    };
-    return labels[status] || status;
+  private issueCard(item: RegistroVisual): string {
+    const resolver = `${item.tipo}:${item.id}`;
+    const primary = item.acaoPrimaria === 'Comparar'
+      ? `<button class="btn btn-soft" type="button" data-conciliar-importacao>${this.escape(item.acaoPrimaria)}</button>`
+      : `<button class="btn btn-soft" type="button" data-resolver-revisao="${this.escape(resolver)}">${this.escape(item.acaoPrimaria)}</button>`;
+    const secondary = item.acaoSecundaria === 'Abrir cadastro'
+      ? `<button class="btn btn-soft" type="button" data-abrir-cadastro-item>Aberir cadastro</button>`
+      : `<button class="btn btn-danger" type="button" data-resolver-ignorar="${this.escape(resolver)}">${this.escape(item.acaoSecundaria)}</button>`;
+    return `<article class="issue-card">
+      <div class="issue-top">
+        <h3 class="issue-title">${this.escape(item.titulo)}</h3>
+        <span class="badge ${item.prioridade}">Linha ${this.escape(item.linha)}</span>
+      </div>
+      <p class="issue-meta">${this.escape(item.meta)}</p>
+      <div class="issue-actions">${primary}${secondary}</div>
+    </article>`;
   }
 
-  private textoHumano(texto: string): string {
-    return texto
-      .replace(/staging/gi, 'área de conferência')
-      .replace(/pacote/gi, 'revisão salva')
-      .replace(/lote de confirmação/gi, 'confirmação salva')
-      .replace(/lote/gi, 'grupo')
-      .replace(/artefatos?/gi, 'restos parciais')
-      .replace(/pré-visualizar/gi, 'ver antes')
-      .replace(/congelar/gi, 'salvar revisão')
-      .replace(/conciliar/gi, 'conferir pagamentos')
-      .replace(/conciliação/gi, 'conferência de pagamentos')
-      .replace(/DESFAZER/g, 'CANCELAR COM CUIDADO');
+  private pendenciasView(staging: StagingImportacaoResumo): string {
+    const pendencias = this.registrosPendentes(staging);
+    const lista = pendencias.length
+      ? pendencias.map(item => this.issueCard(item)).join('')
+      : `<article class="issue-card"><div class="issue-top"><h3 class="issue-title">Sem pendências</h3><span class="badge ok">OK</span></div><p class="issue-meta">Tudo pronto para revisar.</p></article>`;
+    return `<div class="section-head">Resolver</div>${this.tabs(staging)}<div class="issue-list">${lista}</div>`;
   }
 
-  private detalheSeguroParaHumano(mensagem?: string): string {
-    if (!mensagem) return '';
-    return this.textoHumano(mensagem)
-      .replace(/[A-Za-z]+-[0-9][A-Za-z0-9-]*/g, 'identificador interno protegido')
-      .replace(/loteConfirmacaoId/gi, 'identificador interno protegido');
-  }
-
-  private pendencias(registro: RegistroImportacaoTransacao | RegistroImportacaoFinanceira): string {
-    if (!registro.pendencias.length) return '<span class="status-pill success">Validado</span>';
-    return `<ul class="compact-list">${registro.pendencias.slice(0, 3).map(p => `<li>${escapeHtml(p.mensagem)}</li>`).join('')}</ul>`;
-  }
-
-  private tabelaTransacoes(registros: RegistroImportacaoTransacao[]): string {
-    const rows = registros.slice().reverse().map(registro => `<tr>
-      <td>#${escapeHtml(registro.numeroOriginal || '—')}</td>
-      <td>${escapeHtml(registro.clienteNomeImportado || '—')}</td>
-      <td>${escapeHtml(this.statusLabel(registro.status))}</td>
-      <td>${this.pendencias(registro)}</td>
-      <td class="compact-actions"><button type="button" class="icon-button text-icon" data-resolver-revisao="transacao:${escapeHtml(registro.id)}">⚑ Revisar</button><button type="button" class="icon-button text-icon danger" data-resolver-ignorar="transacao:${escapeHtml(registro.id)}">× Ignorar</button></td>
-    </tr>`).join('');
-    return `<table class="kzera-table compact-table"><thead><tr><th>Transação</th><th>Perfil</th><th>Status</th><th>Pendências</th><th>Ações</th></tr></thead><tbody>${rows || '<tr><td colspan="5">Nenhuma registro em conferência.</td></tr>'}</tbody></table>`;
-  }
-
-  private detalhesConciliacao(item: ItemConciliacaoImportacao): string {
-    const detalhes = item.detalhes.map(detalhe => `<li>${escapeHtml(detalhe)}</li>`).join('');
-    const bloqueio = item.bloqueioAprovacaoMassa ? `<p class="form-hint">Fica fora da aprovação segura: ${escapeHtml(item.bloqueioAprovacaoMassa)}</p>` : '';
-    return `<details class="inline-details"><summary>Ver detalhes da conferência</summary><ul class="compact-list">${detalhes}</ul>${bloqueio}</details>`;
-  }
-
-  private acaoConciliacao(item: ItemConciliacaoImportacao): string {
-    const vincular = item.status === 'pagamento_posterior_provavel' && item.registroTransacaoId && item.registroFinanceiroIds[0]
-      ? `<button type="button" class="icon-button text-icon primary-icon" data-resolver-vinculo="${escapeHtml(item.registroTransacaoId)}:${escapeHtml(item.registroFinanceiroIds[0] || '')}">✓ Juntar pagamento</button>`
-      : '';
-    const revisarTransacao = item.registroTransacaoId
-      ? `<button type="button" class="icon-button text-icon" data-resolver-revisao="transacao:${escapeHtml(item.registroTransacaoId)}">⚑ Revisar</button>`
-      : '';
-    const revisarFinanceiro = item.registroFinanceiroIds[0] && !item.registroTransacaoId
-      ? `<button type="button" class="icon-button text-icon" data-resolver-revisao="financeiro:${escapeHtml(item.registroFinanceiroIds[0] || '')}">⚑ Revisar</button>`
-      : '';
-    return `${vincular}${revisarTransacao}${revisarFinanceiro}`;
-  }
-
-
-  private checkboxAprovacaoMassa(item: ItemConciliacaoImportacao): string {
-    if (!item.aprovavelEmMassa || !item.registroTransacaoId || !item.registroFinanceiroIds[0]) return '<span class="status-pill muted">Fica fora</span>';
-    const tipo = item.tipoAprovacaoMassa || 'pagamento_posterior';
-    const value = `${item.registroTransacaoId}:${item.registroFinanceiroIds[0]}:${tipo}`;
-    return `<label class="bulk-check"><input type="checkbox" data-massa-vinculo value="${escapeHtml(value)}" checked /> <span>Está certo</span></label>`;
-  }
-
-  private conciliacaoView(): string {
-    if (!this.conciliacao) {
-      return `<section class="kzera-card soft-card"><h3>Conferência dos pagamentos</h3><p class="form-hint">Depois de preparar as duas planilhas, confira os pagamentos para ver o que bateu e o que precisa de atenção.</p><button class="icon-button text-icon primary-icon" type="button" data-conciliar-importacao>✓ Conferir pagamentos</button></section>`;
-    }
+  private conciliacaoResumo(): string {
+    if (!this.conciliacao) return `<section class="card" data-testid="conciliacao-transacoes-financeiro"><div class="file-row"><div><div class="file-name">Pagamentos</div><div class="file-meta">Ainda não conferidos</div></div><button class="btn btn-soft" type="button" data-conciliar-importacao>Comparar</button></div></section>`;
     const r = this.conciliacao.resumo;
-    const itensVisiveis = this.conciliacao.itens.slice(0, this.limiteRenderizacaoMobile);
-    const itensOcultos = Math.max(0, this.conciliacao.itens.length - itensVisiveis.length);
-    const avisoLimite = itensOcultos > 0
-      ? `<p class="form-hint" data-conciliacao-limite-mobile>Mostrando ${itensVisiveis.length} de ${this.conciliacao.itens.length} itens para não travar o iPhone. Use o resumo antes de abrir mais detalhes.</p>`
-      : '';
-    const rows = itensVisiveis.map(item => `<tr>
-      <td>${this.checkboxAprovacaoMassa(item)}</td>
-      <td>#${escapeHtml(item.numeroTransacao || '—')}</td>
-      <td>${escapeHtml(STATUS_CONCILIACAO_LABEL[item.status] || item.status)}</td>
-      <td>${escapeHtml(item.confianca)}</td>
-      <td>${item.valorPendenteTransacao !== undefined ? escapeHtml(String(item.valorPendenteTransacao)) : '—'}</td>
-      <td>${escapeHtml(item.sugestao || '—')}${this.detalhesConciliacao(item)}</td>
-      <td class="compact-actions">${this.acaoConciliacao(item)}</td>
-    </tr>`).join('');
-    const desfazerMassa = r.aprovadosEmMassa > 0
-      ? `<button class="icon-button text-icon danger" type="button" data-desfazer-aprovacao-massa>↶ Cancelar aprovação conjunta</button>`
-      : '';
-    const aprovacaoMassa = r.aprovaveisEmMassa > 0
-      ? `<div class="bulk-approval-box"><strong>${r.aprovaveisEmMassa} pagamentos que parecem certos para marcar juntos.</strong><p class="form-hint">O que parece certo já vem marcado. Desmarque só se perceber algo estranho. O incompleto fica fora automaticamente.</p><div class="compact-actions"><button class="icon-button text-icon" type="button" data-marcar-massa>☑ Marcar certos</button><button class="icon-button text-icon" type="button" data-desmarcar-massa>☐ Desmarcar</button><button class="icon-button text-icon primary-icon" type="button" data-aprovar-massa-segura>✓ Marcar como certo</button>${desfazerMassa}</div></div>`
-      : `<div class="bulk-approval-box"><p class="form-hint">Nenhum pagamento parece certo para marcar junto agora.</p>${desfazerMassa}</div>`;
-    return `<section class="kzera-card soft-card" data-testid="conciliacao-transacoes-financeiro">
-      <h3>Conferência dos pagamentos</h3>
-      <div class="import-summary" aria-label="Resumo da conferência">
-        <span>Registros: ${r.totalTransacoes}</span>
-        <span>Pagamentos: ${r.totalMovimentos}</span>
-        <span>Pagamentos ok: ${r.conciliados}</span>
-        <span>Pendentes: ${r.pendentes}</span>
-        <span>Diferenças para revisar: ${r.divergencias}</span>
-        <span>Pagamentos que parecem posteriores: ${r.sugestoesPagamentoPosterior}</span>
-        <span>Parecem certos: ${r.aprovaveisEmMassa}</span>
-        <span>Ficam para revisar: ${r.bloqueadosAprovacaoMassa}</span>
-        <span>Já marcados: ${r.aprovadosEmMassa}</span>
-      </div>
-      ${aprovacaoMassa}
-      ${avisoLimite}
-      <div class="compact-actions"><button class="icon-button text-icon primary-icon" type="button" data-conciliar-importacao>↻ Conferir novamente</button><button class="icon-button text-icon" type="button" data-expandir-vinculos>▾ Mostrar detalhes</button><button class="icon-button text-icon" type="button" data-recolher-vinculos>▴ Esconder detalhes</button></div>
-      <table class="kzera-table compact-table"><thead><tr><th>Está certo?</th><th>Registro</th><th>Situação</th><th>Confiança</th><th>Valor a resolver</th><th>Orientação</th><th>Ações</th></tr></thead><tbody>${rows || '<tr><td colspan="7">Nenhum item para conferir.</td></tr>'}</tbody></table>
-    </section>`;
+    return `<section class="card" data-testid="conciliacao-transacoes-financeiro"><div class="file-row"><div><div class="file-name">Pagamentos</div><div class="file-meta">${r.conciliados} ok · ${r.pendentes} pendentes · ${r.divergencias} diferenças</div></div><button class="btn btn-soft" type="button" data-conciliar-importacao>Atualizar</button></div></section>`;
   }
 
-
-  private retomadaHumanaObrigatoriaView(): string {
-    const pacotes = this.lotesConfirmacao?.pacotesComFalha || [];
-    if (!pacotes.length) return '';
-    const principal = pacotes[0]!;
-    const outros = pacotes.slice(1);
-    const revisando = this.revisaoRetomadaLoteId === principal.loteConfirmacaoId;
-    const detalhePrincipal = revisando && principal.falhaMensagem
-      ? `<details class="inline-details" data-detalhe-avancado-retomada><summary>Ver detalhe avançado</summary><p class="form-hint">${escapeHtml(this.detalheSeguroParaHumano(principal.falhaMensagem))}</p></details>`
-      : '';
-    const revisaoHtml = revisando
-      ? `<div class="recovery-review" data-revisao-retomada-aberta tabindex="-1">
-          <h4>O que aconteceu</h4>
-          <p><strong>Nada foi perdido e nada será confirmado sozinho.</strong></p>
-          <p class="form-hint">A confirmação parou antes de terminar. O sistema guardou uma revisão protegida para você voltar com calma.</p>
-          <div class="safe-step-list" aria-label="Passos seguros da retomada">
-            <p><strong>1.</strong> Vamos limpar só restos parciais da tentativa interrompida.</p>
-            <p><strong>2.</strong> Depois abrimos a revisão salva para você conferir.</p>
-            <p><strong>3.</strong> Você só confirma quando tocar no botão final.</p>
-          </div>
-          <div class="import-summary" aria-label="Resumo simples da retomada">
-            <span>Registros protegidos: ${principal.totalTransacoes}</span>
-            <span>Situação: ${escapeHtml(principal.status === 'confirmando' ? 'parou no meio e precisa de cuidado' : 'aguardando sua revisão')}</span>
-          </div>
-          ${detalhePrincipal}
-        </div>`
-      : '';
-    const outrosHtml = outros.length
-      ? `<details class="inline-details" data-retomadas-adicionais><summary>Outras revisões guardadas (${outros.length})</summary><ul class="compact-list">${outros.map(lote => `<li>${lote.totalTransacoes} itens protegidos <button class="icon-button text-icon" type="button" data-revisar-confirmacao-interrompida data-lote-confirmacao-id="${escapeHtml(lote.loteConfirmacaoId)}">Ver o que aconteceu</button></li>`).join('')}</ul></details>`
-      : '';
-    const primaryAction = revisando
-      ? `<button class="icon-button text-icon primary-icon" type="button" data-retomar-confirmacao-segura data-lote-confirmacao-id="${escapeHtml(principal.loteConfirmacaoId)}">Limpar restos e abrir revisão</button>`
-      : `<button class="icon-button text-icon primary-icon" type="button" data-revisar-confirmacao-interrompida data-lote-confirmacao-id="${escapeHtml(principal.loteConfirmacaoId)}">Ver o que aconteceu</button>`;
-    return `<section class="kzera-card soft-card recovery-card" data-testid="retomada-humana-confirmacao" data-retomada-principal data-lote-confirmacao-id="${escapeHtml(principal.loteConfirmacaoId)}">
-      <span class="eyebrow">Voltar com calma</span>
-      <h3>Encontramos uma confirmação interrompida.</h3>
-      <p><strong>Nada foi perdido.</strong></p>
-      <p class="form-hint">Seu histórico ainda está seguro. Primeiro veja o que aconteceu. Depois você escolhe limpar os restos e abrir a revisão.</p>
-      <div class="import-summary" aria-label="Resumo simples da confirmação interrompida">
-        <span>Registros protegidos: ${principal.totalTransacoes}</span>
-        <span>Situação: ${escapeHtml(principal.status === 'confirmando' ? 'parou no meio e precisa de cuidado' : 'aguardando sua revisão')}</span>
-      </div>
-      <div class="compact-actions">
-        ${primaryAction}
-        ${revisando ? '<span class="form-hint">Esse botão não confirma nada sozinho.</span>' : ''}
-      </div>
-      ${revisaoHtml}
-      ${outrosHtml}
-    </section>`;
+  private confirmacaoView(): string {
+    const painel = this.previaConfirmacao || this.ultimaConfirmacao;
+    if (!painel) return `<section class="card" data-testid="confirmacao-historico-financeiro"><div class="file-row"><div><div class="file-name">Confirmação</div><div class="file-meta">Aguardando revisão</div></div><button class="btn btn-soft" type="button" data-previsualizar-historico-financeiro>Revisar</button></div></section>`;
+    const confirmar = this.previaConfirmacao && this.confirmacaoArmada
+      ? `<button class="btn btn-soft" type="button" data-confirmar-historico-financeiro data-previa-id="${this.escape(this.previaConfirmacao.previaId)}">Confirmar</button>`
+      : this.previaConfirmacao
+        ? `<button class="btn btn-soft" type="button" data-armar-confirmacao-historico>Pronto</button>`
+        : `<button class="btn btn-soft" type="button" data-previsualizar-historico-financeiro>Revisar</button>`;
+    return `<section class="card" data-testid="confirmacao-historico-financeiro"><div class="file-row"><div><div class="file-name">Confirmação</div><div class="file-meta">${painel.transacoesPrevistas} registros · ${painel.registrosBloqueados} bloqueios</div></div>${confirmar}</div></section>`;
   }
 
-  private confirmacaoHistoricaView(): string {
-    const resumo = this.ultimaConfirmacao;
-    const previa = this.previaConfirmacao;
-    const painel = previa || resumo;
-    const resumoHtml = painel
-      ? `<div class="import-summary" aria-label="Resumo simples da revisão antes de confirmar">
-          <span>Registros que podem entrar: ${painel.transacoesPrevistas}</span>
-          <span>Pagamentos encontrados: ${painel.pagamentosPrevistos}</span>
-          <span>Registros que precisam de atenção: ${painel.registrosBloqueados}</span>
-          <span>Período: ${escapeHtml(painel.primeiraData || '—')} até ${escapeHtml(painel.ultimaData || '—')}</span>
-        </div>
-        <details class="inline-details" data-detalhes-financeiros-avancados><summary>Ver valores financeiros</summary>
-          <div class="import-summary" aria-label="Valores financeiros da revisão">
-            <span>Faturamento: ${painel.faturamentoTotal}</span>
-            <span>Custo: ${painel.custoTotal}</span>
-            <span>Lucro: ${painel.lucroTotal}</span>
-            <span>Pago: ${painel.valorPagoTotal}</span>
-            <span>Pendente: ${painel.valorPendenteTotal}</span>
-            <span>Movimentos previstos: ${painel.movimentosPrevistos}</span>
-            <span>Transações criadas: ${painel.transacoesCriadas}</span>
-            <span>Pagamentos criados: ${painel.pagamentosCriados}</span>
-            <span>Movimentos criados: ${painel.movimentosCriados}</span>
-          </div>
-        </details>`
-      : '';
-    const bloqueios = painel?.bloqueios.length
-      ? `<details class="inline-details" data-confirmacao-bloqueios><summary>Ver o que precisa de atenção (${painel.bloqueios.length})</summary><div class="compact-actions"><button class="icon-button text-icon" type="button" data-exportar-bloqueios-confirmacao>Copiar lista completa</button></div><textarea class="readonly-export" readonly rows="6" data-bloqueios-exportacao>${escapeHtml(painel.bloqueiosExportacao || painel.bloqueios.join('\n'))}</textarea><ul class="compact-list">${painel.bloqueios.map(aviso => `<li>${escapeHtml(this.textoHumano(aviso))}</li>`).join('')}</ul></details>`
-      : '';
-    const avisos = painel?.avisos.length
-      ? `<details class="inline-details"><summary>Ver avisos (${painel.avisos.length})</summary><ul class="compact-list">${painel.avisos.map(aviso => `<li>${escapeHtml(this.textoHumano(aviso))}</li>`).join('')}</ul></details>`
-      : '';
-    const botaoConfirmar = previa && previa.transacoesPrevistas > 0 && this.confirmacaoArmada
-      ? `<button class="icon-button text-icon primary-icon" type="button" data-confirmar-historico-financeiro data-previa-id="${escapeHtml(previa.previaId)}">✓ Confirmar agora</button>`
-      : '';
-    const botaoArmar = previa && previa.transacoesPrevistas > 0 && !this.confirmacaoArmada
-      ? `<button class="icon-button text-icon" type="button" data-armar-confirmacao-historico>Estou pronta para confirmar</button>`
-      : '';
-    const lotesPersistidos = this.lotesConfirmacao?.pacotesConfirmados.length
-      ? `<details class="inline-details danger-zone" data-lotes-confirmados><summary>Área avançada: corrigir algo já confirmado (${this.lotesConfirmacao.pacotesConfirmados.length})</summary><p class="form-hint">Use só se tiver certeza. Para liberar o botão, digite CANCELAR COM CUIDADO.</p><input data-token-corrigir-confirmacao placeholder="Digite CANCELAR COM CUIDADO" /><ul class="compact-list">${this.lotesConfirmacao.pacotesConfirmados.map(lote => `<li>${lote.totalTransacoes} registros — ${escapeHtml(lote.confirmadoEm || 'sem data')} <button class="icon-button text-icon danger" type="button" data-corrigir-confirmacao-salva data-lote-confirmacao-id="${escapeHtml(lote.loteConfirmacaoId)}">↶ Corrigir confirmação</button></li>`).join('')}</ul></details>`
-      : '';
-    const falhasPersistidas = '';
-    const avisoConfirmado = resumo?.loteConfirmacaoId && resumo.transacoesCriadas > 0
-      ? `<p class="form-hint">Confirmação salva. Se precisar corrigir, use a área avançada abaixo.</p>`
-      : '';
-    return `<section class="kzera-card soft-card" data-testid="confirmacao-historico-financeiro">
-      <h3>Revisar e confirmar histórico</h3>
-      <p class="form-hint">Aqui você confere antes de transformar o histórico em registros definitivos. Estoque não será mexido.</p>
-      <p class="form-hint">Fluxo seguro: ver antes, respirar, confirmar só quando estiver pronta.</p>
-      ${resumoHtml}${bloqueios}${avisos}
-      <div class="compact-actions">
-        <button class="icon-button text-icon" type="button" data-previsualizar-historico-financeiro>👁 Ver antes de confirmar</button>
-        ${botaoArmar}
-        ${botaoConfirmar}
-        ${avisoConfirmado}
-      </div>
-      ${lotesPersistidos}${falhasPersistidas}
-    </section>`;
-  }
-
-  private tabelaFinanceiro(registros: RegistroImportacaoFinanceira[]): string {
-    const rows = registros.slice().reverse().map(registro => `<tr>
-      <td>#${escapeHtml(registro.numeroTransacaoReferenciado || '—')}</td>
-      <td>${escapeHtml(registro.clienteNomeImportado || '—')}</td>
-      <td>${escapeHtml(this.statusLabel(registro.status))}</td>
-      <td>${this.pendencias(registro)}</td>
-      <td class="compact-actions"><button type="button" class="icon-button text-icon" data-resolver-revisao="financeiro:${escapeHtml(registro.id)}">⚑ Revisar</button><button type="button" class="icon-button text-icon danger" data-resolver-ignorar="financeiro:${escapeHtml(registro.id)}">× Ignorar</button></td>
-    </tr>`).join('');
-    return `<table class="kzera-table compact-table"><thead><tr><th>Ref.</th><th>Perfil</th><th>Status</th><th>Pendências</th><th>Ações</th></tr></thead><tbody>${rows || '<tr><td colspan="5">Nenhum pagamento em conferência.</td></tr>'}</tbody></table>`;
+  private retomadaView(): string {
+    const pacote = this.lotesConfirmacao?.pacotesComFalha?.[0];
+    if (!pacote) return '';
+    return `<section class="card" data-testid="retomada-humana-confirmacao"><div class="file-row"><div><div class="file-name">Confirmação interrompida</div><div class="file-meta">${pacote.totalTransacoes} registros</div></div><button class="btn btn-soft" type="button" data-retomar-confirmacao-segura data-lote-confirmacao-id="${this.escape(pacote.loteConfirmacaoId)}">Abrir</button></div></section>`;
   }
 
   private template(staging: StagingImportacaoResumo): string {
-    return `<section class="kzera-screen import-only-screen import-transacoes-screen import-page-background" data-testid="importacao-transacoes-financeiro">
-      <section class="kzera-card import-screen import-transacoes-panel importPanel import-panel">
-      ${renderImportacaoTabs('transacoes')}
-      <p class="form-hint">Nada vira registro definitivo aqui: nada baixa estoque. Tudo fica em conferência até você confirmar.</p>
-      ${this.retomadaHumanaObrigatoriaView()}
-      ${this.mensagem ? `<div class="toast">${escapeHtml(this.mensagem)}</div>` : ''}
-      <div class="import-grid">
-        <form data-import-transacoes class="kzera-card soft-card">
-          <h3>Planilha de registros</h3>
-          <label><span>Nome do arquivo</span><input name="nomeArquivo" value="transacoes.csv" data-nome-arquivo-transacoes /></label>
-          <label class="file-upload-label"><span>Escolher arquivo CSV</span><input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-transacoes aria-label="Escolher arquivo de registros" /></label>
-          <label><span>Ou cole o conteúdo aqui</span><textarea name="conteudo" rows="5" placeholder="Cole a planilha de registros aqui" data-conteudo-transacoes></textarea></label>
-          <button class="icon-button text-icon primary-icon" type="submit">⇩ Preparar registros</button>
-        </form>
-        <form data-import-financeiro class="kzera-card soft-card">
-          <h3>Movimentações financeiras</h3>
-          <label><span>Nome do arquivo</span><input name="nomeArquivo" value="financeiro.csv" data-nome-arquivo-financeiro /></label>
-          <label class="file-upload-label"><span>Escolher arquivo CSV</span><input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-financeiro aria-label="Escolher arquivo financeiro" /></label>
-          <label><span>Ou cole o conteúdo aqui</span><textarea name="conteudo" rows="5" placeholder="Cole a planilha financeira aqui" data-conteudo-financeiro></textarea></label>
-          <button class="icon-button text-icon primary-icon" type="submit">⇩ Preparar financeiro</button>
-        </form>
+    const pendentes = this.pendenciasTotais(staging);
+    const bottomText = pendentes > 0 ? `Resolver ${pendentes} pendências` : 'Ver antes de confirmar';
+    const bottomAction = pendentes > 0 ? 'data-conciliar-importacao' : 'data-previsualizar-historico-financeiro';
+    return `<section class="import-transacoes-mockup" data-testid="importacao-transacoes-financeiro">
+      ${this.css()}
+      <div class="app-header">
+        <button class="hamburger" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+        <span class="header-title">Importar transações</span>
+        <button class="btn-header" type="button" data-novo-importacao>Novo</button>
       </div>
-      <section class="kzera-card soft-card">
-        <h3>Resumo da conferência</h3>
-        <div class="import-grid two-cols">${this.resumoCards('Registros', staging.resumoTransacoes)}${this.resumoCards('Financeiro', staging.resumoFinanceiro)}</div>
-      </section>
-      <section class="kzera-card soft-card"><h3>Últimos registros importados</h3><p class="form-hint">Mostrando no máximo ${staging.limiteVisualizacao} de ${staging.totalRegistrosTransacoes} itens para não travar o iPhone.</p>${this.tabelaTransacoes(staging.registrosTransacoes)}</section>
-      <section class="kzera-card soft-card"><h3>Últimas movimentações financeiras</h3><p class="form-hint">Mostrando no máximo ${staging.limiteVisualizacao} de ${staging.totalRegistrosFinanceiros} itens para não travar o iPhone.</p>${this.tabelaFinanceiro(staging.registrosFinanceiros)}</section>
-      ${this.conciliacaoView()}
-      ${this.confirmacaoHistoricaView()}
-      </section>
+      <p class="sr-only">Nada vira registro definitivo aqui; nada baixa estoque.</p>
+      <div class="screen">
+        ${this.mensagem ? `<div class="toast">${this.escape(this.mensagem)}</div>` : ''}
+        <div class="section-head">Arquivo</div>
+        ${this.uploadForms(staging)}
+        ${this.resumoView(staging)}
+        ${this.pendenciasView(staging)}
+        ${this.conciliacaoResumo()}
+        ${this.confirmacaoView()}
+        ${this.retomadaView()}
+      </div>
+      <div class="bottom-bar"><button class="btn-primary" type="button" ${bottomAction}>${this.escape(bottomText)}</button></div>
     </section>`;
   }
 
@@ -366,11 +566,7 @@ export class ImportacaoTransacoesFinanceiroView {
     this.bind();
   }
 
-  private async atualizarConciliacao(): Promise<void> {
-    this.conciliacao = await this.deps.conciliar.execute();
-  }
-
-  private bindFileUpload(seletor: string, nomeArquivoSeletor: string, conteudoSeletor: string): void {
+  private bindFileUpload(seletor: string, nomeArquivoSeletor: string, conteudoSeletor: string, submitSeletor: string): void {
     const fileInput = this.root?.querySelector<HTMLInputElement>(seletor);
     if (!fileInput) return;
     fileInput.addEventListener('change', () => {
@@ -379,193 +575,123 @@ export class ImportacaoTransacoesFinanceiroView {
       const nomeInput = this.root?.querySelector<HTMLInputElement>(nomeArquivoSeletor);
       if (nomeInput) nomeInput.value = file.name;
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = () => {
         const textarea = this.root?.querySelector<HTMLTextAreaElement>(conteudoSeletor);
-        if (textarea) textarea.value = String(event.target?.result || '');
+        if (textarea) textarea.value = String(reader.result || '');
+        this.root?.querySelector<HTMLButtonElement>(submitSeletor)?.click();
       };
       reader.readAsText(file, 'UTF-8');
     });
   }
 
   private bind(): void {
-    this.bindFileUpload('[data-file-upload-transacoes]', '[data-nome-arquivo-transacoes]', '[data-conteudo-transacoes]');
-    this.bindFileUpload('[data-file-upload-financeiro]', '[data-nome-arquivo-financeiro]', '[data-conteudo-financeiro]');
-    this.root?.querySelector('[data-expandir-vinculos]')?.addEventListener('click', () => {
-      this.root?.querySelectorAll<HTMLDetailsElement>('.inline-details').forEach(details => { details.open = true; });
-    });
-    this.root?.querySelector('[data-recolher-vinculos]')?.addEventListener('click', () => {
-      this.root?.querySelectorAll<HTMLDetailsElement>('.inline-details').forEach(details => { details.open = false; });
-    });
-    this.root?.querySelector('[data-marcar-massa]')?.addEventListener('click', () => {
-      this.root?.querySelectorAll<HTMLInputElement>('[data-massa-vinculo]').forEach(input => { input.checked = true; });
-    });
-    this.root?.querySelector('[data-desmarcar-massa]')?.addEventListener('click', () => {
-      this.root?.querySelectorAll<HTMLInputElement>('[data-massa-vinculo]').forEach(input => { input.checked = false; });
-    });
-    this.root?.querySelector('[data-aprovar-massa-segura]')?.addEventListener('click', async () => {
-      const selecionados = Array.from(this.root?.querySelectorAll<HTMLInputElement>('[data-massa-vinculo]:checked') || []);
-      const vinculos = selecionados.map(input => {
-        const [registroTransacaoId = '', registroFinanceiroId = '', tipoAprovacao = 'pagamento_posterior'] = input.value.split(':');
-        return { registroTransacaoId, registroFinanceiroId, tipoAprovacao: tipoAprovacao as 'referencia' | 'pagamento_posterior' };
-      });
-      if (!vinculos.length) { this.mensagem = 'Nenhum pagamento marcado para confirmar junto.'; await this.render(); return; }
-      try {
-        const result = await this.deps.resolverPendencia.execute({ acao: 'vincular_financeiro_em_massa', vinculos });
-        this.mensagem = result.mensagem;
-        await this.atualizarConciliacao();
-      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível aprovar em massa.'; }
-      await this.render();
-    });
-    this.root?.querySelector('[data-desfazer-aprovacao-massa]')?.addEventListener('click', async () => {
-      try {
-        const result = await this.deps.resolverPendencia.execute({ acao: 'desfazer_aprovacao_massa' });
-        this.mensagem = result.mensagem;
-        await this.atualizarConciliacao();
-      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível desfazer a aprovação em massa.'; }
-      await this.render();
-    });
-    this.root?.querySelectorAll('[data-resolver-vinculo]').forEach(button => {
-      button.addEventListener('click', async () => {
-        const parts = ((button as HTMLElement).dataset.resolverVinculo || '').split(':');
-        const registroTransacaoId = parts[0] || '';
-        const registroFinanceiroId = parts[1] || '';
-        try {
-          const result = await this.deps.resolverPendencia.execute({ acao: 'vincular_financeiro', registroTransacaoId, registroFinanceiroId });
-          this.mensagem = result.mensagem;
-          await this.atualizarConciliacao();
-        } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível resolver o vínculo.'; }
-        await this.render();
-      });
-    });
-    this.root?.querySelectorAll('[data-resolver-revisao]').forEach(button => {
-      button.addEventListener('click', async () => {
-        const [tipo, registroId] = ((button as HTMLElement).dataset.resolverRevisao || '').split(':') as ['transacao' | 'financeiro', string];
-        try {
-          const result = await this.deps.resolverPendencia.execute({ acao: 'marcar_revisao', tipo, registroId });
-          this.mensagem = result.mensagem;
-          await this.atualizarConciliacao();
-        } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível marcar revisão.'; }
-        await this.render();
-      });
-    });
-    this.root?.querySelectorAll('[data-resolver-ignorar]').forEach(button => {
-      button.addEventListener('click', async () => {
-        const [tipo, registroId] = ((button as HTMLElement).dataset.resolverIgnorar || '').split(':') as ['transacao' | 'financeiro', string];
-        try {
-          const result = await this.deps.resolverPendencia.execute({ acao: 'ignorar', tipo, registroId });
-          this.mensagem = result.mensagem;
-          await this.atualizarConciliacao();
-        } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível ignorar o registro.'; }
-        await this.render();
-      });
-    });
-    this.root?.querySelector('[data-conciliar-importacao]')?.addEventListener('click', async () => {
-      await this.atualizarConciliacao();
-      this.mensagem = `Conferência pronta: ${this.conciliacao?.resumo.conciliados || 0} pagamentos conferidos, ${this.conciliacao?.resumo.aprovaveisEmMassa || 0} parecem certos para marcar juntos.`;
-      await this.render();
-    });
-    this.root?.querySelector('[data-previsualizar-historico-financeiro]')?.addEventListener('click', async () => {
-      try {
-        const result = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'previsualizar' });
-        this.previaConfirmacao = result;
-        this.ultimaConfirmacao = null;
-        this.confirmacaoArmada = false;
-        this.mensagem = `Revisão pronta: ${result.transacoesPrevistas} registros podem entrar. Estoque não será alterado. Confira os detalhes antes de confirmar.`;
-      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível abrir a revisão do histórico financeiro.'; }
-      await this.render();
-    });
-    this.root?.querySelector('[data-armar-confirmacao-historico]')?.addEventListener('click', async () => {
-      this.confirmacaoArmada = true;
-      this.mensagem = 'Tudo certo para confirmar. Respire, revise uma última vez e toque em confirmar agora.';
-      await this.render();
-    });
-    this.root?.querySelector('[data-confirmar-historico-financeiro]')?.addEventListener('click', async () => {
-      const previaId = (this.root?.querySelector('[data-confirmar-historico-financeiro]') as HTMLElement | null)?.dataset.previaId || this.previaConfirmacao?.previaId;
-      try {
-        if (!previaId) { this.mensagem = 'Abra a revisão antes de confirmar o histórico financeiro.'; await this.render(); return; }
-        const result = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'confirmar', previaId });
-        this.ultimaConfirmacao = result;
-        this.previaConfirmacao = null;
-        this.confirmacaoArmada = false;
-        this.mensagem = `Histórico confirmado: ${result.transacoesCriadas} registros foram salvas. Estoque não foi alterado.`;
-        if (this.deps.onRascunhoAtualizado) {
-          try { await this.deps.onRascunhoAtualizado('descartar'); } catch { /* best-effort */ }
-        }
-        await this.atualizarConciliacao();
-      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível confirmar o histórico financeiro.'; }
-      await this.render();
-    });
-    this.root?.querySelector('[data-exportar-bloqueios-confirmacao]')?.addEventListener('click', async () => {
-      const textarea = this.root?.querySelector<HTMLTextAreaElement>('[data-bloqueios-exportacao]');
-      const texto = textarea?.value || this.previaConfirmacao?.bloqueiosExportacao || this.ultimaConfirmacao?.bloqueiosExportacao || '';
-      try {
-        if (typeof navigator !== 'undefined' && navigator.clipboard) await navigator.clipboard.writeText(texto);
-        this.mensagem = 'Lista completa copiada para revisão.';
-      } catch (_) {
-        this.mensagem = 'Lista completa disponível no campo de revisão.';
-      }
-      await this.render();
-    });
-    this.root?.querySelectorAll('[data-corrigir-confirmacao-salva]').forEach(button => button.addEventListener('click', async () => {
-      const loteConfirmacaoId = (button as HTMLElement).dataset.loteConfirmacaoId || this.ultimaConfirmacao?.loteConfirmacaoId;
-      const textoDigitado = this.root?.querySelector<HTMLInputElement>('[data-token-corrigir-confirmacao]')?.value || '';
-      const confirmacaoDesfazerTexto = textoDigitado.trim().toUpperCase() === 'CANCELAR COM CUIDADO' ? 'DESFAZER' : textoDigitado;
-      try {
-        if (!loteConfirmacaoId) { this.mensagem = 'Nenhuma confirmação salva para corrigir agora.'; await this.render(); return; }
-        const result = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'desfazer_lote', loteConfirmacaoId, confirmacaoDesfazerTexto });
-        this.ultimaConfirmacao = result;
-        this.previaConfirmacao = null;
-        this.confirmacaoArmada = false;
-        this.mensagem = `Correção concluída: ${result.transacoesDesfeitas || 0} registros, ${result.pagamentosDesfeitos || 0} pagamentos e ${result.movimentosDesfeitos || 0} movimentos foram removidos.`;
-        await this.atualizarConciliacao();
-      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível corrigir a confirmação salva.'; }
-      await this.render();
-    }));
-    this.root?.querySelectorAll('[data-retomar-confirmacao-segura]').forEach(button => button.addEventListener('click', async () => {
-      const loteConfirmacaoId = (button as HTMLElement).dataset.loteConfirmacaoId || '';
-      try {
-        const result = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'recuperar_falha', loteConfirmacaoId });
-        this.previaConfirmacao = result;
-        this.ultimaConfirmacao = null;
-        this.confirmacaoArmada = true;
-        this.revisaoRetomadaLoteId = null;
-        this.mensagem = `Pronto. Nada foi perdido. Limpamos restos parciais e abrimos a revisão para você conferir antes de confirmar.`;
-        await this.atualizarConciliacao();
-      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível abrir a retomada agora.'; }
-      await this.render();
-    }));
-    this.root?.querySelectorAll('[data-revisar-confirmacao-interrompida]').forEach(button => button.addEventListener('click', async () => {
-      const loteConfirmacaoId = (button as HTMLElement).dataset.loteConfirmacaoId || '';
-      this.revisaoRetomadaLoteId = loteConfirmacaoId || null;
-      this.mensagem = 'Revisão protegida aberta. Nada foi perdido. Leia com calma; nenhum dado será confirmado sozinho.';
-      await this.render();
-      this.root?.querySelector<HTMLElement>('[data-revisao-retomada-aberta]')?.focus();
-    }));
+    this.bindFileUpload('[data-file-upload-transacoes]', '[data-nome-arquivo-transacoes]', '[data-conteudo-transacoes]', '[data-submit-transacoes]');
+    this.bindFileUpload('[data-file-upload-financeiro]', '[data-nome-arquivo-financeiro]', '[data-conteudo-financeiro]', '[data-submit-financeiro]');
+
+    this.root?.querySelector('[data-novo-importacao]')?.addEventListener('click', () => this.root?.querySelector<HTMLInputElement>('[data-file-upload-transacoes]')?.click());
+    this.root?.querySelector('[data-pick-transacoes]')?.addEventListener('click', () => this.root?.querySelector<HTMLInputElement>('[data-file-upload-transacoes]')?.click());
+    this.root?.querySelector('[data-pick-financeiro]')?.addEventListener('click', () => this.root?.querySelector<HTMLInputElement>('[data-file-upload-financeiro]')?.click());
+
     this.root?.querySelector('[data-import-transacoes]')?.addEventListener('submit', async event => {
       event.preventDefault();
       const form = event.currentTarget as HTMLFormElement;
       const data = new FormData(form);
       const conteudo = String(data.get('conteudo') || '');
-      if (!conteudo.trim()) { this.mensagem = 'Cole o conteúdo da planilha de registros antes de preparar.'; await this.render(); return; }
+      if (!conteudo.trim()) { this.mensagem = 'Arquivo vazio.'; await this.render(); return; }
       const resultado = await this.deps.prepararTransacoes.execute({ nomeArquivo: String(data.get('nomeArquivo') || 'transacoes.csv'), conteudo });
-      this.mensagem = `Registros preparados: ${resultado.resumo.total} linhas, ${resultado.resumo.pendentes} precisam de atenção.`;
+      this.mensagem = `Transações: ${resultado.resumo.total} linhas, ${resultado.resumo.pendentes} pendências.`;
       if (this.deps.onRascunhoAtualizado) {
         try { await this.deps.onRascunhoAtualizado('salvar'); } catch { /* best-effort */ }
       }
       await this.render();
     });
+
     this.root?.querySelector('[data-import-financeiro]')?.addEventListener('submit', async event => {
       event.preventDefault();
       const form = event.currentTarget as HTMLFormElement;
       const data = new FormData(form);
       const conteudo = String(data.get('conteudo') || '');
-      if (!conteudo.trim()) { this.mensagem = 'Cole o conteúdo da planilha financeira antes de preparar.'; await this.render(); return; }
+      if (!conteudo.trim()) { this.mensagem = 'Arquivo vazio.'; await this.render(); return; }
       const resultado = await this.deps.prepararFinanceiro.execute({ nomeArquivo: String(data.get('nomeArquivo') || 'financeiro.csv'), conteudo });
-      this.mensagem = `Pagamentos preparados: ${resultado.resumo.total} linhas, ${resultado.resumo.pendentes} precisam de atenção.`;
+      this.mensagem = `Financeiro: ${resultado.resumo.total} linhas, ${resultado.resumo.pendentes} pendências.`;
       if (this.deps.onRascunhoAtualizado) {
         try { await this.deps.onRascunhoAtualizado('salvar'); } catch { /* best-effort */ }
       }
       await this.render();
     });
+
+    this.root?.querySelectorAll('[data-resolver-revisao]').forEach(button => button.addEventListener('click', async () => {
+      const [tipo, registroId] = ((button as HTMLElement).dataset.resolverRevisao || '').split(':') as ['transacao' | 'financeiro', string];
+      try {
+        const result = await this.deps.resolverPendencia.execute({ acao: 'marcar_revisao', tipo, registroId });
+        this.mensagem = result.mensagem;
+      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível revisar.'; }
+      await this.render();
+    }));
+
+    this.root?.querySelectorAll('[data-resolver-ignorar]').forEach(button => button.addEventListener('click', async () => {
+      const [tipo, registroId] = ((button as HTMLElement).dataset.resolverIgnorar || '').split(':') as ['transacao' | 'financeiro', string];
+      try {
+        const result = await this.deps.resolverPendencia.execute({ acao: 'ignorar', tipo, registroId });
+        this.mensagem = result.mensagem;
+      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível remover.'; }
+      await this.render();
+    }));
+
+    this.root?.querySelectorAll('[data-abrir-cadastro-item]').forEach(button => button.addEventListener('click', async () => {
+      this.mensagem = 'Abra Itens para cadastrar. A importação fica aguardando.';
+      await this.render();
+    }));
+
+    this.root?.querySelectorAll('[data-conciliar-importacao]').forEach(button => button.addEventListener('click', async () => {
+      try {
+        this.conciliacao = await this.deps.conciliar.execute();
+        this.mensagem = `${this.conciliacao.resumo.conciliados} pagamentos conferidos.`;
+      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível comparar.'; }
+      await this.render();
+    }));
+
+    this.root?.querySelectorAll('[data-previsualizar-historico-financeiro]').forEach(button => button.addEventListener('click', async () => {
+      try {
+        this.previaConfirmacao = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'previsualizar' });
+        this.ultimaConfirmacao = null;
+        this.confirmacaoArmada = false;
+        this.mensagem = `${this.previaConfirmacao.transacoesPrevistas} registros para revisar.`;
+      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível revisar.'; }
+      await this.render();
+    }));
+
+    this.root?.querySelector('[data-armar-confirmacao-historico]')?.addEventListener('click', async () => {
+      this.confirmacaoArmada = true;
+      this.mensagem = 'Pronto para confirmar.';
+      await this.render();
+    });
+
+    this.root?.querySelector('[data-confirmar-historico-financeiro]')?.addEventListener('click', async () => {
+      const previaId = (this.root?.querySelector('[data-confirmar-historico-financeiro]') as HTMLElement | null)?.dataset.previaId || this.previaConfirmacao?.previaId;
+      try {
+        if (!previaId) { this.mensagem = 'Revise antes.'; await this.render(); return; }
+        const result = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'confirmar', previaId });
+        this.ultimaConfirmacao = result;
+        this.previaConfirmacao = null;
+        this.confirmacaoArmada = false;
+        this.mensagem = `${result.transacoesCriadas} registros confirmados.`;
+        if (this.deps.onRascunhoAtualizado) {
+          try { await this.deps.onRascunhoAtualizado('descartar'); } catch { /* best-effort */ }
+        }
+      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível confirmar.'; }
+      await this.render();
+    });
+
+    this.root?.querySelectorAll('[data-retomar-confirmacao-segura]').forEach(button => button.addEventListener('click', async () => {
+      const loteConfirmacaoId = (button as HTMLElement).dataset.loteConfirmacaoId || '';
+      try {
+        this.previaConfirmacao = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'recuperar_falha', loteConfirmacaoId });
+        this.ultimaConfirmacao = null;
+        this.confirmacaoArmada = true;
+        this.mensagem = 'Retomada aberta.';
+      } catch (error) { this.mensagem = error instanceof Error ? error.message : 'Não foi possível retomar.'; }
+      await this.render();
+    }));
   }
 }
