@@ -1,12 +1,12 @@
-# CI validation for Kzera dev branch
-# Runs automatically only for pull requests targeting dev.
+# CI validation for Kzera desenvolvimento branch
+# Runs automatically only for pull requests targeting desenvolvimento.
 # Manual execution remains available through workflow_dispatch.
 name: CI
 
 on:
   pull_request:
     branches:
-      - dev
+      - desenvolvimento
   workflow_dispatch:
 
 permissions:
