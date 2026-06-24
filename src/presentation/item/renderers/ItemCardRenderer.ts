@@ -6,19 +6,20 @@ function createInfoItem(label: string, value: string, extraClass?: string): HTML
   item.classList.add('info-item');
   if (extraClass) item.classList.add(extraClass);
 
-  const strong = document.createElement('strong');
-  strong.textContent = value;
-
   const span = document.createElement('span');
   span.textContent = label;
 
-  item.append(strong, span);
+  const strong = document.createElement('strong');
+  strong.textContent = value;
+
+  item.append(span, strong);
   return item;
 }
 
 function createStatusBadge(status: ItemCatalogo['status']): HTMLElement {
   const statusBadge = document.createElement('span');
   statusBadge.classList.add('badge', status === 'ativo' ? 'badge-success' : 'badge-warning');
+  statusBadge.dataset['testid'] = 'badge';
   statusBadge.textContent = status;
   return statusBadge;
 }
