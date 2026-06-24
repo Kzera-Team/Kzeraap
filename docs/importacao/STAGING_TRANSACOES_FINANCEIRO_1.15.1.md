@@ -10,6 +10,16 @@ Regra central:
 
 Nada desta etapa baixa estoque.
 
+## Regra financeira oficial
+
+Este documento descreve o staging inicial de transações e movimentações financeiras.
+
+As regras de negócio obrigatórias para confirmação histórica, impacto financeiro oficial, conciliação, receita, custo, lucro, pagamentos, movimentos financeiros, relatórios, recuperação de falha e desfazer lote confirmado ficam documentadas em:
+
+- [REGRAS_FINANCEIRO_TRANSACOES_IMPORTADAS.md](./REGRAS_FINANCEIRO_TRANSACOES_IMPORTADAS.md)
+
+Nenhuma confirmação histórica deve ser implementada ou aprovada considerando apenas este documento de staging.
+
 ## Planilha de transações
 
 A importação reconhece colunas como:
