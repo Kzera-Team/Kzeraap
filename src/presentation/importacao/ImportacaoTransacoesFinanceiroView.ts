@@ -113,7 +113,7 @@ export class ImportacaoTransacoesFinanceiroView {
 
   private pendencias(registro: RegistroImportacaoTransacao | RegistroImportacaoFinanceira): string {
     if (!registro.pendencias.length) return '<span class="status-pill success">Validado</span>';
-    return `<ul class="compact-list">${registro.pendencias.slice(0, 3).map(p => `<li>${escapeHtml(p.mensagem)}</li>`).join('')}</ul>`;
+    return `<ul class="compact-list">${registro.pendencias.filter(p => p?.mensagem).slice(0, 3).map(p => `<li>${escapeHtml(p.mensagem)}</li>`).join('')}</ul>`;
   }
 
   private tabelaTransacoes(registros: RegistroImportacaoTransacao[]): string {
