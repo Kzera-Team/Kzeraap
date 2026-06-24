@@ -2,7 +2,7 @@ import type { PerfilImportacaoPreviewRegistro } from '../../../domain/perfil/Per
 import { normalizarTelefoneBrasil } from '../../../domain/perfil/PerfilImportacao';
 
 export function coletarPatchDoCard(input: HTMLInputElement | HTMLSelectElement): Partial<PerfilImportacaoPreviewRegistro> {
-  const card = input.closest<HTMLElement>('[data-preview-index]');
+  const card = input.closest<HTMLElement>('article[data-preview-index]');
   if (!card) return {};
 
   const nome = card.querySelector<HTMLInputElement>('[data-preview-field="nome"]')?.value ?? '';
