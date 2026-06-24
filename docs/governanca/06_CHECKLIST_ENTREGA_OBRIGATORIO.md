@@ -139,3 +139,17 @@ Antes de declarar qualquer entrega pronta, simular a tela como Usuária final e 
 - não há erro básico de atenção visual.
 
 Se houver texto duplicado como `Perfis` sobre `Perfis`, a entrega está bloqueada.
+
+
+## ⛔ IMPEDIMENTO — Bloqueia versão 1.0.0
+
+**Tela de Código do Perfil não é intuitiva o suficiente para produção.**
+
+Durante validação interna (2026-06-24), a tela de configuração inicial "Blocos do Código do Perfil" não foi preenchida de forma intuitiva sem orientação prévia.
+
+- O fluxo de primeiro acesso exige configurar blocos antes de usar qualquer tela — mas o formato dos campos ("Texto fixo", "Formatação", "Transformação") não é autoexplicativo para uma usuária não técnica.
+- A validação falhou silenciosamente: o botão "Salvar e entrar" não avança sem texto nos campos, mas o feedback de erro não é claro.
+
+**Critério para liberar 1.0.0:** a tela deve ser preenchida corretamente por uma pessoa leiga sem instrução verbal ou escrita.
+
+**Responsável:** UX (Ana) — redesenhar fluxo de configuração inicial.
