@@ -357,13 +357,19 @@ export class ImportacaoTransacoesFinanceiroView {
 
   private async render(): Promise<void> {
     if (!this.root) return;
-    const [staging, lotes] = await Promise.all([
-      this.deps.listarStaging.execute(),
-      this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'listar_lotes' })
-    ]);
-    this.lotesConfirmacao = lotes;
-    this.root.innerHTML = this.template(staging);
-    this.bind();
+    try {
+      const [staging, lotes] = await Promise.all([
+        this.deps.listarStaging.execute(),
+        this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'listar_lotes' })
+      ]);
+      this.lotesConfirmacao = lotes;
+      this.root.innerHTML = this.template(staging);
+      this.bind();
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Erro ao carregar importação de transações.';
+      this.root.innerHTML = `<section class="kzera-screen import-only-screen import-transacoes-screen import-page-background" data-testid="importacao-transacoes-financeiro"><section class="kzera-card import-screen import-transacoes-panel importPanel import-panel"><p class="toast toast-error">${escapeHtml(msg)}</p><button type="button" class="icon-button text-icon primary-icon" data-retry-transacoes>↻ Tentar novamente</button></section></section>`;
+      this.root.querySelector('[data-retry-transacoes]')?.addEventListener('click', () => this.render());
+    }
   }
 
   private async atualizarConciliacao(): Promise<void> {
