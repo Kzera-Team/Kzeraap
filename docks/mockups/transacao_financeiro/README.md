@@ -1,9 +1,10 @@
 # Mockups — Transação financeiro
 
-Fluxo de UX para importação/confirmacão histórica financeira.
+Fluxo de UX para importação/confirmação histórica financeira.
 
 Arquivos:
 
+0. `00-importar-historico-financeiro.html`
 1. `01-importacao-em-andamento.html`
 2. `02-resolver-pendencias.html`
 3. `03-previa-segura.html`
