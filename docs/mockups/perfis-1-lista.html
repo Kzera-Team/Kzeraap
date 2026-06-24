@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Perfis — Lista · Kzera</title>
+  <style>
+    :root {
+      --purple:      #7B4DFF;
+      --purple-dark: #5B2ECC;
+      --bg:          #F7F3FF;
+      --white:       #ffffff;
+      --text:        #120B35;
+      --muted:       #766BA8;
+      --border:      #DDD6EE;
+      --green:       #087A36;
+      --green-bg:    #DDF8E7;
+      --green-bdr:   #A8E8BF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 12px;
+      background: #120B35;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 28px;
+      height: 28px;
+      background: none;
+      border: none;
+      padding: 2px;
+      cursor: pointer;
+      justify-content: center;
+    }
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      border-radius: 2px;
+      background: #fff;
+    }
+    .header-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .btn-header {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: inherit;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    /* ── SCREEN ── */
+    .screen { padding: 20px 16px 60px; }
+
+    /* ── BUSCA ── */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .search-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px 0 44px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--white);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      box-shadow: 0 2px 8px rgba(30,14,70,0.05);
+      outline: none;
+    }
+    .search-input::placeholder { color: #B0A8D0; }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    /* ── ABAS ── */
+    .tabs {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex-shrink: 0;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2.5px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      margin-bottom: -1px;
+    }
+    .tab.active {
+      color: var(--purple-dark);
+      border-bottom-color: var(--purple);
+    }
+
+    /* ── CABEÇALHO LISTA ── */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .list-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .btn-export {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--purple);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+    }
+
+    /* ── PERFIL CARD ── */
+    .perfil-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 8px rgba(30,14,70,0.05);
+      cursor: pointer;
+    }
+    .card-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.2px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .badge.ativo {
+      background: var(--green-bg);
+      border: 1px solid var(--green-bdr);
+      color: var(--green);
+    }
+    .badge.arquivado {
+      background: #F0EDF8;
+      border: 1px solid #C4BAE4;
+      color: var(--muted);
+    }
+    .badge.pendente {
+      background: #FFF8E1;
+      border: 1px solid #FFD54F;
+      color: #8B4500;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-header">
+    <button class="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="header-title">Perfis</span>
+    <button class="btn-header">+ Perfil</button>
+  </div>
+
+  <div class="screen">
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="text" placeholder="Buscar por nome…">
+    </div>
+
+    <div class="tabs">
+      <button class="tab active">Lista</button>
+      <button class="tab">Resumo</button>
+      <button class="tab">Histórico</button>
+      <button class="tab">Duplicidades</button>
+    </div>
+
+    <div class="list-header">
+      <span class="list-title">Perfis cadastrados</span>
+    </div>
+
+    <div class="perfil-card">
+      <span class="card-name">Maria Santos</span>
+      <span class="badge ativo">Ativo</span>
+    </div>
+
+    <div class="perfil-card">
+      <span class="card-name">João Lima</span>
+      <span class="badge pendente">Pendente</span>
+    </div>
+
+    <div class="perfil-card">
+      <span class="card-name">Ana Costa</span>
+      <span class="badge arquivado">Arquivado</span>
+    </div>
+
+  </div>
+
+</body>
+</html>
