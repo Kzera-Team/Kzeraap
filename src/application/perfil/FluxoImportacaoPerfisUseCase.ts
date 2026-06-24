@@ -79,6 +79,10 @@ export class FluxoImportacaoPerfisUseCase {
     }
   }
 
+  restaurar(registros: PerfilImportacaoPreviewRegistro[]): void {
+    this.state = { preview: registros };
+  }
+
   limpar(): void {
     releaseObject(this.state.preview);
     this.state = { preview: [] };

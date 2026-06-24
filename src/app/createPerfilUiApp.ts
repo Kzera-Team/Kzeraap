@@ -217,6 +217,7 @@ export function createPerfilUiApp(
     },
     async restaurarPreview(registros: unknown[]): Promise<void> {
       preview = registros as PerfilUiState['importacaoPreview'];
+      module.fluxoImportacao.restaurar(preview);
     }
   };
 }
