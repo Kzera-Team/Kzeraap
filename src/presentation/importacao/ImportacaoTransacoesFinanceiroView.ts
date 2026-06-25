@@ -1,7 +1,7 @@
 import type { PrepararImportacaoTransacoesUseCase } from '../../application/importacao/PrepararImportacaoTransacoesUseCase';
 import type { PrepararImportacaoFinanceiraUseCase } from '../../application/importacao/PrepararImportacaoFinanceiraUseCase';
-import type { ListarStagingImportacaoUseCase, StagingImportacaoResumo } from '../../application/importacao/ListarStagingImportacaoUseCase';
-import type { ConciliarTransacoesFinanceiroUseCase, ResultadoConciliacaoImportacao } from '../../application/importacao/ConciliarTransacoesFinanceiroUseCase';
+import type { ListarStagingImportacaoUseCase } from '../../application/importacao/ListarStagingImportacaoUseCase';
+import type { ConciliarTransacoesFinanceiroUseCase } from '../../application/importacao/ConciliarTransacoesFinanceiroUseCase';
 import type { ResolverPendenciaImportacaoUseCase } from '../../application/importacao/ResolverPendenciaImportacaoUseCase';
 import type { ConfirmarImportacaoHistoricaFinanceiraUseCase, ConfirmarImportacaoHistoricaFinanceiraResultado } from '../../application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase';
 import { releaseObject } from '../../runtime/RuntimeCleanup';
@@ -16,16 +16,12 @@ export interface ImportacaoTransacoesFinanceiroDeps {
   onRascunhoAtualizado?: (acao: 'salvar' | 'descartar') => Promise<void>;
 }
 
-type ImportacaoEstado = 'vazio' | 'carregado' | 'andamento' | 'pendencias' | 'previa' | 'confirmacao' | 'recuperacao' | 'detalhes';
-type TemplateKey = 'shell' | ImportacaoEstado;
-type ArquivoImportacaoTipo = 'transacoes' | 'financeiro';
+type Estado = 'vazio' | 'carregado' | 'andamento' | 'pendencias' | 'previa' | 'confirmacao' | 'recuperacao' | 'detalhes';
+type Template = 'shell' | Estado;
+type TipoArquivo = 'transacoes' | 'financeiro';
+interface ArquivoImportacao { nomeArquivo: string; conteudo: string }
 
-interface ArquivoImportacao {
-  nome: string;
-  conteudo: string;
-}
-
-const TEMPLATE_URLS: Record<TemplateKey, URL> = {
+const TEMPLATES: Record<Template, URL> = {
   shell: new URL('./templates/importacao-transacoes-financeiro.html', import.meta.url),
   vazio: new URL('./templates/importacao-transacoes-financeiro-vazio.html', import.meta.url),
   carregado: new URL('./templates/importacao-transacoes-financeiro-carregado.html', import.meta.url),
@@ -36,46 +32,43 @@ const TEMPLATE_URLS: Record<TemplateKey, URL> = {
   recuperacao: new URL('./templates/importacao-transacoes-financeiro-recuperacao.html', import.meta.url),
   detalhes: new URL('./templates/importacao-transacoes-financeiro-detalhes.html', import.meta.url),
 };
-
 const CSS_URL = new URL('./templates/importacao-transacoes-financeiro.css', import.meta.url);
+const EXTENSOES_TEXTO = ['csv', 'tsv', 'txt'];
 
 export class ImportacaoTransacoesFinanceiroView {
   private root: HTMLElement | null = null;
+  private estado: Estado = 'vazio';
   private mensagem = '';
-  private estado: ImportacaoEstado = 'vazio';
-  private templates = new Map<TemplateKey, string>();
-  private conciliacao: ResultadoConciliacaoImportacao | null = null;
-  private ultimaConfirmacao: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
-  private previaConfirmacao: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
-  private confirmacaoArmada = false;
+  private cache = new Map<Template, string>();
   private transacoes: ArquivoImportacao | null = null;
   private financeiro: ArquivoImportacao | null = null;
+  private previa: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
+  private ultima: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
+  private confirmacaoArmada = false;
 
   constructor(private readonly deps: ImportacaoTransacoesFinanceiroDeps) {}
 
   release(): void {
-    releaseObject(this.conciliacao);
-    releaseObject(this.ultimaConfirmacao);
-    releaseObject(this.previaConfirmacao);
-    this.conciliacao = null;
-    this.ultimaConfirmacao = null;
-    this.previaConfirmacao = null;
+    releaseObject(this.previa);
+    releaseObject(this.ultima);
     this.transacoes = null;
     this.financeiro = null;
+    this.previa = null;
+    this.ultima = null;
+    this.confirmacaoArmada = false;
     this.mensagem = '';
     this.estado = 'vazio';
-    this.confirmacaoArmada = false;
-    if (this.root) this.root.replaceChildren();
+    this.root?.replaceChildren();
   }
 
   async mount(root: HTMLElement): Promise<void> {
     this.root = root;
-    this.carregarCss();
-    await this.carregarShell();
+    this.injetarCss();
+    this.root.innerHTML = await this.template('shell');
     await this.render();
   }
 
-  private carregarCss(): void {
+  private injetarCss(): void {
     if (document.getElementById('importacao-transacoes-financeiro-css')) return;
     const link = document.createElement('link');
     link.id = 'importacao-transacoes-financeiro-css';
@@ -84,31 +77,26 @@ export class ImportacaoTransacoesFinanceiroView {
     document.head.appendChild(link);
   }
 
-  private async carregarShell(): Promise<void> {
-    if (!this.root) return;
-    this.root.innerHTML = await this.carregarTemplate('shell');
-  }
-
-  private async carregarTemplate(key: TemplateKey): Promise<string> {
-    const cached = this.templates.get(key);
+  private async template(nome: Template): Promise<string> {
+    const cached = this.cache.get(nome);
     if (cached) return cached;
-    const response = await fetch(TEMPLATE_URLS[key].toString());
-    if (!response.ok) throw new Error('Não foi possível carregar a tela de importação financeira.');
-    const template = await response.text();
-    this.templates.set(key, template);
-    return template;
+    const response = await fetch(TEMPLATES[nome].toString());
+    if (!response.ok) throw new Error('Não foi possível carregar a importação financeira.');
+    const html = await response.text();
+    this.cache.set(nome, html);
+    return html;
   }
 
   private async render(): Promise<void> {
-    const container = this.el('[data-importacao-conteudo]');
-    if (!container) return;
-    container.innerHTML = await this.carregarTemplate(this.estado);
-    await this.preencherEstadoAtual();
-    this.renderMensagem();
-    this.bindEstadoAtual();
+    const alvo = this.el('[data-importacao-conteudo]');
+    if (!alvo) return;
+    alvo.innerHTML = await this.template(this.estado);
+    await this.preencher();
+    this.mostrarMensagem();
+    this.bind();
   }
 
-  private async preencherEstadoAtual(): Promise<void> {
+  private async preencher(): Promise<void> {
     if (this.estado === 'vazio') this.preencherVazio();
     if (this.estado === 'carregado') this.preencherCarregado();
     if (this.estado === 'andamento') await this.preencherAndamento();
@@ -119,204 +107,174 @@ export class ImportacaoTransacoesFinanceiroView {
   }
 
   private preencherVazio(): void {
-    this.setText('[data-nome-transacoes]', this.transacoes?.nome || 'Nenhum arquivo carregado');
-    this.setText('[data-nome-financeiro]', this.financeiro?.nome || 'Nenhum arquivo carregado');
-    this.setDisabled('[data-continuar-carregamento]', !this.temArquivosObrigatorios());
+    this.texto('[data-nome-transacoes]', this.transacoes?.nomeArquivo || 'Nenhum arquivo carregado');
+    this.texto('[data-nome-financeiro]', this.financeiro?.nomeArquivo || 'Nenhum arquivo carregado');
+    this.desabilitar('[data-continuar-carregamento]', !this.temArquivos());
   }
 
   private preencherCarregado(): void {
-    this.setText('[data-nome-transacoes]', this.transacoes?.nome || '—');
-    this.setText('[data-nome-financeiro]', this.financeiro?.nome || '—');
-    this.setText('[data-linhas-transacoes]', this.contarLinhas(this.transacoes?.conteudo));
-    this.setText('[data-linhas-financeiro]', this.contarLinhas(this.financeiro?.conteudo));
+    this.texto('[data-nome-transacoes]', this.transacoes?.nomeArquivo || '—');
+    this.texto('[data-nome-financeiro]', this.financeiro?.nomeArquivo || '—');
+    this.texto('[data-linhas-transacoes]', this.linhas(this.transacoes?.conteudo));
+    this.texto('[data-linhas-financeiro]', this.linhas(this.financeiro?.conteudo));
   }
 
   private async preencherAndamento(): Promise<void> {
     const staging = await this.deps.listarStaging.execute();
-    this.setText('[data-linhas-lidas]', String(staging.resumoTransacoes.total));
-    this.setText('[data-possiveis-vendas]', String(staging.resumoTransacoes.validos));
-    this.setText('[data-periodo-encontrado]', 'Aguardando prévia');
-    this.setText('[data-financeiro-oficial]', 'R$ 0');
+    this.texto('[data-linhas-lidas]', String(staging.resumoTransacoes.total));
+    this.texto('[data-possiveis-vendas]', String(staging.resumoTransacoes.validos));
   }
 
   private async preencherPendencias(): Promise<void> {
     const staging = await this.deps.listarStaging.execute();
-    this.setText('[data-pendencias-financeiro]', String(staging.resumoTransacoes.pendentesFinanceiro));
-    this.setText('[data-pendencias-valor]', String(staging.resumoFinanceiro.pendentes));
-    this.setText('[data-pendencias-duplicidade]', String(staging.resumoTransacoes.pendentesPerfil + staging.resumoTransacoes.pendentesItem));
+    this.texto('[data-pendencias-financeiro]', String(staging.resumoTransacoes.pendentesFinanceiro));
+    this.texto('[data-pendencias-valor]', String(staging.resumoFinanceiro.pendentes));
+    this.texto('[data-pendencias-duplicidade]', String(staging.resumoTransacoes.pendentesPerfil + staging.resumoTransacoes.pendentesItem));
   }
 
   private preencherPrevia(): void {
-    const previa = this.previaConfirmacao;
-    this.setText('[data-previa-transacoes]', String(previa?.transacoesPrevistas || 0));
-    this.setText('[data-previa-pagamentos]', String(previa?.pagamentosPrevistos || 0));
-    this.setText('[data-previa-movimentos]', String(previa?.movimentosPrevistos || 0));
-    this.setText('[data-previa-bloqueados]', String(previa?.registrosBloqueados || 0));
-    this.setText('[data-previa-faturamento]', String(previa?.faturamentoTotal || '—'));
-    this.setText('[data-previa-pendente]', String(previa?.valorPendenteTotal || '—'));
+    this.texto('[data-previa-transacoes]', String(this.previa?.transacoesPrevistas || 0));
+    this.texto('[data-previa-pagamentos]', String(this.previa?.pagamentosPrevistos || 0));
+    this.texto('[data-previa-movimentos]', String(this.previa?.movimentosPrevistos || 0));
+    this.texto('[data-previa-bloqueados]', String(this.previa?.registrosBloqueados || 0));
+    this.texto('[data-previa-faturamento]', String(this.previa?.faturamentoTotal || '—'));
+    this.texto('[data-previa-pendente]', String(this.previa?.valorPendenteTotal || '—'));
   }
 
   private preencherConfirmacao(): void {
-    const previa = this.previaConfirmacao;
-    this.setText('[data-confirmacao-transacoes]', String(previa?.transacoesPrevistas || 0));
-    this.setText('[data-confirmacao-pagamentos]', String(previa?.pagamentosPrevistos || 0));
+    this.texto('[data-confirmacao-transacoes]', String(this.previa?.transacoesPrevistas || 0));
+    this.texto('[data-confirmacao-pagamentos]', String(this.previa?.pagamentosPrevistos || 0));
   }
 
   private preencherDetalhes(): void {
-    const previa = this.previaConfirmacao || this.ultimaConfirmacao;
-    this.setText('[data-detalhe-pacote]', previa?.previaId || previa?.loteConfirmacaoId || 'sem-pacote');
-    this.setText('[data-detalhe-transacoes]', String(previa?.transacoesPrevistas || previa?.transacoesCriadas || 0));
-    this.setText('[data-detalhe-pagamentos]', String(previa?.pagamentosPrevistos || previa?.pagamentosCriados || 0));
-    this.setText('[data-detalhe-movimentos]', String(previa?.movimentosPrevistos || previa?.movimentosCriados || 0));
+    const base = this.previa || this.ultima;
+    this.texto('[data-detalhe-pacote]', base?.previaId || base?.loteConfirmacaoId || 'sem-pacote');
+    this.texto('[data-detalhe-transacoes]', String(base?.transacoesPrevistas || base?.transacoesCriadas || 0));
+    this.texto('[data-detalhe-pagamentos]', String(base?.pagamentosPrevistos || base?.pagamentosCriados || 0));
+    this.texto('[data-detalhe-movimentos]', String(base?.movimentosPrevistos || base?.movimentosCriados || 0));
   }
 
-  private bindEstadoAtual(): void {
-    this.bindNavegacao();
-    this.bindUploads();
-    this.bindPreparacao();
-    this.bindConciliacao();
-    this.bindPrevia();
-    this.bindConfirmacao();
+  private bind(): void {
+    this.on('[data-ir-vazio]', () => this.ir('vazio'));
+    this.on('[data-ir-pendencias]', () => this.ir('pendencias'));
+    this.on('[data-ir-detalhes]', () => this.ir('detalhes'));
+    this.on('[data-ir-previa]', () => this.ir('previa'));
+    this.on('[data-ir-recuperacao]', () => this.ir('recuperacao'));
+    this.upload('[data-file-upload-transacoes]', 'transacoes');
+    this.upload('[data-file-upload-financeiro]', 'financeiro');
+    this.on('[data-continuar-carregamento]', () => this.ir('carregado'));
+    this.on('[data-preparar-importacao]', () => this.preparar());
+    this.on('[data-conciliar-importacao]', () => this.conciliar());
+    this.on('[data-gerar-previa]', () => this.gerarPrevia());
+    this.on('[data-abrir-confirmacao]', () => this.abrirConfirmacao());
+    this.on('[data-cancelar-confirmacao]', () => this.ir('previa'));
+    this.on('[data-confirmar-importacao]', () => this.confirmar());
   }
 
-  private bindNavegacao(): void {
-    this.bindClick('[data-ir-vazio]', () => this.irPara('vazio'));
-    this.bindClick('[data-ir-pendencias]', () => this.irPara('pendencias'));
-    this.bindClick('[data-ir-detalhes]', () => this.irPara('detalhes'));
-    this.bindClick('[data-ir-previa]', () => this.irPara('previa'));
-    this.bindClick('[data-ir-recuperacao]', () => this.irPara('recuperacao'));
+  private async preparar(): Promise<void> {
+    if (!this.transacoes || !this.financeiro) return this.falha('Carregue os dois arquivos antes de preparar.');
+    const t = await this.deps.prepararTransacoes.execute(this.transacoes);
+    const f = await this.deps.prepararFinanceiro.execute(this.financeiro);
+    this.mensagem = `Arquivos preparados: ${t.resumo.total} transações e ${f.resumo.total} pagamentos.`;
+    await this.deps.onRascunhoAtualizado?.('salvar');
+    await this.ir('andamento');
   }
 
-  private bindUploads(): void {
-    this.bindArquivo('[data-file-upload-transacoes]', 'transacoes');
-    this.bindArquivo('[data-file-upload-financeiro]', 'financeiro');
-    this.bindClick('[data-continuar-carregamento]', () => this.irPara('carregado'));
-  }
-
-  private bindPreparacao(): void {
-    this.bindClick('[data-preparar-importacao]', () => this.prepararImportacao());
-  }
-
-  private bindConciliacao(): void {
-    this.bindClick('[data-conciliar-importacao]', () => this.conciliarImportacao());
-  }
-
-  private bindPrevia(): void {
-    this.bindClick('[data-gerar-previa]', () => this.gerarPrevia());
-    this.bindClick('[data-abrir-confirmacao]', () => this.abrirConfirmacao());
-  }
-
-  private bindConfirmacao(): void {
-    this.bindClick('[data-cancelar-confirmacao]', () => this.irPara('previa'));
-    this.bindClick('[data-confirmar-importacao]', () => this.confirmarImportacao());
-  }
-
-  private async prepararImportacao(): Promise<void> {
-    if (!this.transacoes || !this.financeiro) {
-      this.mensagem = 'Carregue os dois arquivos antes de preparar.';
-      await this.render();
-      return;
-    }
-    const transacoes = await this.deps.prepararTransacoes.execute(this.transacoes);
-    const financeiro = await this.deps.prepararFinanceiro.execute(this.financeiro);
-    this.mensagem = `Arquivos preparados: ${transacoes.resumo.total} transações e ${financeiro.resumo.total} pagamentos.`;
-    if (this.deps.onRascunhoAtualizado) await this.deps.onRascunhoAtualizado('salvar');
-    await this.irPara('andamento');
-  }
-
-  private async conciliarImportacao(): Promise<void> {
-    this.conciliacao = await this.deps.conciliar.execute();
-    this.mensagem = `Conferência pronta: ${this.conciliacao.resumo.conciliados} pagamentos conferidos.`;
-    await this.irPara('pendencias');
+  private async conciliar(): Promise<void> {
+    const resultado = await this.deps.conciliar.execute();
+    this.mensagem = `Conferência pronta: ${resultado.resumo.conciliados} pagamentos conferidos.`;
+    await this.ir('pendencias');
   }
 
   private async gerarPrevia(): Promise<void> {
     try {
-      this.previaConfirmacao = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'previsualizar' });
+      this.previa = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'previsualizar' });
       this.confirmacaoArmada = false;
-      this.mensagem = `Prévia pronta: ${this.previaConfirmacao.transacoesPrevistas} registros podem entrar.`;
-      await this.irPara('previa');
+      this.mensagem = `Prévia pronta: ${this.previa.transacoesPrevistas} registros podem entrar.`;
+      await this.ir('previa');
     } catch (error) {
-      this.mensagem = error instanceof Error ? error.message : 'Não foi possível gerar a prévia segura.';
-      await this.render();
+      await this.falha(error instanceof Error ? error.message : 'Não foi possível gerar a prévia.');
     }
   }
 
   private async abrirConfirmacao(): Promise<void> {
-    if (!this.previaConfirmacao) {
-      this.mensagem = 'Gere a prévia antes de confirmar.';
-      await this.render();
-      return;
-    }
+    if (!this.previa) return this.falha('Gere a prévia antes de confirmar.');
     this.confirmacaoArmada = true;
-    await this.irPara('confirmacao');
+    await this.ir('confirmacao');
   }
 
-  private async confirmarImportacao(): Promise<void> {
-    const previaId = this.previaConfirmacao?.previaId;
-    if (!previaId || !this.confirmacaoArmada) {
-      this.mensagem = 'Abra a confirmação segura antes de concluir.';
-      await this.render();
-      return;
-    }
-    this.ultimaConfirmacao = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'confirmar', previaId });
-    this.previaConfirmacao = null;
+  private async confirmar(): Promise<void> {
+    const previaId = this.previa?.previaId;
+    if (!previaId || !this.confirmacaoArmada) return this.falha('Abra a confirmação segura antes de concluir.');
+    this.ultima = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'confirmar', previaId });
+    this.previa = null;
     this.confirmacaoArmada = false;
-    this.mensagem = `Histórico confirmado: ${this.ultimaConfirmacao.transacoesCriadas} registros salvos. Estoque não foi alterado.`;
-    if (this.deps.onRascunhoAtualizado) await this.deps.onRascunhoAtualizado('descartar');
-    await this.irPara('andamento');
+    this.mensagem = `Histórico confirmado: ${this.ultima.transacoesCriadas} registros salvos. Estoque não foi alterado.`;
+    await this.deps.onRascunhoAtualizado?.('descartar');
+    await this.ir('andamento');
   }
 
-  private bindArquivo(selector: string, tipo: ArquivoImportacaoTipo): void {
+  private upload(selector: string, tipo: TipoArquivo): void {
     const input = this.el<HTMLInputElement>(selector);
     if (!input) return;
     input.addEventListener('change', async () => {
-      const file = input.files?.[0];
-      if (!file) return;
-      this.definirArquivo(tipo, { nome: file.name, conteudo: await file.text() });
-      if (this.temArquivosObrigatorios()) this.estado = 'carregado';
+      const arquivo = input.files?.[0];
+      if (!arquivo) return;
+      if (!this.extensaoTexto(arquivo.name)) return this.falha('Use CSV, TSV ou TXT.');
+      this.definirArquivo(tipo, { nomeArquivo: arquivo.name, conteudo: await arquivo.text() });
+      if (this.temArquivos()) this.estado = 'carregado';
       await this.render();
     });
   }
 
-  private definirArquivo(tipo: ArquivoImportacaoTipo, arquivo: ArquivoImportacao): void {
+  private definirArquivo(tipo: TipoArquivo, arquivo: ArquivoImportacao): void {
     if (tipo === 'transacoes') this.transacoes = arquivo;
     if (tipo === 'financeiro') this.financeiro = arquivo;
   }
 
-  private async irPara(estado: ImportacaoEstado): Promise<void> {
+  private extensaoTexto(nomeArquivo: string): boolean {
+    const ext = nomeArquivo.split('.').pop()?.toLowerCase() || '';
+    return EXTENSOES_TEXTO.includes(ext);
+  }
+
+  private async falha(mensagem: string): Promise<void> {
+    this.mensagem = mensagem;
+    await this.render();
+  }
+
+  private async ir(estado: Estado): Promise<void> {
     this.estado = estado;
     await this.render();
   }
 
-  private bindClick(selector: string, handler: () => void | Promise<void>): void {
+  private on(selector: string, handler: () => void | Promise<void>): void {
     this.el(selector)?.addEventListener('click', () => void handler());
   }
 
-  private temArquivosObrigatorios(): boolean {
+  private temArquivos(): boolean {
     return Boolean(this.transacoes?.conteudo.trim() && this.financeiro?.conteudo.trim());
   }
 
-  private contarLinhas(conteudo?: string): string {
+  private linhas(conteudo?: string): string {
     if (!conteudo?.trim()) return '0 linhas';
     return `${conteudo.trim().split(/\r?\n/).length} linhas`;
   }
 
-  private renderMensagem(): void {
+  private mostrarMensagem(): void {
     const toast = this.el('[data-importacao-mensagem]');
     if (!toast) return;
     toast.textContent = this.mensagem;
     toast.hidden = !this.mensagem;
   }
 
-  private setText(selector: string, value: string): void {
-    const target = this.el(selector);
-    if (target) target.textContent = value;
+  private texto(selector: string, valor: string): void {
+    const alvo = this.el(selector);
+    if (alvo) alvo.textContent = valor;
   }
 
-  private setDisabled(selector: string, disabled: boolean): void {
-    const target = this.el<HTMLButtonElement>(selector);
-    if (target) target.disabled = disabled;
+  private desabilitar(selector: string, valor: boolean): void {
+    const alvo = this.el<HTMLButtonElement>(selector);
+    if (alvo) alvo.disabled = valor;
   }
 
   private el<T extends HTMLElement = HTMLElement>(selector: string): T | null {
