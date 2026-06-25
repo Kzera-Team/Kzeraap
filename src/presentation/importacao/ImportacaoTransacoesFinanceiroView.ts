@@ -20,6 +20,11 @@ type Estado = 'vazio' | 'carregado' | 'andamento' | 'pendencias' | 'previa' | 'c
 type Template = 'shell' | Estado;
 type TipoArquivo = 'transacoes' | 'financeiro';
 interface ArquivoImportacao { nomeArquivo: string; conteudo: string }
+interface UploadDraftMemoria {
+  transacoes: ArquivoImportacao | null;
+  financeiro: ArquivoImportacao | null;
+  updatedAt: string;
+}
 
 const TEMPLATES: Record<Template, URL> = {
   shell: new URL('./templates/importacao-transacoes-financeiro.html', import.meta.url),
@@ -34,6 +39,11 @@ const TEMPLATES: Record<Template, URL> = {
 };
 const CSS_URL = new URL('./templates/importacao-transacoes-financeiro.css', import.meta.url);
 const EXTENSOES_TEXTO = ['csv', 'tsv', 'txt'];
+const UPLOAD_DRAFT_MEMORIA_KEY = '__kzeraImportacaoTransacoesFinanceiroUploadDraft__';
+
+function uploadDraftMemoriaStore(): Record<string, UploadDraftMemoria | undefined> {
+  return globalThis as unknown as Record<string, UploadDraftMemoria | undefined>;
+}
 
 export class ImportacaoTransacoesFinanceiroView {
   private root: HTMLElement | null = null;
@@ -64,6 +74,7 @@ export class ImportacaoTransacoesFinanceiroView {
   async mount(root: HTMLElement): Promise<void> {
     this.root = root;
     this.injetarCss();
+    this.restaurarUploadEmMemoria();
     this.root.innerHTML = await this.template('shell');
     await this.render();
   }
@@ -176,6 +187,7 @@ export class ImportacaoTransacoesFinanceiroView {
     const t = await this.deps.prepararTransacoes.execute(this.transacoes);
     const f = await this.deps.prepararFinanceiro.execute(this.financeiro);
     this.mensagem = `Arquivos preparados: ${t.resumo.total} transações e ${f.resumo.total} pagamentos.`;
+    this.limparUploadEmMemoria();
     await this.deps.onRascunhoAtualizado?.('salvar');
     await this.ir('andamento');
   }
@@ -210,6 +222,7 @@ export class ImportacaoTransacoesFinanceiroView {
     this.previa = null;
     this.confirmacaoArmada = false;
     this.mensagem = `Histórico confirmado: ${this.ultima.transacoesCriadas} registros salvos. Estoque não foi alterado.`;
+    this.limparUploadEmMemoria();
     await this.deps.onRascunhoAtualizado?.('descartar');
     await this.ir('andamento');
   }
@@ -222,6 +235,7 @@ export class ImportacaoTransacoesFinanceiroView {
       if (!arquivo) return;
       if (!this.extensaoTexto(arquivo.name)) return this.falha('Use CSV, TSV ou TXT.');
       this.definirArquivo(tipo, { nomeArquivo: arquivo.name, conteudo: await arquivo.text() });
+      this.salvarUploadEmMemoria();
       if (this.temArquivos()) this.estado = 'carregado';
       await this.render();
     });
@@ -230,6 +244,31 @@ export class ImportacaoTransacoesFinanceiroView {
   private definirArquivo(tipo: TipoArquivo, arquivo: ArquivoImportacao): void {
     if (tipo === 'transacoes') this.transacoes = arquivo;
     if (tipo === 'financeiro') this.financeiro = arquivo;
+  }
+
+  private restaurarUploadEmMemoria(): void {
+    const draft = uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY];
+    if (!draft) return;
+    this.transacoes = this.clonarArquivo(draft.transacoes);
+    this.financeiro = this.clonarArquivo(draft.financeiro);
+    if (this.temArquivos()) this.estado = 'carregado';
+  }
+
+  private salvarUploadEmMemoria(): void {
+    uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY] = {
+      transacoes: this.clonarArquivo(this.transacoes),
+      financeiro: this.clonarArquivo(this.financeiro),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  private limparUploadEmMemoria(): void {
+    delete uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY];
+  }
+
+  private clonarArquivo(arquivo: ArquivoImportacao | null | undefined): ArquivoImportacao | null {
+    if (!arquivo) return null;
+    return { nomeArquivo: arquivo.nomeArquivo, conteudo: arquivo.conteudo };
   }
 
   private extensaoTexto(nomeArquivo: string): boolean {
