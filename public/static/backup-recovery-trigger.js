@@ -1,7 +1,10 @@
 (() => {
   const MAX_CLICKS = 10;
   const WINDOW_MS = 5000;
-  const MEMORY_KEY = '__kzeraPendingBackupRecovery';
+  const DB_NAME = 'kzera_backup_recovery';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'pending';
+  const RECORD_ID = 'selected-backup';
 
   let clicks = 0;
   let firstClickAt = 0;
@@ -25,7 +28,30 @@
     return false;
   }
 
-  function showRestoringShell() {
+  function openDb() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error('Falha ao abrir armazenamento temporário.'));
+    });
+  }
+
+  async function saveEncryptedPendingBackup(record) {
+    const db = await openDb();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).put(record);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error || new Error('Falha ao guardar backup criptografado.'));
+    });
+    db.close();
+  }
+
+  function showRecoveryLoginShell(filename) {
     const app = document.getElementById('app');
     if (!app) return;
     app.innerHTML = `<section class="auth-shell" aria-live="polite">
@@ -33,12 +59,27 @@
         <div class="auth-brand"><div class="auth-icon">V</div><div><h1>Vevelt</h1></div></div>
         <form class="auth-form" data-testid="backup-login-form">
           <h2>Restaurar backup</h2>
-          <p>Digite a mesma senha usada para abrir o sistema no backup. O arquivo fica apenas na memória até a restauração terminar.</p>
+          <p>Arquivo selecionado: ${filename}</p>
+          <p>Digite a mesma senha usada para abrir o sistema no backup.</p>
           <label class="auth-field password-field"><span>Senha</span><span class="password-control"><input id="backup-recovery-password" type="password" autocomplete="current-password" required /></span></label>
           <button type="submit">Desbloquear e restaurar</button>
         </form>
       </div>
     </section>`;
+
+    const form = app.querySelector('[data-testid="backup-login-form"]');
+    form?.addEventListener('submit', event => {
+      event.preventDefault();
+      app.innerHTML = `<section class="auth-shell" aria-live="polite">
+        <div class="auth-card">
+          <div class="auth-brand"><div class="auth-icon">V</div><div><h1>Vevelt</h1></div></div>
+          <form class="auth-form"><h2>Restoring backup...</h2><p>Validando senha e desbloqueando arquivo criptografado.</p></form>
+        </div>
+      </section>`;
+      window.dispatchEvent(new CustomEvent('kzera:backup-recovery-auth-submit', {
+        detail: { password: app.querySelector('#backup-recovery-password')?.value || '' }
+      }));
+    }, { once: true });
   }
 
   function openBackupSelector() {
@@ -61,19 +102,19 @@
           return;
         }
 
-        window[MEMORY_KEY] = {
+        await saveEncryptedPendingBackup({
+          id: RECORD_ID,
           filename: file.name,
           size: file.size,
           loadedAt: new Date().toISOString(),
-          payload: text
-        };
+          encryptedPayload: text
+        });
 
         window.dispatchEvent(new CustomEvent('kzera:backup-recovery-selected', {
-          detail: { filename: file.name, size: file.size }
+          detail: { filename: file.name, size: file.size, storage: DB_NAME }
         }));
 
-        showRestoringShell();
-        showMessage('Backup carregado em memória. Autentique para restaurar.');
+        showRecoveryLoginShell(file.name);
       } catch {
         showMessage('Não foi possível ler o backup. Use o arquivo .dat/.json exportado pelo sistema.', 'error');
       }
