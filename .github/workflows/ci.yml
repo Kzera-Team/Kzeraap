@@ -32,7 +32,21 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install --include=dev
+        run: |
+          set -o pipefail
+          echo "Starting npm install with dev dependencies" | tee install.log
+          echo "Node before install: $(node --version)" | tee -a install.log
+          echo "NPM before install: $(npm --version)" | tee -a install.log
+          echo "package-lock present:" | tee -a install.log
+          ls -la package-lock.json 2>&1 | tee -a install.log || true
+          npm install --include=dev 2>&1 | tee -a install.log
+
+      - name: Upload install log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: install-log
+          path: install.log
 
       - name: Verify build toolchain
         run: |
