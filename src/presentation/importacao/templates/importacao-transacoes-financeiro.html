@@ -1,92 +1,416 @@
-<section class="kzera-screen import-only-screen import-transacoes-screen import-page-background" data-testid="importacao-transacoes-financeiro">
-  <section class="kzera-card import-screen import-transacoes-panel importPanel import-panel">
-    <nav class="import-tabs" data-importacao-tabs="transacoes"></nav>
+<style>
+  :root {
+    --purple:#7B4DFF;
+    --purple-dark:#5B2ECC;
+    --bg:#F7F3FF;
+    --white:#ffffff;
+    --text:#120B35;
+    --muted:#766BA8;
+    --border:#DDD6EE;
+    --green:#087A36;
+    --green-bg:#DDF8E7;
+    --green-bdr:#A8E8BF;
+    --warn:#8B4500;
+    --warn-bg:#FFF8E1;
+    --warn-bdr:#FFD54F;
+    --danger:#C62828;
+    --danger-bg:#FFF5F5;
+    --danger-bdr:#FFCDD2;
+    --blue:#1357A6;
+    --blue-bg:#EAF3FF;
+    --blue-bdr:#B8D7FF;
+  }
 
-    <p class="form-hint">Nada vira registro definitivo aqui: nada baixa estoque. Tudo fica em conferência até você confirmar.</p>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <section class="kzera-card soft-card recovery-card" data-retomada-humana hidden>
-      <span class="eyebrow">Voltar com calma</span>
-      <h3>Encontramos uma confirmação interrompida.</h3>
-      <p><strong>Nada foi perdido.</strong></p>
-      <p class="form-hint">Seu histórico ainda está seguro. Primeiro veja o que aconteceu. Depois você escolhe limpar os restos e abrir a revisão.</p>
-      <div class="import-summary" data-retomada-resumo></div>
-      <div class="compact-actions" data-retomada-acoes></div>
-      <div class="recovery-review" data-retomada-revisao tabindex="-1" hidden></div>
+  .importar-historico-financeiro {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+
+  .importar-historico-financeiro .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 12px;
+    background: #120B35;
+    color: #fff;
+  }
+
+  .importar-historico-financeiro .hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+  }
+
+  .importar-historico-financeiro .hamburger span {
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: #fff;
+  }
+
+  .importar-historico-financeiro .header-title {
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .importar-historico-financeiro .btn-header {
+    border: 1px solid rgba(255,255,255,.24);
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border-radius: 10px;
+    padding: 6px 11px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 850;
+  }
+
+  .importar-historico-financeiro .screen {
+    padding: 18px 16px 104px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .importar-historico-financeiro .hero { margin-bottom: 14px; }
+
+  .importar-historico-financeiro .hero h1 {
+    font-size: 24px;
+    line-height: 1.05;
+    letter-spacing: -0.05em;
+    margin-bottom: 7px;
+  }
+
+  .importar-historico-financeiro .hero p {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 750;
+    line-height: 1.35;
+  }
+
+  .importar-historico-financeiro .section-head {
+    margin: 18px 0 10px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .importar-historico-financeiro .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 10px rgba(30,14,70,.06);
+  }
+
+  .importar-historico-financeiro .file-card { display: grid; gap: 12px; }
+
+  .importar-historico-financeiro .file-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .importar-historico-financeiro .file-title {
+    font-size: 16px;
+    font-weight: 950;
+    letter-spacing: -0.025em;
+    margin-bottom: 3px;
+  }
+
+  .importar-historico-financeiro .file-meta {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 750;
+  }
+
+  .importar-historico-financeiro .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 950;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: #F0EDF8;
+  }
+
+  .importar-historico-financeiro .badge.ok { color: var(--green); background: var(--green-bg); border-color: var(--green-bdr); }
+  .importar-historico-financeiro .badge.warn { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-bdr); }
+  .importar-historico-financeiro .badge.danger { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-bdr); }
+  .importar-historico-financeiro .badge.info { color: var(--blue); background: var(--blue-bg); border-color: var(--blue-bdr); }
+
+  .importar-historico-financeiro .drop {
+    border: 1.5px dashed #C4BAE4;
+    background: #FBF9FF;
+    border-radius: 16px;
+    padding: 13px;
+    color: var(--purple-dark);
+    font-size: 14px;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  .importar-historico-financeiro .match-card { background: linear-gradient(180deg, #fff 0%, #FBF9FF 100%); }
+
+  .importar-historico-financeiro .match-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .importar-historico-financeiro .match-title {
+    font-size: 17px;
+    font-weight: 950;
+    letter-spacing: -0.035em;
+  }
+
+  .importar-historico-financeiro .match-sub {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 760;
+    line-height: 1.35;
+  }
+
+  .importar-historico-financeiro .mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .importar-historico-financeiro .mini {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: #fff;
+    padding: 12px;
+  }
+
+  .importar-historico-financeiro .mini.ok { background: var(--green-bg); border-color: var(--green-bdr); }
+  .importar-historico-financeiro .mini.warn { background: var(--warn-bg); border-color: var(--warn-bdr); }
+  .importar-historico-financeiro .mini.info { background: var(--blue-bg); border-color: var(--blue-bdr); }
+
+  .importar-historico-financeiro .mini-label {
+    min-height: 31px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 8px;
+  }
+
+  .importar-historico-financeiro .mini-value {
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: -0.05em;
+  }
+
+  .importar-historico-financeiro .callout {
+    border-radius: 18px;
+    padding: 14px;
+    border: 1px solid var(--green-bdr);
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 14px;
+    line-height: 1.35;
+    font-weight: 850;
+    margin-bottom: 12px;
+  }
+
+  .importar-historico-financeiro .issues { display: grid; gap: 9px; }
+
+  .importar-historico-financeiro .issue {
+    display: grid;
+    gap: 8px;
+    padding: 13px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: #fff;
+  }
+
+  .importar-historico-financeiro .issue-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .importar-historico-financeiro .issue-title {
+    font-size: 15px;
+    font-weight: 950;
+    letter-spacing: -0.025em;
+  }
+
+  .importar-historico-financeiro .issue-meta {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.35;
+  }
+
+  .importar-historico-financeiro .issue-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .importar-historico-financeiro .btn {
+    min-height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 900;
+    background: #fff;
+  }
+
+  .importar-historico-financeiro .btn-soft { color: var(--purple-dark); background: #F5F0FF; border-color: #C4BAE4; }
+  .importar-historico-financeiro .btn-warn { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-bdr); }
+
+  .importar-historico-financeiro .bottom-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px 16px 18px;
+    background: linear-gradient(180deg, rgba(247,243,255,.18), rgba(247,243,255,.98) 36%);
+    border-top: 1px solid rgba(221,214,238,.75);
+    backdrop-filter: blur(10px);
+  }
+
+  .importar-historico-financeiro .bottom-inner {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .importar-historico-financeiro .btn-primary {
+    width: 100%;
+    height: 54px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(180deg, var(--purple) 0%, var(--purple-dark) 100%);
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 950;
+    box-shadow: 0 8px 24px rgba(91,46,204,.35);
+  }
+
+  .importar-historico-financeiro .safe-note {
+    margin-top: 7px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 760;
+  }
+</style>
+
+<div class="importar-historico-financeiro" data-testid="importacao-transacoes-financeiro">
+  <div class="app-header">
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <span class="header-title">Importar histórico financeiro</span>
+    <button class="btn-header">Novo</button>
+  </div>
+
+  <main class="screen">
+    <section class="hero">
+      <h1>Importar transações e financeiro</h1>
+      <p>Traga os dois arquivos. Primeiro o sistema cruza tudo. Nada vira oficial antes da prévia segura.</p>
     </section>
 
-    <div class="toast" data-importacao-mensagem hidden></div>
+    <div class="section-head">Arquivos</div>
 
-    <div class="import-grid">
-      <form data-import-transacoes class="kzera-card soft-card">
-        <h3>Planilha de registros</h3>
-        <label><span>Nome do arquivo</span><input name="nomeArquivo" value="transacoes.csv" data-nome-arquivo-transacoes /></label>
-        <label class="file-upload-label"><span>Escolher arquivo CSV</span><input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-transacoes aria-label="Escolher arquivo de registros" /></label>
-        <label><span>Ou cole o conteúdo aqui</span><textarea name="conteudo" rows="5" placeholder="Cole a planilha de registros aqui" data-conteudo-transacoes></textarea></label>
-        <button class="icon-button text-icon primary-icon" type="submit">⇩ Preparar registros</button>
-      </form>
+    <section class="card file-card">
+      <div class="file-top">
+        <div>
+          <div class="file-title">Transações / vendas</div>
+          <div class="file-meta" data-file-meta-transacoes>vendas-junho.csv · 128 linhas · R$ 4.892,30</div>
+        </div>
+        <span class="badge ok" data-status-transacoes>Lido</span>
+      </div>
+      <div class="drop" data-import-transacoes>Trocar arquivo de transações</div>
+    </section>
 
-      <form data-import-financeiro class="kzera-card soft-card">
-        <h3>Movimentações financeiras</h3>
-        <label><span>Nome do arquivo</span><input name="nomeArquivo" value="financeiro.csv" data-nome-arquivo-financeiro /></label>
-        <label class="file-upload-label"><span>Escolher arquivo CSV</span><input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-financeiro aria-label="Escolher arquivo financeiro" /></label>
-        <label><span>Ou cole o conteúdo aqui</span><textarea name="conteudo" rows="5" placeholder="Cole a planilha financeira aqui" data-conteudo-financeiro></textarea></label>
-        <button class="icon-button text-icon primary-icon" type="submit">⇩ Preparar financeiro</button>
-      </form>
+    <section class="card file-card">
+      <div class="file-top">
+        <div>
+          <div class="file-title">Financeiro / pagamentos</div>
+          <div class="file-meta" data-file-meta-financeiro>financeiro-junho.csv · 132 linhas · Pix, dinheiro e cartão</div>
+        </div>
+        <span class="badge ok" data-status-financeiro>Lido</span>
+      </div>
+      <div class="drop" data-import-financeiro>Trocar arquivo financeiro</div>
+    </section>
+
+    <div class="section-head">Conciliação</div>
+
+    <section class="card match-card">
+      <div class="match-main">
+        <div>
+          <div class="match-title">Pronto para gerar prévia</div>
+          <div class="match-sub">As transações foram cruzadas com pagamentos e movimentos financeiros.</div>
+        </div>
+        <span class="badge info">Prévia</span>
+      </div>
+
+      <div class="mini-grid">
+        <div class="mini ok"><div class="mini-label">Transações encontradas</div><div class="mini-value" data-mini-transacoes>128</div></div>
+        <div class="mini ok"><div class="mini-label">Pagamentos encontrados</div><div class="mini-value" data-mini-pagamentos>132</div></div>
+        <div class="mini info"><div class="mini-label">Vínculos seguros</div><div class="mini-value" data-mini-vinculos>118</div></div>
+        <div class="mini warn"><div class="mini-label">Pendências</div><div class="mini-value" data-mini-pendencias>10</div></div>
+      </div>
+    </section>
+
+    <div class="callout">Essa confirmação cria histórico financeiro. Não mexe no estoque.</div>
+
+    <div class="section-head">Pendências principais</div>
+
+    <section class="issues">
+      <article class="issue">
+        <div class="issue-top"><div><div class="issue-title">Falta financeiro</div><div class="issue-meta">3 vendas não têm pagamento correspondente.</div></div><span class="badge warn">3</span></div>
+        <div class="issue-actions"><button class="btn btn-soft" type="button">Ver vendas</button><button class="btn btn-warn" type="button">Marcar revisão</button></div>
+      </article>
+
+      <article class="issue">
+        <div class="issue-top"><div><div class="issue-title">Valor diferente</div><div class="issue-meta">4 pagamentos têm valor diferente da transação.</div></div><span class="badge warn">4</span></div>
+        <div class="issue-actions"><button class="btn btn-soft" type="button">Comparar</button><button class="btn btn-warn" type="button">Resolver depois</button></div>
+      </article>
+
+      <article class="issue">
+        <div class="issue-top"><div><div class="issue-title">Pode estar duplicado</div><div class="issue-meta">3 registros batem em data, perfil e valor.</div></div><span class="badge danger">3</span></div>
+        <div class="issue-actions"><button class="btn btn-soft" type="button">Comparar</button><button class="btn btn-warn" type="button">Bloquear</button></div>
+      </article>
+    </section>
+  </main>
+
+  <div class="bottom-bar">
+    <div class="bottom-inner">
+      <button class="btn-primary" type="button" data-previsualizar-historico-financeiro>Gerar prévia segura</button>
+      <div class="safe-note">Nada será confirmado agora.</div>
     </div>
-
-    <section class="kzera-card soft-card">
-      <h3>Resumo da conferência</h3>
-      <div class="import-grid two-cols">
-        <div class="import-summary" data-resumo-transacoes></div>
-        <div class="import-summary" data-resumo-financeiro></div>
-      </div>
-    </section>
-
-    <section class="kzera-card soft-card">
-      <h3>Últimos registros importados</h3>
-      <p class="form-hint" data-limite-transacoes></p>
-      <table class="kzera-table compact-table">
-        <thead><tr><th>Transação</th><th>Perfil</th><th>Status</th><th>Pendências</th><th>Ações</th></tr></thead>
-        <tbody data-tabela-transacoes></tbody>
-      </table>
-    </section>
-
-    <section class="kzera-card soft-card">
-      <h3>Últimas movimentações financeiras</h3>
-      <p class="form-hint" data-limite-financeiro></p>
-      <table class="kzera-table compact-table">
-        <thead><tr><th>Ref.</th><th>Perfil</th><th>Status</th><th>Pendências</th><th>Ações</th></tr></thead>
-        <tbody data-tabela-financeiro></tbody>
-      </table>
-    </section>
-
-    <section class="kzera-card soft-card" data-testid="conciliacao-transacoes-financeiro">
-      <h3>Conferência dos pagamentos</h3>
-      <div class="import-summary" data-conciliacao-resumo></div>
-      <div class="bulk-approval-box" data-aprovacao-massa></div>
-      <p class="form-hint" data-conciliacao-limite-mobile hidden></p>
-      <div class="compact-actions"><button class="icon-button text-icon primary-icon" type="button" data-conciliar-importacao>↻ Conferir novamente</button></div>
-      <table class="kzera-table compact-table">
-        <thead><tr><th>Seguro</th><th>Transação</th><th>Status</th><th>Confiança</th><th>Pendente</th><th>Sugestão</th><th>Ações</th></tr></thead>
-        <tbody data-tabela-conciliacao></tbody>
-      </table>
-    </section>
-
-    <section class="kzera-card soft-card" data-testid="confirmacao-historico-financeiro">
-      <h3>Revisar e confirmar histórico</h3>
-      <p class="form-hint">Aqui você confere antes de transformar o histórico em registros definitivos. Estoque não será mexido.</p>
-      <p class="form-hint">Fluxo seguro: ver antes, respirar, confirmar só quando estiver pronta.</p>
-      <div class="import-summary" data-confirmacao-resumo></div>
-      <details class="inline-details" data-detalhes-financeiros-avancados><summary>Ver valores financeiros</summary><div class="import-summary" data-confirmacao-valores></div></details>
-      <details class="inline-details" data-confirmacao-bloqueios hidden><summary data-confirmacao-bloqueios-titulo>Ver o que precisa de atenção</summary><div class="compact-actions"><button class="icon-button text-icon" type="button" data-exportar-bloqueios-confirmacao>Copiar lista completa</button></div><textarea class="readonly-export" readonly rows="6" data-bloqueios-exportacao></textarea><ul class="compact-list" data-confirmacao-bloqueios-lista></ul></details>
-      <details class="inline-details" data-confirmacao-avisos hidden><summary data-confirmacao-avisos-titulo>Ver avisos</summary><ul class="compact-list" data-confirmacao-avisos-lista></ul></details>
-      <div class="compact-actions">
-        <button class="icon-button text-icon" type="button" data-previsualizar-historico-financeiro>👁 Ver antes de confirmar</button>
-        <button class="icon-button text-icon" type="button" data-armar-confirmacao-historico hidden>Estou pronta para confirmar</button>
-        <button class="icon-button text-icon primary-icon" type="button" data-confirmar-historico-financeiro hidden>✓ Confirmar agora</button>
-        <span class="form-hint" data-confirmacao-salva hidden>Confirmação salva. Se precisar corrigir, use a área avançada abaixo.</span>
-      </div>
-      <details class="inline-details danger-zone" data-lotes-confirmados hidden><summary data-lotes-confirmados-titulo>Área avançada: corrigir algo já confirmado</summary><p class="form-hint">Use só se tiver certeza. Para liberar o botão, digite CANCELAR COM CUIDADO.</p><input data-token-corrigir-confirmacao placeholder="Digite CANCELAR COM CUIDADO" /><ul class="compact-list" data-lotes-confirmados-lista></ul></details>
-    </section>
-  </section>
-</section>
+  </div>
+</div>
