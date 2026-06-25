@@ -32,7 +32,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci --include=dev
+        run: npm install --include=dev
 
       - name: Verify build toolchain
         run: |
@@ -41,6 +41,8 @@ jobs:
           echo "PWD: $(pwd)"
           echo "package.json version:"
           node -e "console.log(require('./package.json').version)"
+          echo "vite package resolution:"
+          node -e "console.log(require.resolve('vite'))"
           echo "npm bin resolution:"
           npm exec vite -- --version
           echo "node_modules/.bin contents:"
