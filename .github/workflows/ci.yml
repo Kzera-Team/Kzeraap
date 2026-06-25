@@ -38,7 +38,7 @@ jobs:
         run: npm exec vite -- --version
 
       - name: Build
-        run: npm run build
+        run: npm exec vite -- build
 
       - name: Tests and typecheck
         run: npm test
