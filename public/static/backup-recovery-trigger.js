@@ -1,5 +1,10 @@
 (() => {
-  const LABEL_ID = 'backup-recovery-test-labels';
+  const TAP_TARGET_SELECTOR = '.auth-icon';
+  const TAP_LIMIT = 10;
+  const TAP_WINDOW_MS = 4200;
+
+  let tapCount = 0;
+  let firstTapAt = 0;
 
   function closeBackupDialog() {
     document.querySelector('[data-backup-picker-overlay]')?.remove();
@@ -72,7 +77,7 @@
       const file = input.files && input.files[0];
       if (!file) return;
       selected.textContent = `Backup selecionado: ${file.name}`;
-      handleSelectedFile(file, 'visible-popup');
+      handleSelectedFile(file, 'auth-logo-10-taps');
     });
 
     card.appendChild(title);
@@ -84,59 +89,25 @@
     document.body.appendChild(overlay);
   }
 
-  function createActionLabel(text, onClick) {
-    const label = document.createElement('label');
-    label.textContent = text;
-    label.tabIndex = 0;
-    label.style.display = 'block';
-    label.style.margin = '10px 0 0';
-    label.style.padding = '12px 14px';
-    label.style.borderRadius = '12px';
-    label.style.background = '#111';
-    label.style.color = '#fff';
-    label.style.fontWeight = '700';
-    label.style.textAlign = 'center';
-    label.style.cursor = 'pointer';
-    label.addEventListener('click', onClick);
-    return label;
+  function handleLogoTap(event) {
+    const target = event.target;
+    if (!(target instanceof Element) || !target.closest(TAP_TARGET_SELECTOR)) return;
+
+    const now = Date.now();
+    if (!firstTapAt || now - firstTapAt > TAP_WINDOW_MS) {
+      firstTapAt = now;
+      tapCount = 0;
+    }
+
+    tapCount += 1;
+
+    if (tapCount >= TAP_LIMIT) {
+      tapCount = 0;
+      firstTapAt = 0;
+      showVisiblePickerDialog();
+    }
   }
 
-  function createNativeFileLabel() {
-    const label = createActionLabel('Restaurar backup', () => {});
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.dat,.json,application/json,application/octet-stream,text/plain';
-    input.style.position = 'absolute';
-    input.style.width = '1px';
-    input.style.height = '1px';
-    input.style.opacity = '0.01';
-    input.style.pointerEvents = 'none';
-    input.addEventListener('change', () => {
-      const file = input.files && input.files[0];
-      handleSelectedFile(file, 'native-label');
-    });
-    label.appendChild(input);
-    return label;
-  }
-
-  function mountRecoveryLabels() {
-    if (document.getElementById(LABEL_ID)) return;
-
-    const setupForm = document.querySelector('[data-testid="setup-form"]');
-    if (!setupForm) return;
-
-    const box = document.createElement('div');
-    box.id = LABEL_ID;
-    box.style.marginTop = '14px';
-
-    box.appendChild(createActionLabel('Restaurar backup', showVisiblePickerDialog));
-    box.appendChild(createNativeFileLabel());
-
-    setupForm.appendChild(box);
-  }
-
-  mountRecoveryLabels();
-
-  const observer = new MutationObserver(mountRecoveryLabels);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener('click', handleLogoTap, true);
+  document.addEventListener('touchend', handleLogoTap, true);
 })();
