@@ -28,10 +28,10 @@ jobs:
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
-          set -o pipefail
-          echo "Starting npm install" | tee install.log
-          npm config set registry https://registry.npmjs.org/
-          npm install --include=dev --registry=https://registry.npmjs.org/ 2>&1 | tee -a install.log
+          echo "Starting npm install" > install.log
+          npm config set registry https://registry.npmjs.org/ >> install.log 2>&1
+          npm install --include=dev --registry=https://registry.npmjs.org/ >> install.log 2>&1
+          cat install.log
 
       - name: Upload install log
         if: always()
@@ -53,11 +53,20 @@ jobs:
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
-          set -o pipefail
-          npm exec vite -- build 2>&1 | tee build.log
+          npm exec vite -- build > build.log 2>&1
+          cat build.log
 
       - name: Tests and typecheck
-        run: npm test
+        run: |
+          npm test > test.log 2>&1
+          cat test.log
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log
+          path: test.log
 
       - name: Upload build log
         if: always()
