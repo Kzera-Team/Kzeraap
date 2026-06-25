@@ -30,16 +30,22 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
           set -o pipefail
           echo "Starting npm install with dev dependencies" | tee install.log
           echo "Node before install: $(node --version)" | tee -a install.log
           echo "NPM before install: $(npm --version)" | tee -a install.log
+          echo "Registry before override: $(npm config get registry)" | tee -a install.log
+          npm config set registry https://registry.npmjs.org/
+          echo "Registry after override: $(npm config get registry)" | tee -a install.log
           echo "package-lock present:" | tee -a install.log
           ls -la package-lock.json 2>&1 | tee -a install.log || true
-          npm install --include=dev 2>&1 | tee -a install.log
+          npm install --include=dev --registry=https://registry.npmjs.org/ 2>&1 | tee -a install.log
 
       - name: Upload install log
         if: always()
@@ -49,9 +55,12 @@ jobs:
           path: install.log
 
       - name: Verify build toolchain
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
           echo "Node: $(node --version)"
           echo "NPM: $(npm --version)"
+          echo "Registry: $(npm config get registry)"
           echo "PWD: $(pwd)"
           echo "package.json version:"
           node -e "console.log(require('./package.json').version)"
@@ -63,6 +72,8 @@ jobs:
           ls -la node_modules/.bin || true
 
       - name: Build
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
           set -o pipefail
           echo "Starting Vite build through npm exec"
