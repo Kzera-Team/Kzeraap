@@ -30,15 +30,61 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
-        run: npm ci --include=dev
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+        run: |
+          set -o pipefail
+          echo "Starting npm install with dev dependencies" | tee install.log
+          echo "Node before install: $(node --version)" | tee -a install.log
+          echo "NPM before install: $(npm --version)" | tee -a install.log
+          echo "Registry before override: $(npm config get registry)" | tee -a install.log
+          npm config set registry https://registry.npmjs.org/
+          echo "Registry after override: $(npm config get registry)" | tee -a install.log
+          echo "package-lock present:" | tee -a install.log
+          ls -la package-lock.json 2>&1 | tee -a install.log || true
+          npm install --include=dev --registry=https://registry.npmjs.org/ 2>&1 | tee -a install.log
+
+      - name: Upload install log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: install-log
+          path: install.log
 
       - name: Verify build toolchain
-        run: npm exec vite -- --version
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+        run: |
+          echo "Node: $(node --version)"
+          echo "NPM: $(npm --version)"
+          echo "Registry: $(npm config get registry)"
+          echo "PWD: $(pwd)"
+          echo "package.json version:"
+          node -e "console.log(require('./package.json').version)"
+          echo "vite package resolution:"
+          node -e "console.log(require.resolve('vite'))"
+          echo "npm bin resolution:"
+          npm exec vite -- --version
+          echo "node_modules/.bin contents:"
+          ls -la node_modules/.bin || true
 
       - name: Build
-        run: npm exec vite -- build
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+        run: |
+          set -o pipefail
+          echo "Starting Vite build through npm exec"
+          npm exec vite -- build 2>&1 | tee build.log
 
       - name: Tests and typecheck
         run: npm test
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
