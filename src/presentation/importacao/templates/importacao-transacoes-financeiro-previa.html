@@ -1,0 +1,59 @@
+<section class="ifwrap">
+  <section class="ifcard ifgreen">
+    <div class="iftitle">Pronto para confirmar vendas históricas.</div>
+    <p>Essa confirmação cria histórico financeiro. Não mexe no estoque.</p>
+  </section>
+
+  <div class="ifhead">O que será criado</div>
+
+  <div class="ifgrid">
+    <div class="ifstat">
+      <div class="iflabel">Vendas</div>
+      <div class="ifvalue" data-previa-transacoes>0</div>
+    </div>
+    <div class="ifstat">
+      <div class="iflabel">Pagamentos</div>
+      <div class="ifvalue" data-previa-pagamentos>0</div>
+    </div>
+  </div>
+
+  <div class="ifgrid">
+    <div class="ifstat">
+      <div class="iflabel">Movimentos</div>
+      <div class="ifvalue" data-previa-movimentos>0</div>
+    </div>
+    <div class="ifstat warn">
+      <div class="iflabel">Bloqueados</div>
+      <div class="ifvalue" data-previa-bloqueados>0</div>
+    </div>
+  </div>
+
+  <div class="ifhead">Impacto previsto</div>
+
+  <section class="ifcard">
+    <div class="ifrow">
+      <div>
+        <div class="iftitle">Faturamento previsto</div>
+        <div class="ifmeta">Somente registros aprovados</div>
+      </div>
+      <span class="ifbadge ok" data-previa-faturamento>—</span>
+    </div>
+  </section>
+
+  <section class="ifcard">
+    <div class="ifrow">
+      <div>
+        <div class="iftitle">Valor pendente</div>
+        <div class="ifmeta">Pagamentos não encontrados</div>
+      </div>
+      <span class="ifbadge warn" data-previa-pendente>—</span>
+    </div>
+  </section>
+</section>
+
+<div class="ifbar">
+  <div class="ifbar-inner">
+    <button class="ifprimary" data-abrir-confirmacao>Confirmar prévia</button>
+    <button class="ifsecondary" data-ir-detalhes>Ver detalhes avançados</button>
+  </div>
+</div>
