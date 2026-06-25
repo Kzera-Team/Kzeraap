@@ -1,1 +1,92 @@
-<main data-template="importacao-transacoes-financeiro"></main>
+<section class="kzera-screen import-only-screen import-transacoes-screen import-page-background" data-testid="importacao-transacoes-financeiro">
+  <section class="kzera-card import-screen import-transacoes-panel importPanel import-panel">
+    <nav class="import-tabs" data-importacao-tabs="transacoes"></nav>
+
+    <p class="form-hint">Nada vira registro definitivo aqui: nada baixa estoque. Tudo fica em conferência até você confirmar.</p>
+
+    <section class="kzera-card soft-card recovery-card" data-retomada-humana hidden>
+      <span class="eyebrow">Voltar com calma</span>
+      <h3>Encontramos uma confirmação interrompida.</h3>
+      <p><strong>Nada foi perdido.</strong></p>
+      <p class="form-hint">Seu histórico ainda está seguro. Primeiro veja o que aconteceu. Depois você escolhe limpar os restos e abrir a revisão.</p>
+      <div class="import-summary" data-retomada-resumo></div>
+      <div class="compact-actions" data-retomada-acoes></div>
+      <div class="recovery-review" data-retomada-revisao tabindex="-1" hidden></div>
+    </section>
+
+    <div class="toast" data-importacao-mensagem hidden></div>
+
+    <div class="import-grid">
+      <form data-import-transacoes class="kzera-card soft-card">
+        <h3>Planilha de registros</h3>
+        <label><span>Nome do arquivo</span><input name="nomeArquivo" value="transacoes.csv" data-nome-arquivo-transacoes /></label>
+        <label class="file-upload-label"><span>Escolher arquivo CSV</span><input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-transacoes aria-label="Escolher arquivo de registros" /></label>
+        <label><span>Ou cole o conteúdo aqui</span><textarea name="conteudo" rows="5" placeholder="Cole a planilha de registros aqui" data-conteudo-transacoes></textarea></label>
+        <button class="icon-button text-icon primary-icon" type="submit">⇩ Preparar registros</button>
+      </form>
+
+      <form data-import-financeiro class="kzera-card soft-card">
+        <h3>Movimentações financeiras</h3>
+        <label><span>Nome do arquivo</span><input name="nomeArquivo" value="financeiro.csv" data-nome-arquivo-financeiro /></label>
+        <label class="file-upload-label"><span>Escolher arquivo CSV</span><input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" data-file-upload-financeiro aria-label="Escolher arquivo financeiro" /></label>
+        <label><span>Ou cole o conteúdo aqui</span><textarea name="conteudo" rows="5" placeholder="Cole a planilha financeira aqui" data-conteudo-financeiro></textarea></label>
+        <button class="icon-button text-icon primary-icon" type="submit">⇩ Preparar financeiro</button>
+      </form>
+    </div>
+
+    <section class="kzera-card soft-card">
+      <h3>Resumo da conferência</h3>
+      <div class="import-grid two-cols">
+        <div class="import-summary" data-resumo-transacoes></div>
+        <div class="import-summary" data-resumo-financeiro></div>
+      </div>
+    </section>
+
+    <section class="kzera-card soft-card">
+      <h3>Últimos registros importados</h3>
+      <p class="form-hint" data-limite-transacoes></p>
+      <table class="kzera-table compact-table">
+        <thead><tr><th>Transação</th><th>Perfil</th><th>Status</th><th>Pendências</th><th>Ações</th></tr></thead>
+        <tbody data-tabela-transacoes></tbody>
+      </table>
+    </section>
+
+    <section class="kzera-card soft-card">
+      <h3>Últimas movimentações financeiras</h3>
+      <p class="form-hint" data-limite-financeiro></p>
+      <table class="kzera-table compact-table">
+        <thead><tr><th>Ref.</th><th>Perfil</th><th>Status</th><th>Pendências</th><th>Ações</th></tr></thead>
+        <tbody data-tabela-financeiro></tbody>
+      </table>
+    </section>
+
+    <section class="kzera-card soft-card" data-testid="conciliacao-transacoes-financeiro">
+      <h3>Conferência dos pagamentos</h3>
+      <div class="import-summary" data-conciliacao-resumo></div>
+      <div class="bulk-approval-box" data-aprovacao-massa></div>
+      <p class="form-hint" data-conciliacao-limite-mobile hidden></p>
+      <div class="compact-actions"><button class="icon-button text-icon primary-icon" type="button" data-conciliar-importacao>↻ Conferir novamente</button></div>
+      <table class="kzera-table compact-table">
+        <thead><tr><th>Seguro</th><th>Transação</th><th>Status</th><th>Confiança</th><th>Pendente</th><th>Sugestão</th><th>Ações</th></tr></thead>
+        <tbody data-tabela-conciliacao></tbody>
+      </table>
+    </section>
+
+    <section class="kzera-card soft-card" data-testid="confirmacao-historico-financeiro">
+      <h3>Revisar e confirmar histórico</h3>
+      <p class="form-hint">Aqui você confere antes de transformar o histórico em registros definitivos. Estoque não será mexido.</p>
+      <p class="form-hint">Fluxo seguro: ver antes, respirar, confirmar só quando estiver pronta.</p>
+      <div class="import-summary" data-confirmacao-resumo></div>
+      <details class="inline-details" data-detalhes-financeiros-avancados><summary>Ver valores financeiros</summary><div class="import-summary" data-confirmacao-valores></div></details>
+      <details class="inline-details" data-confirmacao-bloqueios hidden><summary data-confirmacao-bloqueios-titulo>Ver o que precisa de atenção</summary><div class="compact-actions"><button class="icon-button text-icon" type="button" data-exportar-bloqueios-confirmacao>Copiar lista completa</button></div><textarea class="readonly-export" readonly rows="6" data-bloqueios-exportacao></textarea><ul class="compact-list" data-confirmacao-bloqueios-lista></ul></details>
+      <details class="inline-details" data-confirmacao-avisos hidden><summary data-confirmacao-avisos-titulo>Ver avisos</summary><ul class="compact-list" data-confirmacao-avisos-lista></ul></details>
+      <div class="compact-actions">
+        <button class="icon-button text-icon" type="button" data-previsualizar-historico-financeiro>👁 Ver antes de confirmar</button>
+        <button class="icon-button text-icon" type="button" data-armar-confirmacao-historico hidden>Estou pronta para confirmar</button>
+        <button class="icon-button text-icon primary-icon" type="button" data-confirmar-historico-financeiro hidden>✓ Confirmar agora</button>
+        <span class="form-hint" data-confirmacao-salva hidden>Confirmação salva. Se precisar corrigir, use a área avançada abaixo.</span>
+      </div>
+      <details class="inline-details danger-zone" data-lotes-confirmados hidden><summary data-lotes-confirmados-titulo>Área avançada: corrigir algo já confirmado</summary><p class="form-hint">Use só se tiver certeza. Para liberar o botão, digite CANCELAR COM CUIDADO.</p><input data-token-corrigir-confirmacao placeholder="Digite CANCELAR COM CUIDADO" /><ul class="compact-list" data-lotes-confirmados-lista></ul></details>
+    </section>
+  </section>
+</section>
