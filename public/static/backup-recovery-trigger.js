@@ -1,18 +1,18 @@
 (() => {
-  const REQUIRED_CLICKS = 5;
-  let passwordClicks = 0;
-  let confirmationClicks = 0;
-
-  function resetCounters() {
-    passwordClicks = 0;
-    confirmationClicks = 0;
-  }
+  const LABEL_ID = 'backup-recovery-test-labels';
 
   function closeBackupDialog() {
     document.querySelector('[data-backup-picker-overlay]')?.remove();
   }
 
-  function showBackupDialog() {
+  function handleSelectedFile(file, mode) {
+    if (!file) return;
+    window.dispatchEvent(new CustomEvent('kzera:backup-file-selected', {
+      detail: { file, mode }
+    }));
+  }
+
+  function showVisiblePickerDialog() {
     closeBackupDialog();
 
     const overlay = document.createElement('div');
@@ -41,7 +41,7 @@
     title.style.fontSize = '20px';
 
     const text = document.createElement('p');
-    text.textContent = 'Escolha o arquivo de backup exportado pelo sistema.';
+    text.textContent = 'Toque no campo abaixo e escolha o arquivo de backup.';
     text.style.margin = '0 0 16px';
     text.style.fontSize = '14px';
     text.style.color = '#555';
@@ -52,9 +52,10 @@
     input.style.width = '100%';
     input.style.margin = '8px 0 16px';
 
-    const actions = document.createElement('div');
-    actions.style.display = 'flex';
-    actions.style.justifyContent = 'flex-end';
+    const selected = document.createElement('p');
+    selected.style.margin = '0 0 16px';
+    selected.style.fontSize = '13px';
+    selected.style.color = '#333';
 
     const cancel = document.createElement('button');
     cancel.type = 'button';
@@ -65,52 +66,77 @@
     cancel.style.background = '#eee';
     cancel.style.color = '#111';
 
-    const selected = document.createElement('p');
-    selected.style.margin = '0';
-    selected.style.fontSize = '13px';
-    selected.style.color = '#333';
-
     cancel.addEventListener('click', closeBackupDialog);
 
     input.addEventListener('change', () => {
       const file = input.files && input.files[0];
       if (!file) return;
       selected.textContent = `Backup selecionado: ${file.name}`;
-      window.dispatchEvent(new CustomEvent('kzera:backup-file-selected', {
-        detail: { file }
-      }));
+      handleSelectedFile(file, 'visible-popup');
     });
 
-    actions.appendChild(cancel);
     card.appendChild(title);
     card.appendChild(text);
     card.appendChild(input);
     card.appendChild(selected);
-    card.appendChild(actions);
+    card.appendChild(cancel);
     overlay.appendChild(card);
     document.body.appendChild(overlay);
   }
 
-  document.addEventListener('click', event => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
+  function createActionLabel(text, onClick) {
+    const label = document.createElement('label');
+    label.textContent = text;
+    label.tabIndex = 0;
+    label.style.display = 'block';
+    label.style.margin = '10px 0 0';
+    label.style.padding = '12px 14px';
+    label.style.borderRadius = '12px';
+    label.style.background = '#111';
+    label.style.color = '#fff';
+    label.style.fontWeight = '700';
+    label.style.textAlign = 'center';
+    label.style.cursor = 'pointer';
+    label.addEventListener('click', onClick);
+    return label;
+  }
 
-    const button = target.closest('[data-toggle-password]');
-    if (!(button instanceof HTMLElement)) return;
+  function createNativeFileLabel() {
+    const label = createActionLabel('Restaurar backup', () => {});
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.dat,.json,application/json,application/octet-stream,text/plain';
+    input.style.position = 'absolute';
+    input.style.width = '1px';
+    input.style.height = '1px';
+    input.style.opacity = '0.01';
+    input.style.pointerEvents = 'none';
+    input.addEventListener('change', () => {
+      const file = input.files && input.files[0];
+      handleSelectedFile(file, 'native-label');
+    });
+    label.appendChild(input);
+    return label;
+  }
 
-    const passwordTarget = button.dataset.togglePassword;
+  function mountRecoveryLabels() {
+    if (document.getElementById(LABEL_ID)) return;
 
-    if (passwordTarget === 'setup-password') {
-      passwordClicks += 1;
-    }
+    const setupForm = document.querySelector('[data-testid="setup-form"]');
+    if (!setupForm) return;
 
-    if (passwordTarget === 'setup-confirmation') {
-      confirmationClicks += 1;
-    }
+    const box = document.createElement('div');
+    box.id = LABEL_ID;
+    box.style.marginTop = '14px';
 
-    if (passwordClicks >= REQUIRED_CLICKS && confirmationClicks >= REQUIRED_CLICKS) {
-      resetCounters();
-      showBackupDialog();
-    }
-  }, true);
+    box.appendChild(createActionLabel('Restaurar backup', showVisiblePickerDialog));
+    box.appendChild(createNativeFileLabel());
+
+    setupForm.appendChild(box);
+  }
+
+  mountRecoveryLabels();
+
+  const observer = new MutationObserver(mountRecoveryLabels);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
