@@ -1,0 +1,1 @@
+Perfil nunca é excluído

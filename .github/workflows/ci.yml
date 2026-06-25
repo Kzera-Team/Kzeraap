@@ -1,6 +1,3 @@
-# CI validation for Kzera desenvolvimento branch
-# Runs automatically only for pull requests targeting desenvolvimento.
-# Manual execution remains available through workflow_dispatch.
 name: CI
 
 on:
@@ -11,10 +8,6 @@ on:
 
 permissions:
   contents: read
-
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build-test-typecheck:
@@ -29,23 +22,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
           registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
-          set -o pipefail
-          echo "Starting npm install with dev dependencies" | tee install.log
-          echo "Node before install: $(node --version)" | tee -a install.log
-          echo "NPM before install: $(npm --version)" | tee -a install.log
-          echo "Registry before override: $(npm config get registry)" | tee -a install.log
-          npm config set registry https://registry.npmjs.org/
-          echo "Registry after override: $(npm config get registry)" | tee -a install.log
-          echo "package-lock present:" | tee -a install.log
-          ls -la package-lock.json 2>&1 | tee -a install.log || true
-          npm install --include=dev --registry=https://registry.npmjs.org/ 2>&1 | tee -a install.log
+          echo "Starting npm install" > install.log
+          npm config set registry https://registry.npmjs.org/ >> install.log 2>&1
+          npm install --include=dev --registry=https://registry.npmjs.org/ >> install.log 2>&1
+          cat install.log
 
       - name: Upload install log
         if: always()
@@ -58,29 +44,29 @@ jobs:
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
-          echo "Node: $(node --version)"
-          echo "NPM: $(npm --version)"
-          echo "Registry: $(npm config get registry)"
-          echo "PWD: $(pwd)"
-          echo "package.json version:"
-          node -e "console.log(require('./package.json').version)"
-          echo "vite package resolution:"
-          node -e "console.log(require.resolve('vite'))"
-          echo "npm bin resolution:"
+          node --version
+          npm --version
+          npm config get registry
           npm exec vite -- --version
-          echo "node_modules/.bin contents:"
-          ls -la node_modules/.bin || true
 
       - name: Build
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
         run: |
-          set -o pipefail
-          echo "Starting Vite build through npm exec"
-          npm exec vite -- build 2>&1 | tee build.log
+          npm exec vite -- build > build.log 2>&1
+          cat build.log
 
       - name: Tests and typecheck
-        run: npm test
+        run: |
+          npm test > test.log 2>&1
+          cat test.log
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log
+          path: test.log
 
       - name: Upload build log
         if: always()

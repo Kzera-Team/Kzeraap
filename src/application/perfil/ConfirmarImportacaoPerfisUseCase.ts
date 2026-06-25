@@ -1,5 +1,5 @@
 import type { PerfilImportacaoPreviewRegistro } from '../../domain/perfil/PerfilImportacao';
-import { CIDADE_PADRAO_IMPORTACAO_PERFIL } from '../../domain/perfil/PerfilImportacao';
+import { CIDADE_PADRAO_IMPORTACAO_CLIENTE } from '../../domain/perfil/PerfilImportacao';
 import type { ImportarPerfilInput, ImportarPerfisResultado } from './ImportarPerfisSemBairroUseCase';
 import { ImportarPerfisSemBairroUseCase } from './ImportarPerfisSemBairroUseCase';
 import type { Repository } from '../ports/Repository';
@@ -13,7 +13,7 @@ export interface ConfirmarImportacaoPerfisResultado extends ImportarPerfisResult
 function toImportInput(registro: PerfilImportacaoPreviewRegistro): ImportarPerfilInput {
   const input: ImportarPerfilInput = {
     nome: registro.nome.trim(),
-    cidade: CIDADE_PADRAO_IMPORTACAO_PERFIL,
+    cidade: CIDADE_PADRAO_IMPORTACAO_CLIENTE,
     conhecePessoalmente: Boolean(registro.conhecePessoalmente)
   };
 
@@ -27,11 +27,7 @@ function toImportInput(registro: PerfilImportacaoPreviewRegistro): ImportarPerfi
 export class ConfirmarImportacaoPerfisUseCase {
   private readonly importar: ImportarPerfisSemBairroUseCase;
 
-  constructor(
-    perfis: Repository<Perfil>,
-    clock: Clock,
-    idFactory: () => string
-  ) {
+  constructor(perfis: Repository<Perfil>, clock: Clock, idFactory: () => string) {
     this.importar = new ImportarPerfisSemBairroUseCase(perfis, clock, idFactory);
   }
 
@@ -42,15 +38,12 @@ export class ConfirmarImportacaoPerfisUseCase {
       .map(registro => ({ ...registro, erros: [...(registro.erros ?? [])] }));
 
     if (validos.length === 0) {
-      throw new Error('Nenhum registro válido para importar.');
+      throw new Error('Nenhum registro valido para importar.');
     }
 
     const inputs: ImportarPerfilInput[] = validos.map(toImportInput);
     const resultado = await this.importar.execute(inputs);
 
-    return {
-      ...resultado,
-      ignoradosInvalidos: invalidos
-    };
+    return { ...resultado, ignoradosInvalidos: invalidos };
   }
 }
