@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite';
 import { readFileSync } from 'fs';
 
-const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string };
+const packageInfo = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string; appDisplayVersion?: string };
+const appVersion = packageInfo.appDisplayVersion || packageInfo.version;
 
 export default defineConfig({
   base: '/Kzeraap/',
   define: {
-    __APP_VERSION__: JSON.stringify(version)
+    __APP_VERSION__: JSON.stringify(appVersion)
   },
   root: 'public',
   publicDir: 'static',
