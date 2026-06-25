@@ -1,7 +1,7 @@
 (() => {
   const MAX_CLICKS = 10;
   const WINDOW_MS = 5000;
-  const PENDING_KEY = 'kzera_pending_backup_recovery';
+  const MEMORY_KEY = '__kzeraPendingBackupRecovery';
 
   let clicks = 0;
   let firstClickAt = 0;
@@ -20,9 +20,25 @@
 
   function isBackupEnvelope(value) {
     if (!value || typeof value !== 'object') return false;
+    if (value.runtime && typeof value.encryptedPayload === 'string') return true;
     if (Array.isArray(value.iv) && Array.isArray(value.data)) return true;
-    if (value.schemaVersion === 1 && value.data && typeof value.data === 'object') return true;
     return false;
+  }
+
+  function showRestoringShell() {
+    const app = document.getElementById('app');
+    if (!app) return;
+    app.innerHTML = `<section class="auth-shell" aria-live="polite">
+      <div class="auth-card">
+        <div class="auth-brand"><div class="auth-icon">V</div><div><h1>Vevelt</h1></div></div>
+        <form class="auth-form" data-testid="backup-login-form">
+          <h2>Restaurar backup</h2>
+          <p>Digite a mesma senha usada para abrir o sistema no backup. O arquivo fica apenas na memória até a restauração terminar.</p>
+          <label class="auth-field password-field"><span>Senha</span><span class="password-control"><input id="backup-recovery-password" type="password" autocomplete="current-password" required /></span></label>
+          <button type="submit">Desbloquear e restaurar</button>
+        </form>
+      </div>
+    </section>`;
   }
 
   function openBackupSelector() {
@@ -45,13 +61,19 @@
           return;
         }
 
-        sessionStorage.setItem(PENDING_KEY, JSON.stringify({
+        window[MEMORY_KEY] = {
           filename: file.name,
           size: file.size,
           loadedAt: new Date().toISOString(),
           payload: text
+        };
+
+        window.dispatchEvent(new CustomEvent('kzera:backup-recovery-selected', {
+          detail: { filename: file.name, size: file.size }
         }));
-        showMessage('Backup carregado para recuperação. Próximo passo: restaurador seguro aplicar após validação da senha.');
+
+        showRestoringShell();
+        showMessage('Backup carregado em memória. Autentique para restaurar.');
       } catch {
         showMessage('Não foi possível ler o backup. Use o arquivo .dat/.json exportado pelo sistema.', 'error');
       }
