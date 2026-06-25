@@ -1,4 +1,5 @@
 (() => {
+  const LABEL_ID = 'backup-recovery-action';
   const TAP_TARGET_SELECTOR = '.auth-icon';
   const TAP_LIMIT = 10;
   const TAP_WINDOW_MS = 4200;
@@ -17,7 +18,7 @@
     }));
   }
 
-  function showVisiblePickerDialog() {
+  function showVisiblePickerDialog(mode = 'recover-backup-button') {
     closeBackupDialog();
 
     const overlay = document.createElement('div');
@@ -77,7 +78,7 @@
       const file = input.files && input.files[0];
       if (!file) return;
       selected.textContent = `Backup selecionado: ${file.name}`;
-      handleSelectedFile(file, 'auth-logo-10-taps');
+      handleSelectedFile(file, mode);
     });
 
     card.appendChild(title);
@@ -87,6 +88,22 @@
     card.appendChild(cancel);
     overlay.appendChild(card);
     document.body.appendChild(overlay);
+  }
+
+  function mountRecoveryButton() {
+    if (document.getElementById(LABEL_ID)) return;
+
+    const setupForm = document.querySelector('[data-testid="setup-form"]');
+    if (!setupForm) return;
+
+    const button = document.createElement('button');
+    button.id = LABEL_ID;
+    button.type = 'button';
+    button.textContent = 'Recuperar backup';
+    button.style.marginTop = '10px';
+    button.addEventListener('click', () => showVisiblePickerDialog('recover-backup-button'));
+
+    setupForm.appendChild(button);
   }
 
   function handleLogoTap(event) {
@@ -104,9 +121,14 @@
     if (tapCount >= TAP_LIMIT) {
       tapCount = 0;
       firstTapAt = 0;
-      showVisiblePickerDialog();
+      showVisiblePickerDialog('auth-logo-10-taps');
     }
   }
+
+  mountRecoveryButton();
+
+  const observer = new MutationObserver(mountRecoveryButton);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
 
   document.addEventListener('click', handleLogoTap, true);
   document.addEventListener('touchend', handleLogoTap, true);
