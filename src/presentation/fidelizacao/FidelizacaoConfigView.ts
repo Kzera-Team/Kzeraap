@@ -1,11 +1,9 @@
 import './styles/fidelizacao-config.css';
-import { inputValue, numberValue } from '../shared/ui/Html';
+import { FIDELIZACAO_CONFIG_TEMPLATE } from './templates/FidelizacaoConfigTemplate';
 import type { ObterRegraFidelidadeUseCase } from '../../application/fidelidade/ObterRegraFidelidadeUseCase';
 import type { SalvarRegraFidelidadeUseCase } from '../../application/fidelidade/SalvarRegraFidelidadeUseCase';
 import type { ArquivarRegraFidelidadeUseCase } from '../../application/fidelidade/ArquivarRegraFidelidadeUseCase';
 import type { PremioFidelidade, RegraFidelidade, RegraFidelidadeStatus } from '../../domain/fidelidade/RegraFidelidade';
-import { renderConfigRoot, renderForm } from './templates/FidelizacaoConfigTemplate';
-import type { ConfigTemplateValues, ConfigTemplateState } from './templates/FidelizacaoConfigTemplate';
 
 export interface FidelizacaoConfigModule {
   obterRegra: ObterRegraFidelidadeUseCase;
@@ -13,229 +11,251 @@ export interface FidelizacaoConfigModule {
   arquivarRegra: ArquivarRegraFidelidadeUseCase;
 }
 
-interface ConfigState {
-  regraId: string | null;
-  status: RegraFidelidadeStatus;
-  premios: PremioFidelidade[];
-  sheetOpen: boolean;
-  mensagem: string;
-  erro: string;
-}
+const STATUS_CLASSES: Record<RegraFidelidadeStatus, string> = {
+  ativa: 'active-green',
+  inativa: 'active-muted',
+  arquivada: 'active-danger',
+};
 
 export class FidelizacaoConfigView {
   private root: HTMLElement | null = null;
-  private state: ConfigState = {
-    regraId: null,
-    status: 'ativa',
-    premios: [],
-    sheetOpen: false,
-    mensagem: '',
-    erro: '',
-  };
-  private currentValues: ConfigTemplateValues = this.emptyValues();
+  private regraId: string | null = null;
+  private status: RegraFidelidadeStatus = 'ativa';
+  private premios: PremioFidelidade[] = [];
 
   constructor(private readonly module: FidelizacaoConfigModule) {}
 
   async mount(root: HTMLElement): Promise<void> {
     this.root = root;
-    this.state = { regraId: null, status: 'ativa', premios: [], sheetOpen: false, mensagem: '', erro: '' };
-    await this.load();
+    this.regraId = null;
+    this.status = 'ativa';
+    this.premios = [];
+    root.innerHTML = FIDELIZACAO_CONFIG_TEMPLATE;
+    this.bindAll();
+    await this.loadData();
   }
 
-  private emptyValues(): ConfigTemplateValues {
-    return { nome: '', totalPassos: 10, periodoInicio: '', periodoFim: '', itemNome: '', qtd: 1, unidade: 'un', passosGerados: 1 };
-  }
-
-  private regraToValues(r: RegraFidelidade): ConfigTemplateValues {
-    return {
-      nome: r.nome,
-      totalPassos: r.totalPassos,
-      periodoInicio: r.periodoInicio,
-      periodoFim: r.periodoFim ?? '',
-      itemNome: r.regraPassoItemNome || r.regraPassoItemId,
-      qtd: r.regraPassoQuantidade,
-      unidade: r.regraPassoUnidade,
-      passosGerados: r.regraPassoPassosGerados,
-    };
-  }
-
-  private async load(): Promise<void> {
+  private async loadData(): Promise<void> {
     const regra = await this.module.obterRegra.execute();
     if (regra) {
-      this.state.regraId = regra.id;
-      this.state.status = regra.status;
-      this.state.premios = structuredClone(regra.premios);
-      this.currentValues = this.regraToValues(regra);
+      this.regraId = regra.id;
+      this.status = regra.status;
+      this.premios = structuredClone(regra.premios);
+      this.fillForm(regra);
     }
-    this.render();
+    this.updateStatus(this.status);
+    this.renderPremios();
+    this.get<HTMLButtonElement>('[data-arquivar]')!.hidden = !this.regraId;
   }
 
-  private render(): void {
-    if (!this.root) return;
-    const templateState: ConfigTemplateState = { ...this.state };
-    const formHtml = renderForm(this.currentValues, templateState);
-    this.root.innerHTML = renderConfigRoot(formHtml, this.state.sheetOpen, this.currentValues.totalPassos);
-    this.bind();
+  private fillForm(r: RegraFidelidade): void {
+    this.input('#fc-nome').value = r.nome;
+    this.input('#fc-passos').value = String(r.totalPassos);
+    this.input('#fc-inicio').value = r.periodoInicio;
+    this.input('#fc-fim').value = r.periodoFim ?? '';
+    this.input('#fc-item-nome').value = r.regraPassoItemNome || r.regraPassoItemId;
+    this.input('#fc-qtd').value = String(r.regraPassoQuantidade);
+    this.input('#fc-unidade').value = r.regraPassoUnidade;
+    this.input('#fc-passos-gerados').value = String(r.regraPassoPassosGerados);
   }
 
-  private bind(): void {
+  private updateStatus(s: RegraFidelidadeStatus): void {
+    this.root!.querySelectorAll('[data-status]').forEach(btn => {
+      const el = btn as HTMLElement;
+      const isActive = el.dataset.status === s;
+      el.classList.remove('active-green', 'active-muted', 'active-danger');
+      if (isActive) el.classList.add(STATUS_CLASSES[s]);
+    });
+  }
+
+  private renderPremios(): void {
+    const list = this.root!.querySelector<HTMLElement>('#fc-premios-list')!;
+    const tpl = this.root!.querySelector<HTMLTemplateElement>('#fc-premio-tpl')!;
+    list.innerHTML = '';
+    this.premios.forEach((p, i) => {
+      const node = document.importNode(tpl.content, true);
+      const card = node.querySelector<HTMLElement>('.prize-card')!;
+      card.dataset.prize = String(i);
+      node.querySelector<HTMLElement>('[data-prize-step]')!.textContent = `Passo ${p.passo}`;
+      const removeBtn = node.querySelector<HTMLElement>('[data-remove-prize]')!;
+      removeBtn.dataset.removePrize = String(i);
+      const descInput = node.querySelector<HTMLInputElement>('[data-prize-desc]')!;
+      descInput.value = p.descricao;
+      descInput.dataset.prizeDesc = String(i);
+      const itemInput = node.querySelector<HTMLInputElement>('[data-prize-item]')!;
+      itemInput.value = p.itemNome || p.itemId;
+      itemInput.dataset.prizeItem = String(i);
+      const toggle = node.querySelector<HTMLElement>('[data-toggle-prize]')!;
+      toggle.dataset.togglePrize = String(i);
+      toggle.setAttribute('aria-checked', String(p.ativo));
+      if (!p.ativo) toggle.classList.add('off');
+      list.appendChild(node);
+    });
+    this.bindPrizeEvents();
+  }
+
+  private bindPrizeEvents(): void {
+    const list = this.root!.querySelector<HTMLElement>('#fc-premios-list')!;
+    list.querySelectorAll('[data-toggle-prize]').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = Number((el as HTMLElement).dataset.togglePrize);
+        this.syncPrizesFromDom();
+        const prize = this.premios[i];
+        if (prize) {
+          prize.ativo = !prize.ativo;
+          el.classList.toggle('off', !prize.ativo);
+          el.setAttribute('aria-checked', String(prize.ativo));
+        }
+      });
+    });
+    list.querySelectorAll('[data-remove-prize]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = Number((btn as HTMLElement).dataset.removePrize);
+        this.syncPrizesFromDom();
+        this.premios.splice(i, 1);
+        this.renderPremios();
+      });
+    });
+  }
+
+  private bindAll(): void {
     if (!this.root) return;
 
     this.root.querySelectorAll('[data-status]').forEach(btn => {
       btn.addEventListener('click', () => {
-        this.state.status = (btn as HTMLElement).dataset.status as RegraFidelidadeStatus;
-        this.state.mensagem = '';
-        this.state.erro = '';
-        this.currentValues = this.readFormValues();
-        this.render();
-      });
-    });
-
-    this.root.querySelectorAll('[data-toggle-prize]').forEach(el => {
-      el.addEventListener('click', () => {
-        const i = Number((el as HTMLElement).dataset.togglePrize);
-        this.syncPrizesFromDom();
-        const prize = this.state.premios[i];
-        if (prize) prize.ativo = !prize.ativo;
-        this.currentValues = this.readFormValues();
-        this.render();
-      });
-    });
-
-    this.root.querySelectorAll('[data-remove-prize]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const i = Number((btn as HTMLElement).dataset.removePrize);
-        this.syncPrizesFromDom();
-        this.state.premios.splice(i, 1);
-        this.currentValues = this.readFormValues();
-        this.render();
+        this.status = (btn as HTMLElement).dataset.status as RegraFidelidadeStatus;
+        this.updateStatus(this.status);
       });
     });
 
     this.root.querySelector('[data-open-sheet]')?.addEventListener('click', () => {
-      this.syncPrizesFromDom();
-      this.currentValues = this.readFormValues();
-      this.state.sheetOpen = true;
-      this.state.mensagem = '';
-      this.state.erro = '';
-      this.render();
+      const totalPassos = Number(this.input('#fc-passos').value) || 10;
+      this.input('#fc-sheet-passo').max = String(totalPassos);
+      this.input('#fc-sheet-passo').value = '';
+      this.input('#fc-sheet-desc').value = '';
+      this.input('#fc-sheet-item').value = '';
+      const toggle = this.get<HTMLElement>('#fc-sheet-toggle')!;
+      toggle.dataset.ativo = 'true';
+      toggle.classList.remove('off');
+      const hint = this.get<HTMLElement>('#fc-sheet-hint')!;
+      hint.textContent = `1 ≤ passo ≤ ${totalPassos}`;
+      this.setSheetOpen(true);
     });
 
     this.root.querySelectorAll('[data-close-sheet]').forEach(el => {
-      el.addEventListener('click', () => {
-        this.state.sheetOpen = false;
-        this.render();
-      });
+      el.addEventListener('click', () => this.setSheetOpen(false));
     });
 
-    const sheetToggle = this.root.querySelector<HTMLElement>('#fc-sheet-toggle');
-    sheetToggle?.addEventListener('click', () => {
-      const current = sheetToggle.dataset.ativo === 'true';
-      sheetToggle.dataset.ativo = String(!current);
-      sheetToggle.classList.toggle('off', current);
+    this.get<HTMLElement>('#fc-sheet-toggle')?.addEventListener('click', () => {
+      const toggle = this.get<HTMLElement>('#fc-sheet-toggle')!;
+      const current = toggle.dataset.ativo === 'true';
+      toggle.dataset.ativo = String(!current);
+      toggle.classList.toggle('off', current);
     });
 
     this.root.querySelector('[data-sheet-adicionar]')?.addEventListener('click', () => {
-      const r = this.root!;
-      const passo = Number(inputValue(r, '#fc-sheet-passo'));
-      const desc  = inputValue(r, '#fc-sheet-desc').trim();
-      const item  = inputValue(r, '#fc-sheet-item').trim();
-      const ativo = r.querySelector<HTMLElement>('#fc-sheet-toggle')?.dataset.ativo !== 'false';
-      const totalPassos = this.currentValues.totalPassos;
+      const totalPassos = Number(this.input('#fc-passos').value) || 10;
+      const passo = Number(this.input('#fc-sheet-passo').value);
+      const desc  = this.input('#fc-sheet-desc').value.trim();
+      const item  = this.input('#fc-sheet-item').value.trim();
+      const ativo = this.get<HTMLElement>('#fc-sheet-toggle')?.dataset.ativo !== 'false';
 
       if (!passo || passo < 1 || passo > totalPassos) {
-        this.state.erro = `Passo deve estar entre 1 e ${totalPassos}.`;
-        this.render();
+        this.showToast(`Passo deve estar entre 1 e ${totalPassos}.`, 'erro');
         return;
       }
-      if (!desc) {
-        this.state.erro = 'Descrição é obrigatória.';
-        this.render();
-        return;
-      }
+      if (!desc) { this.showToast('Descrição é obrigatória.', 'erro'); return; }
 
-      this.state.premios.push({ passo, descricao: desc, itemId: item, itemNome: item, ativo });
-      this.state.sheetOpen = false;
-      this.state.erro = '';
-      this.render();
+      this.premios.push({ passo, descricao: desc, itemId: item, itemNome: item, ativo });
+      this.setSheetOpen(false);
+      this.renderPremios();
+      this.hideToast();
     });
 
     this.root.querySelectorAll('[data-salvar]').forEach(btn => {
       btn.addEventListener('click', async () => {
         this.syncPrizesFromDom();
-        this.currentValues = this.readFormValues();
-        this.state.mensagem = '';
-        this.state.erro = '';
+        this.hideToast();
         try {
           const saved = await this.module.salvarRegra.execute({
-            ...(this.state.regraId ? { id: this.state.regraId } : {}),
-            nome: this.currentValues.nome,
-            status: this.state.status,
-            totalPassos: this.currentValues.totalPassos,
-            periodoInicio: this.currentValues.periodoInicio,
-            ...(this.currentValues.periodoFim ? { periodoFim: this.currentValues.periodoFim } : {}),
-            regraPassoItemId: this.currentValues.itemNome,
-            regraPassoItemNome: this.currentValues.itemNome,
-            regraPassoQuantidade: this.currentValues.qtd,
-            regraPassoUnidade: this.currentValues.unidade,
-            regraPassoPassosGerados: this.currentValues.passosGerados,
-            premios: this.state.premios,
+            ...(this.regraId ? { id: this.regraId } : {}),
+            nome:                    this.input('#fc-nome').value,
+            status:                  this.status,
+            totalPassos:             Number(this.input('#fc-passos').value) || 0,
+            periodoInicio:           this.input('#fc-inicio').value,
+            ...(this.input('#fc-fim').value ? { periodoFim: this.input('#fc-fim').value } : {}),
+            regraPassoItemId:        this.input('#fc-item-nome').value,
+            regraPassoItemNome:      this.input('#fc-item-nome').value,
+            regraPassoQuantidade:    Number(this.input('#fc-qtd').value) || 0,
+            regraPassoUnidade:       this.input('#fc-unidade').value,
+            regraPassoPassosGerados: Number(this.input('#fc-passos-gerados').value) || 0,
+            premios:                 this.premios,
           });
-          this.state.regraId = saved.id;
-          this.state.mensagem = 'Regra salva.';
-          this.currentValues = this.regraToValues(saved);
-          this.render();
+          this.regraId = saved.id;
+          this.get<HTMLButtonElement>('[data-arquivar]')!.hidden = false;
+          this.showToast('Regra salva.', 'sucesso');
         } catch (err) {
-          this.state.erro = err instanceof Error ? err.message : 'Erro ao salvar.';
-          this.render();
+          this.showToast(err instanceof Error ? err.message : 'Erro ao salvar.', 'erro');
         }
       });
     });
 
     this.root.querySelector('[data-arquivar]')?.addEventListener('click', async () => {
-      if (!this.state.regraId) return;
-      this.state.mensagem = '';
-      this.state.erro = '';
+      if (!this.regraId) return;
+      this.hideToast();
       try {
-        await this.module.arquivarRegra.execute(this.state.regraId);
-        this.state.regraId = null;
-        this.state.status = 'ativa';
-        this.state.premios = [];
-        this.currentValues = this.emptyValues();
-        this.state.mensagem = 'Regra arquivada.';
-        this.render();
+        await this.module.arquivarRegra.execute(this.regraId);
+        this.regraId = null;
+        this.status = 'ativa';
+        this.premios = [];
+        this.updateStatus('ativa');
+        this.renderPremios();
+        this.get<HTMLButtonElement>('[data-arquivar]')!.hidden = true;
+        this.showToast('Regra arquivada.', 'sucesso');
       } catch (err) {
-        this.state.erro = err instanceof Error ? err.message : 'Erro ao arquivar.';
-        this.render();
+        this.showToast(err instanceof Error ? err.message : 'Erro ao arquivar.', 'erro');
       }
     });
   }
 
-  private readFormValues(): ConfigTemplateValues {
-    if (!this.root) return this.currentValues;
-    const r = this.root;
-    return {
-      nome:          inputValue(r, '#fc-nome'),
-      totalPassos:   numberValue(r, '#fc-passos') || this.currentValues.totalPassos,
-      periodoInicio: inputValue(r, '#fc-inicio'),
-      periodoFim:    inputValue(r, '#fc-fim'),
-      itemNome:      inputValue(r, '#fc-item-nome'),
-      qtd:           numberValue(r, '#fc-qtd') || this.currentValues.qtd,
-      unidade:       inputValue(r, '#fc-unidade'),
-      passosGerados: numberValue(r, '#fc-passos-gerados') || this.currentValues.passosGerados,
-    };
+  private setSheetOpen(open: boolean): void {
+    const overlay = this.root!.querySelector<HTMLElement>('.overlay')!;
+    const sheet   = this.root!.querySelector<HTMLElement>('#fc-sheet')!;
+    const screen  = this.root!.querySelector<HTMLElement>('.screen')!;
+    overlay.hidden = !open;
+    sheet.hidden   = !open;
+    screen.classList.toggle('bg-content', open);
+  }
+
+  private showToast(msg: string, tipo: 'sucesso' | 'erro'): void {
+    const toast = this.get<HTMLElement>('#fc-toast')!;
+    toast.textContent = msg;
+    toast.className = `toast toast-${tipo === 'sucesso' ? 'success' : 'error'}`;
+    toast.hidden = false;
+  }
+
+  private hideToast(): void {
+    const toast = this.get<HTMLElement>('#fc-toast');
+    if (toast) toast.hidden = true;
   }
 
   private syncPrizesFromDom(): void {
-    if (!this.root) return;
-    this.root.querySelectorAll<HTMLElement>('[data-prize]').forEach(card => {
+    this.root!.querySelectorAll<HTMLElement>('[data-prize]').forEach(card => {
       const i = Number(card.dataset.prize);
-      if (!this.state.premios[i]) return;
-      const desc = (card.querySelector(`[data-prize-desc="${i}"]`) as HTMLInputElement | null)?.value ?? '';
-      const item = (card.querySelector(`[data-prize-item="${i}"]`) as HTMLInputElement | null)?.value ?? '';
-      this.state.premios[i].descricao = desc;
-      this.state.premios[i].itemId    = item;
-      this.state.premios[i].itemNome  = item;
+      const prize = this.premios[i];
+      if (!prize) return;
+      prize.descricao = (card.querySelector<HTMLInputElement>(`[data-prize-desc]`)?.value ?? '');
+      const item = card.querySelector<HTMLInputElement>(`[data-prize-item]`)?.value ?? '';
+      prize.itemId   = item;
+      prize.itemNome = item;
     });
+  }
+
+  private input(selector: string): HTMLInputElement {
+    return this.root!.querySelector<HTMLInputElement>(selector)!;
+  }
+
+  private get<T extends HTMLElement>(selector: string): T | null {
+    return this.root!.querySelector<T>(selector);
   }
 }

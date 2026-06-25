@@ -55,6 +55,13 @@ import { UxFluxoTracker } from '../application/uxMetricas/UxFluxoTracker';
 import { UxDomTracker } from '../presentation/shared/uxTracking/UxDomTracker';
 import { GerarRelatorioOperacionalUseCase } from '../application/relatorio/GerarRelatorioOperacionalUseCase';
 import type { RelatorioFiltroOperacional } from '../domain/relatorio/RelatorioOperacional';
+import { FidelizacaoConfigView } from '../presentation/fidelizacao/FidelizacaoConfigView';
+import { FidelizacaoDashboardView } from '../presentation/fidelizacao/FidelizacaoDashboardView';
+import { ObterRegraFidelidadeUseCase } from '../application/fidelidade/ObterRegraFidelidadeUseCase';
+import { SalvarRegraFidelidadeUseCase } from '../application/fidelidade/SalvarRegraFidelidadeUseCase';
+import { ArquivarRegraFidelidadeUseCase } from '../application/fidelidade/ArquivarRegraFidelidadeUseCase';
+import { ObterDashboardFidelidadeUseCase } from '../application/fidelidade/ObterDashboardFidelidadeUseCase';
+import type { RegraFidelidade } from '../domain/fidelidade/RegraFidelidade';
 
 const clock = { now: () => new Date() };
 const PUBLIC_APP_NAME = 'Ve' + 'velt';
@@ -65,7 +72,7 @@ const BACKUP_STATUS_KEY = 'backupStatus';
 let counter = 0;
 const idFactory = () => `perfil-${Date.now()}-${++counter}`;
 
-function createOperationalRepository<T extends { id: string }>(storeName: 'perfis' | 'itens' | 'balancas' | 'contasFinanceiras' | 'movimentosFinanceiros' | 'pagamentosTransacao' | 'transacoesFinanceiras' | 'lotesImportacaoTransacoes' | 'registrosImportacaoTransacoes' | 'lotesImportacaoFinanceira' | 'registrosImportacaoFinanceira' | 'pacotesConfirmacaoHistorica'): Repository<T> {
+function createOperationalRepository<T extends { id: string }>(storeName: 'perfis' | 'itens' | 'balancas' | 'contasFinanceiras' | 'movimentosFinanceiros' | 'pagamentosTransacao' | 'transacoesFinanceiras' | 'lotesImportacaoTransacoes' | 'registrosImportacaoTransacoes' | 'lotesImportacaoFinanceira' | 'registrosImportacaoFinanceira' | 'pacotesConfirmacaoHistorica' | 'regrasFidelidade'): Repository<T> {
   if (typeof indexedDB === 'undefined') {
     return new InMemoryRepository<T>();
   }
@@ -73,14 +80,14 @@ function createOperationalRepository<T extends { id: string }>(storeName: 'perfi
   // Compatibilidade de auditoria: stores: ['perfis', 'itens', 'balancas']
   const connection = new IndexedDbConnection({
     databaseName: 'kzera_operacional_1102',
-    version: 5,
-    stores: ['perfis', 'itens', 'balancas', 'contasFinanceiras', 'movimentosFinanceiros', 'pagamentosTransacao', 'transacoesFinanceiras', 'lotesImportacaoTransacoes', 'registrosImportacaoTransacoes', 'lotesImportacaoFinanceira', 'registrosImportacaoFinanceira', 'pacotesConfirmacaoHistorica']
+    version: 6,
+    stores: ['perfis', 'itens', 'balancas', 'contasFinanceiras', 'movimentosFinanceiros', 'pagamentosTransacao', 'transacoesFinanceiras', 'lotesImportacaoTransacoes', 'registrosImportacaoTransacoes', 'lotesImportacaoFinanceira', 'registrosImportacaoFinanceira', 'pacotesConfirmacaoHistorica', 'regrasFidelidade']
   });
 
   return new IndexedDbRepository<T>(connection, storeName);
 }
 
-type Screen = 'home' | 'perfis' | 'itens' | 'transacoes' | 'relatorios' | 'codigo' | 'importacao-perfis' | 'importacao-itens' | 'importacao-transacoes' | 'configuracoes';
+type Screen = 'home' | 'perfis' | 'itens' | 'transacoes' | 'relatorios' | 'codigo' | 'importacao-perfis' | 'importacao-itens' | 'importacao-transacoes' | 'configuracoes' | 'fidelizacao-config' | 'fidelizacao-dashboard';
 
 interface LegacyCodigoPerfilConfig { fields: IdentityColumn[]; separator: string; }
 
@@ -314,6 +321,15 @@ export function createKzeraAuthenticatedApp() {
     definirBalancaPadrao: new DefinirBalancaPadraoUseCase(balancas, clock),
     registrarCalibragemBalanca: new RegistrarCalibragemBalancaUseCase(balancas, clock, () => `calibragem-${Date.now()}-${++counter}`),
     limparMetricasUso: () => uxTracker.limparMetricas()
+  });
+  const regrasFidelidade = createOperationalRepository<RegraFidelidade>('regrasFidelidade');
+  const fidelizacaoConfigApp = new FidelizacaoConfigView({
+    obterRegra: new ObterRegraFidelidadeUseCase(regrasFidelidade),
+    salvarRegra: new SalvarRegraFidelidadeUseCase(regrasFidelidade, clock, () => `regra-fidelidade-${Date.now()}-${++counter}`),
+    arquivarRegra: new ArquivarRegraFidelidadeUseCase(regrasFidelidade, clock),
+  });
+  const fidelizacaoDashboardApp = new FidelizacaoDashboardView({
+    obterDashboard: new ObterDashboardFidelidadeUseCase(),
   });
   // Rascunho de importação — criado após security.session estar disponível
   const importacaoRascunhoRepo = new ImportacaoRascunhoRepository(security.session);
@@ -689,11 +705,13 @@ export function createKzeraAuthenticatedApp() {
   function renderDrawer(): string {
     const openClass = menuOpen ? ' is-open' : '';
     const items: Array<[Screen, string]> = [['perfis', 'Perfis'], ['itens', 'Itens'], ['transacoes', 'Dinheiro'], ['relatorios', 'Relatórios'], ['codigo', 'Código do Perfil'], ['importacao-perfis', 'Importar Perfis'], ['importacao-itens', 'Importar Itens'], ['importacao-transacoes', 'Importar Transações'], ['configuracoes', 'Configurações']];
+    const fidelizacaoItems: Array<[Screen, string]> = [['fidelizacao-config', 'Configuração'], ['fidelizacao-dashboard', 'Dashboard']];
+    const fidelizacaoNav = `<div class="kzera-drawer-group"><span class="kzera-drawer-group-label">Fidelização</span>${fidelizacaoItems.map(([screen, label]) => `<button type="button" data-nav="${screen}" class="${currentScreen === screen ? 'active' : ''}">${label}</button>`).join('')}</div>`;
     return `${renderAppMenuButton()}
       <div class="kzera-drawer-backdrop${openClass}" data-menu-close></div>
       <aside class="kzera-drawer${openClass}" aria-label="Menu principal">
         <header><div><strong>${PUBLIC_APP_NAME}</strong></div><button type="button" data-menu-close aria-label="Fechar menu">×</button></header>
-        <nav>${items.map(([screen, label]) => `<button type="button" data-nav="${screen}" class="${currentScreen === screen ? 'active' : ''}">${label}</button>`).join('')}<button type="button" data-testid="logout-button">Sair</button></nav><footer class="kzera-drawer-footer"><span class="kzera-drawer-version" data-testid="menu-app-version">${escapeHtml(APP_VERSION_LABEL)}</span></footer>
+        <nav>${items.map(([screen, label]) => `<button type="button" data-nav="${screen}" class="${currentScreen === screen ? 'active' : ''}">${label}</button>`).join('')}${fidelizacaoNav}<button type="button" data-testid="logout-button">Sair</button></nav><footer class="kzera-drawer-footer"><span class="kzera-drawer-version" data-testid="menu-app-version">${escapeHtml(APP_VERSION_LABEL)}</span></footer>
       </aside>`;
   }
 
@@ -990,7 +1008,7 @@ export function createKzeraAuthenticatedApp() {
         </main>
       </div>`;
     } else {
-      const title = currentScreen === 'perfis' ? 'Perfis' : currentScreen === 'itens' ? 'Itens' : currentScreen === 'transacoes' ? 'Dinheiro' : currentScreen === 'relatorios' ? 'Relatórios' : currentScreen === 'codigo' ? 'Código do Perfil' : currentScreen === 'importacao-perfis' ? 'Importar Perfis' : currentScreen === 'importacao-itens' ? 'Importar Itens' : currentScreen === 'importacao-transacoes' ? 'Importar Transações' : 'Configurações';
+      const title = currentScreen === 'perfis' ? 'Perfis' : currentScreen === 'itens' ? 'Itens' : currentScreen === 'transacoes' ? 'Dinheiro' : currentScreen === 'relatorios' ? 'Relatórios' : currentScreen === 'codigo' ? 'Código do Perfil' : currentScreen === 'importacao-perfis' ? 'Importar Perfis' : currentScreen === 'importacao-itens' ? 'Importar Itens' : currentScreen === 'importacao-transacoes' ? 'Importar Transações' : currentScreen === 'fidelizacao-config' ? 'Config. Fidelidade' : currentScreen === 'fidelizacao-dashboard' ? 'Dashboard Fidelidade' : 'Configurações';
       rootRef.innerHTML = `<div class="app-frame">${renderDrawer()}<main id="kzera-main" aria-label="${title}"></main></div>`;
     }
 
@@ -1012,6 +1030,8 @@ export function createKzeraAuthenticatedApp() {
       if (currentScreen === 'importacao-itens') await itemApp.mountImportacao(appRoot);
       if (currentScreen === 'importacao-transacoes') await importacaoTransacoesFinanceiroApp.mount(appRoot);
       if (currentScreen === 'configuracoes') await configuracoesApp.mount(appRoot);
+      if (currentScreen === 'fidelizacao-config') await fidelizacaoConfigApp.mount(appRoot);
+      if (currentScreen === 'fidelizacao-dashboard') await fidelizacaoDashboardApp.mount(appRoot);
     }
 
     if (!listenersBound) { rootRef.addEventListener('pointerdown', touchSession, { passive: true }); rootRef.addEventListener('keydown', touchSession); listenersBound = true; }
