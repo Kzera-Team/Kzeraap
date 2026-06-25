@@ -4,7 +4,8 @@ Fluxo de UX para importação/confirmação histórica financeira.
 
 Arquivos:
 
-0. `00-importar-historico-financeiro.html`
+0A. `00-importar-historico-financeiro.html` — vazio, antes de carregar arquivos.
+0B. `00-importar-historico-financeiro-carregado.html` — com transações e financeiro carregados.
 1. `01-importacao-em-andamento.html`
 2. `02-resolver-pendencias.html`
 3. `03-previa-segura.html`
