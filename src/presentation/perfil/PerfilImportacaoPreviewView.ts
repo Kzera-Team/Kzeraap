@@ -3,6 +3,7 @@ import type { PerfilImportacaoPreviewRegistro } from '../../domain/perfil/Perfil
 export interface PerfilImportacaoPreviewViewModel {
   registros: PerfilImportacaoPreviewRegistro[];
   podeEditarAoVivo: true;
+  podeEditarConhecePessoalmente: true;
   podeEditarBairro: true;
   cidadeVisivel: false;
   cidadePadrao: 'Brasília';
@@ -14,6 +15,7 @@ export function criarImportacaoPreviewViewModel(
   return {
     registros,
     podeEditarAoVivo: true,
+    podeEditarConhecePessoalmente: true,
     podeEditarBairro: true,
     cidadeVisivel: false,
     cidadePadrao: 'Brasília'
