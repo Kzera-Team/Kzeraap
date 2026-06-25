@@ -16,16 +16,40 @@ export interface ImportacaoTransacoesFinanceiroDeps {
   onRascunhoAtualizado?: (acao: 'salvar' | 'descartar') => Promise<void>;
 }
 
-const TEMPLATE_URL = new URL('./templates/importacao-transacoes-financeiro.html', import.meta.url);
+type ImportacaoEstado = 'vazio' | 'carregado' | 'andamento' | 'pendencias' | 'previa' | 'confirmacao' | 'recuperacao' | 'detalhes';
+type TemplateKey = 'shell' | ImportacaoEstado;
+type ArquivoImportacaoTipo = 'transacoes' | 'financeiro';
+
+interface ArquivoImportacao {
+  nome: string;
+  conteudo: string;
+}
+
+const TEMPLATE_URLS: Record<TemplateKey, URL> = {
+  shell: new URL('./templates/importacao-transacoes-financeiro.html', import.meta.url),
+  vazio: new URL('./templates/importacao-transacoes-financeiro-vazio.html', import.meta.url),
+  carregado: new URL('./templates/importacao-transacoes-financeiro-carregado.html', import.meta.url),
+  andamento: new URL('./templates/importacao-transacoes-financeiro-andamento.html', import.meta.url),
+  pendencias: new URL('./templates/importacao-transacoes-financeiro-pendencias.html', import.meta.url),
+  previa: new URL('./templates/importacao-transacoes-financeiro-previa.html', import.meta.url),
+  confirmacao: new URL('./templates/importacao-transacoes-financeiro-confirmacao.html', import.meta.url),
+  recuperacao: new URL('./templates/importacao-transacoes-financeiro-recuperacao.html', import.meta.url),
+  detalhes: new URL('./templates/importacao-transacoes-financeiro-detalhes.html', import.meta.url),
+};
+
+const CSS_URL = new URL('./templates/importacao-transacoes-financeiro.css', import.meta.url);
 
 export class ImportacaoTransacoesFinanceiroView {
   private root: HTMLElement | null = null;
   private mensagem = '';
+  private estado: ImportacaoEstado = 'vazio';
+  private templates = new Map<TemplateKey, string>();
   private conciliacao: ResultadoConciliacaoImportacao | null = null;
   private ultimaConfirmacao: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
   private previaConfirmacao: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
   private confirmacaoArmada = false;
-  private templateCarregado = false;
+  private transacoes: ArquivoImportacao | null = null;
+  private financeiro: ArquivoImportacao | null = null;
 
   constructor(private readonly deps: ImportacaoTransacoesFinanceiroDeps) {}
 
@@ -36,65 +60,246 @@ export class ImportacaoTransacoesFinanceiroView {
     this.conciliacao = null;
     this.ultimaConfirmacao = null;
     this.previaConfirmacao = null;
+    this.transacoes = null;
+    this.financeiro = null;
     this.mensagem = '';
+    this.estado = 'vazio';
     this.confirmacaoArmada = false;
-    this.templateCarregado = false;
     if (this.root) this.root.replaceChildren();
   }
 
   async mount(root: HTMLElement): Promise<void> {
     this.root = root;
-    await this.carregarTemplate();
-    this.bindEvents();
+    this.carregarCss();
+    await this.carregarShell();
     await this.render();
   }
 
-  private async carregarTemplate(): Promise<void> {
-    if (!this.root || this.templateCarregado) return;
-    const response = await fetch(TEMPLATE_URL);
-    if (!response.ok) throw new Error('Não foi possível carregar o template da importação financeira.');
-    this.root.innerHTML = await response.text();
-    this.templateCarregado = true;
+  private carregarCss(): void {
+    if (document.getElementById('importacao-transacoes-financeiro-css')) return;
+    const link = document.createElement('link');
+    link.id = 'importacao-transacoes-financeiro-css';
+    link.rel = 'stylesheet';
+    link.href = CSS_URL.toString();
+    document.head.appendChild(link);
   }
 
-  private el<T extends HTMLElement = HTMLElement>(selector: string): T | null {
-    return this.root?.querySelector<T>(selector) || null;
+  private async carregarShell(): Promise<void> {
+    if (!this.root) return;
+    this.root.innerHTML = await this.carregarTemplate('shell');
   }
 
-  private all<T extends HTMLElement = HTMLElement>(selector: string): T[] {
-    return Array.from(this.root?.querySelectorAll<T>(selector) || []);
-  }
-
-  private setText(selector: string, value: string): void {
-    const target = this.el(selector);
-    if (target) target.textContent = value;
-  }
-
-  private setHidden(selector: string, hidden: boolean): void {
-    const target = this.el(selector);
-    if (target) target.hidden = hidden;
-  }
-
-  private setValue(selector: string, value: string): void {
-    const target = this.el<HTMLInputElement | HTMLTextAreaElement>(selector);
-    if (target) target.value = value;
-  }
-
-  private resumoTexto(label: string, resumo: { total: number; validos: number; pendentes: number; pendentesPerfil: number; pendentesItem: number; pendentesFinanceiro: number }): string {
-    return `${label}: total ${resumo.total}; válidos ${resumo.validos}; pendentes ${resumo.pendentes}; perfil ${resumo.pendentesPerfil}; item ${resumo.pendentesItem}; financeiro ${resumo.pendentesFinanceiro}.`;
-  }
-
-  private confirmacaoAtiva(): ConfirmarImportacaoHistoricaFinanceiraResultado | null {
-    return this.previaConfirmacao || this.ultimaConfirmacao;
+  private async carregarTemplate(key: TemplateKey): Promise<string> {
+    const cached = this.templates.get(key);
+    if (cached) return cached;
+    const response = await fetch(TEMPLATE_URLS[key].toString());
+    if (!response.ok) throw new Error('Não foi possível carregar a tela de importação financeira.');
+    const template = await response.text();
+    this.templates.set(key, template);
+    return template;
   }
 
   private async render(): Promise<void> {
-    if (!this.root) return;
-    const staging = await this.deps.listarStaging.execute();
+    const container = this.el('[data-importacao-conteudo]');
+    if (!container) return;
+    container.innerHTML = await this.carregarTemplate(this.estado);
+    await this.preencherEstadoAtual();
     this.renderMensagem();
-    this.renderStaging(staging);
-    this.renderConciliacao();
-    this.renderConfirmacao();
+    this.bindEstadoAtual();
+  }
+
+  private async preencherEstadoAtual(): Promise<void> {
+    if (this.estado === 'vazio') this.preencherVazio();
+    if (this.estado === 'carregado') this.preencherCarregado();
+    if (this.estado === 'andamento') await this.preencherAndamento();
+    if (this.estado === 'pendencias') await this.preencherPendencias();
+    if (this.estado === 'previa') this.preencherPrevia();
+    if (this.estado === 'confirmacao') this.preencherConfirmacao();
+    if (this.estado === 'detalhes') this.preencherDetalhes();
+  }
+
+  private preencherVazio(): void {
+    this.setText('[data-nome-transacoes]', this.transacoes?.nome || 'Nenhum arquivo carregado');
+    this.setText('[data-nome-financeiro]', this.financeiro?.nome || 'Nenhum arquivo carregado');
+    this.setDisabled('[data-continuar-carregamento]', !this.temArquivosObrigatorios());
+  }
+
+  private preencherCarregado(): void {
+    this.setText('[data-nome-transacoes]', this.transacoes?.nome || '—');
+    this.setText('[data-nome-financeiro]', this.financeiro?.nome || '—');
+    this.setText('[data-linhas-transacoes]', this.contarLinhas(this.transacoes?.conteudo));
+    this.setText('[data-linhas-financeiro]', this.contarLinhas(this.financeiro?.conteudo));
+  }
+
+  private async preencherAndamento(): Promise<void> {
+    const staging = await this.deps.listarStaging.execute();
+    this.setText('[data-linhas-lidas]', String(staging.resumoTransacoes.total));
+    this.setText('[data-possiveis-vendas]', String(staging.resumoTransacoes.validos));
+    this.setText('[data-periodo-encontrado]', 'Aguardando prévia');
+    this.setText('[data-financeiro-oficial]', 'R$ 0');
+  }
+
+  private async preencherPendencias(): Promise<void> {
+    const staging = await this.deps.listarStaging.execute();
+    this.setText('[data-pendencias-financeiro]', String(staging.resumoTransacoes.pendentesFinanceiro));
+    this.setText('[data-pendencias-valor]', String(staging.resumoFinanceiro.pendentes));
+    this.setText('[data-pendencias-duplicidade]', String(staging.resumoTransacoes.pendentesPerfil + staging.resumoTransacoes.pendentesItem));
+  }
+
+  private preencherPrevia(): void {
+    const previa = this.previaConfirmacao;
+    this.setText('[data-previa-transacoes]', String(previa?.transacoesPrevistas || 0));
+    this.setText('[data-previa-pagamentos]', String(previa?.pagamentosPrevistos || 0));
+    this.setText('[data-previa-movimentos]', String(previa?.movimentosPrevistos || 0));
+    this.setText('[data-previa-bloqueados]', String(previa?.registrosBloqueados || 0));
+    this.setText('[data-previa-faturamento]', String(previa?.faturamentoTotal || '—'));
+    this.setText('[data-previa-pendente]', String(previa?.valorPendenteTotal || '—'));
+  }
+
+  private preencherConfirmacao(): void {
+    const previa = this.previaConfirmacao;
+    this.setText('[data-confirmacao-transacoes]', String(previa?.transacoesPrevistas || 0));
+    this.setText('[data-confirmacao-pagamentos]', String(previa?.pagamentosPrevistos || 0));
+  }
+
+  private preencherDetalhes(): void {
+    const previa = this.previaConfirmacao || this.ultimaConfirmacao;
+    this.setText('[data-detalhe-pacote]', previa?.previaId || previa?.loteConfirmacaoId || 'sem-pacote');
+    this.setText('[data-detalhe-transacoes]', String(previa?.transacoesPrevistas || previa?.transacoesCriadas || 0));
+    this.setText('[data-detalhe-pagamentos]', String(previa?.pagamentosPrevistos || previa?.pagamentosCriados || 0));
+    this.setText('[data-detalhe-movimentos]', String(previa?.movimentosPrevistos || previa?.movimentosCriados || 0));
+  }
+
+  private bindEstadoAtual(): void {
+    this.bindNavegacao();
+    this.bindUploads();
+    this.bindPreparacao();
+    this.bindConciliacao();
+    this.bindPrevia();
+    this.bindConfirmacao();
+  }
+
+  private bindNavegacao(): void {
+    this.bindClick('[data-ir-vazio]', () => this.irPara('vazio'));
+    this.bindClick('[data-ir-pendencias]', () => this.irPara('pendencias'));
+    this.bindClick('[data-ir-detalhes]', () => this.irPara('detalhes'));
+    this.bindClick('[data-ir-previa]', () => this.irPara('previa'));
+    this.bindClick('[data-ir-recuperacao]', () => this.irPara('recuperacao'));
+  }
+
+  private bindUploads(): void {
+    this.bindArquivo('[data-file-upload-transacoes]', 'transacoes');
+    this.bindArquivo('[data-file-upload-financeiro]', 'financeiro');
+    this.bindClick('[data-continuar-carregamento]', () => this.irPara('carregado'));
+  }
+
+  private bindPreparacao(): void {
+    this.bindClick('[data-preparar-importacao]', () => this.prepararImportacao());
+  }
+
+  private bindConciliacao(): void {
+    this.bindClick('[data-conciliar-importacao]', () => this.conciliarImportacao());
+  }
+
+  private bindPrevia(): void {
+    this.bindClick('[data-gerar-previa]', () => this.gerarPrevia());
+    this.bindClick('[data-abrir-confirmacao]', () => this.abrirConfirmacao());
+  }
+
+  private bindConfirmacao(): void {
+    this.bindClick('[data-cancelar-confirmacao]', () => this.irPara('previa'));
+    this.bindClick('[data-confirmar-importacao]', () => this.confirmarImportacao());
+  }
+
+  private async prepararImportacao(): Promise<void> {
+    if (!this.transacoes || !this.financeiro) {
+      this.mensagem = 'Carregue os dois arquivos antes de preparar.';
+      await this.render();
+      return;
+    }
+    const transacoes = await this.deps.prepararTransacoes.execute(this.transacoes);
+    const financeiro = await this.deps.prepararFinanceiro.execute(this.financeiro);
+    this.mensagem = `Arquivos preparados: ${transacoes.resumo.total} transações e ${financeiro.resumo.total} pagamentos.`;
+    if (this.deps.onRascunhoAtualizado) await this.deps.onRascunhoAtualizado('salvar');
+    await this.irPara('andamento');
+  }
+
+  private async conciliarImportacao(): Promise<void> {
+    this.conciliacao = await this.deps.conciliar.execute();
+    this.mensagem = `Conferência pronta: ${this.conciliacao.resumo.conciliados} pagamentos conferidos.`;
+    await this.irPara('pendencias');
+  }
+
+  private async gerarPrevia(): Promise<void> {
+    try {
+      this.previaConfirmacao = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'previsualizar' });
+      this.confirmacaoArmada = false;
+      this.mensagem = `Prévia pronta: ${this.previaConfirmacao.transacoesPrevistas} registros podem entrar.`;
+      await this.irPara('previa');
+    } catch (error) {
+      this.mensagem = error instanceof Error ? error.message : 'Não foi possível gerar a prévia segura.';
+      await this.render();
+    }
+  }
+
+  private async abrirConfirmacao(): Promise<void> {
+    if (!this.previaConfirmacao) {
+      this.mensagem = 'Gere a prévia antes de confirmar.';
+      await this.render();
+      return;
+    }
+    this.confirmacaoArmada = true;
+    await this.irPara('confirmacao');
+  }
+
+  private async confirmarImportacao(): Promise<void> {
+    const previaId = this.previaConfirmacao?.previaId;
+    if (!previaId || !this.confirmacaoArmada) {
+      this.mensagem = 'Abra a confirmação segura antes de concluir.';
+      await this.render();
+      return;
+    }
+    this.ultimaConfirmacao = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'confirmar', previaId });
+    this.previaConfirmacao = null;
+    this.confirmacaoArmada = false;
+    this.mensagem = `Histórico confirmado: ${this.ultimaConfirmacao.transacoesCriadas} registros salvos. Estoque não foi alterado.`;
+    if (this.deps.onRascunhoAtualizado) await this.deps.onRascunhoAtualizado('descartar');
+    await this.irPara('andamento');
+  }
+
+  private bindArquivo(selector: string, tipo: ArquivoImportacaoTipo): void {
+    const input = this.el<HTMLInputElement>(selector);
+    if (!input) return;
+    input.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      this.definirArquivo(tipo, { nome: file.name, conteudo: await file.text() });
+      if (this.temArquivosObrigatorios()) this.estado = 'carregado';
+      await this.render();
+    });
+  }
+
+  private definirArquivo(tipo: ArquivoImportacaoTipo, arquivo: ArquivoImportacao): void {
+    if (tipo === 'transacoes') this.transacoes = arquivo;
+    if (tipo === 'financeiro') this.financeiro = arquivo;
+  }
+
+  private async irPara(estado: ImportacaoEstado): Promise<void> {
+    this.estado = estado;
+    await this.render();
+  }
+
+  private bindClick(selector: string, handler: () => void | Promise<void>): void {
+    this.el(selector)?.addEventListener('click', () => void handler());
+  }
+
+  private temArquivosObrigatorios(): boolean {
+    return Boolean(this.transacoes?.conteudo.trim() && this.financeiro?.conteudo.trim());
+  }
+
+  private contarLinhas(conteudo?: string): string {
+    if (!conteudo?.trim()) return '0 linhas';
+    return `${conteudo.trim().split(/\r?\n/).length} linhas`;
   }
 
   private renderMensagem(): void {
@@ -104,173 +309,17 @@ export class ImportacaoTransacoesFinanceiroView {
     toast.hidden = !this.mensagem;
   }
 
-  private renderStaging(staging: StagingImportacaoResumo): void {
-    this.setText('[data-resumo-transacoes]', this.resumoTexto('Registros', staging.resumoTransacoes));
-    this.setText('[data-resumo-financeiro]', this.resumoTexto('Financeiro', staging.resumoFinanceiro));
-    this.setText('[data-limite-transacoes]', `Mostrando no máximo ${staging.limiteVisualizacao} de ${staging.totalRegistrosTransacoes} itens para não travar o iPhone.`);
-    this.setText('[data-limite-financeiro]', `Mostrando no máximo ${staging.limiteVisualizacao} de ${staging.totalRegistrosFinanceiros} itens para não travar o iPhone.`);
-    this.setText('[data-tabela-transacoes]', staging.registrosTransacoes.length ? `${staging.registrosTransacoes.length} registros em conferência.` : 'Nenhum registro em conferência.');
-    this.setText('[data-tabela-financeiro]', staging.registrosFinanceiros.length ? `${staging.registrosFinanceiros.length} pagamentos em conferência.` : 'Nenhum pagamento em conferência.');
-  }
-
-  private renderConciliacao(): void {
-    if (!this.conciliacao) {
-      this.setText('[data-conciliacao-resumo]', 'Depois de preparar as duas planilhas, confira os pagamentos para ver o que bateu e o que precisa de atenção.');
-      this.setText('[data-aprovacao-massa]', 'Nenhum pagamento conferido ainda.');
-      this.setText('[data-tabela-conciliacao]', 'Nenhuma conferência executada.');
-      this.setHidden('[data-conciliacao-limite-mobile]', true);
-      return;
-    }
-
-    const r = this.conciliacao.resumo;
-    this.setText('[data-conciliacao-resumo]', `Registros ${r.totalTransacoes}; pagamentos ${r.totalMovimentos}; ok ${r.conciliados}; pendentes ${r.pendentes}; diferenças ${r.divergencias}; posteriores prováveis ${r.sugestoesPagamentoPosterior}; parecem certos ${r.aprovaveisEmMassa}; ficam para revisar ${r.bloqueadosAprovacaoMassa}; já marcados ${r.aprovadosEmMassa}.`);
-    this.setText('[data-aprovacao-massa]', r.aprovaveisEmMassa > 0 ? `${r.aprovaveisEmMassa} pagamentos parecem certos para marcar juntos.` : 'Nenhum pagamento parece certo para marcar junto agora.');
-    this.setText('[data-tabela-conciliacao]', `${this.conciliacao.itens.length} itens avaliados na conferência.`);
-    this.setHidden('[data-conciliacao-limite-mobile]', this.conciliacao.itens.length <= 80);
-    this.setText('[data-conciliacao-limite-mobile]', `Mostrando resumo para não travar o iPhone. Total avaliado: ${this.conciliacao.itens.length}.`);
-  }
-
-  private renderConfirmacao(): void {
-    const painel = this.confirmacaoAtiva();
-    const botaoArmar = this.el<HTMLButtonElement>('[data-armar-confirmacao-historico]');
-    const botaoConfirmar = this.el<HTMLButtonElement>('[data-confirmar-historico-financeiro]');
-
-    if (!painel) {
-      this.setText('[data-confirmacao-resumo]', 'Abra a revisão antes de confirmar o histórico financeiro.');
-      this.setText('[data-confirmacao-valores]', 'Sem valores carregados ainda.');
-      if (botaoArmar) botaoArmar.hidden = true;
-      if (botaoConfirmar) botaoConfirmar.hidden = true;
-      this.setHidden('[data-confirmacao-salva]', true);
-      return;
-    }
-
-    this.setText('[data-confirmacao-resumo]', `Registros que podem entrar ${painel.transacoesPrevistas}; pagamentos encontrados ${painel.pagamentosPrevistos}; precisam de atenção ${painel.registrosBloqueados}; período ${painel.primeiraData || '—'} até ${painel.ultimaData || '—'}.`);
-    this.setText('[data-confirmacao-valores]', `Faturamento ${painel.faturamentoTotal}; custo ${painel.custoTotal}; lucro ${painel.lucroTotal}; pago ${painel.valorPagoTotal}; pendente ${painel.valorPendenteTotal}; movimentos previstos ${painel.movimentosPrevistos}; transações criadas ${painel.transacoesCriadas}; pagamentos criados ${painel.pagamentosCriados}; movimentos criados ${painel.movimentosCriados}.`);
-    if (botaoArmar) botaoArmar.hidden = !this.previaConfirmacao || this.confirmacaoArmada || painel.transacoesPrevistas <= 0;
-    if (botaoConfirmar) {
-      botaoConfirmar.hidden = !this.previaConfirmacao || !this.confirmacaoArmada || painel.transacoesPrevistas <= 0;
-      if (this.previaConfirmacao?.previaId) botaoConfirmar.dataset.previaId = this.previaConfirmacao.previaId;
-    }
-    this.setHidden('[data-confirmacao-salva]', !(this.ultimaConfirmacao?.loteConfirmacaoId && this.ultimaConfirmacao.transacoesCriadas > 0));
-    this.renderLista('[data-confirmacao-bloqueios-lista]', painel.bloqueios);
-    this.renderLista('[data-confirmacao-avisos-lista]', painel.avisos);
-    this.setHidden('[data-confirmacao-bloqueios]', !painel.bloqueios.length);
-    this.setHidden('[data-confirmacao-avisos]', !painel.avisos.length);
-    this.setText('[data-confirmacao-bloqueios-titulo]', `Ver o que precisa de atenção (${painel.bloqueios.length})`);
-    this.setText('[data-confirmacao-avisos-titulo]', `Ver avisos (${painel.avisos.length})`);
-    this.setValue('[data-bloqueios-exportacao]', painel.bloqueiosExportacao || painel.bloqueios.join('\n'));
-  }
-
-  private renderLista(selector: string, itens: string[]): void {
+  private setText(selector: string, value: string): void {
     const target = this.el(selector);
-    if (!target) return;
-    target.replaceChildren(...itens.map(item => document.createTextNode(`${item}\n`)));
+    if (target) target.textContent = value;
   }
 
-  private async atualizarConciliacao(): Promise<void> {
-    this.conciliacao = await this.deps.conciliar.execute();
+  private setDisabled(selector: string, disabled: boolean): void {
+    const target = this.el<HTMLButtonElement>(selector);
+    if (target) target.disabled = disabled;
   }
 
-  private bindEvents(): void {
-    this.el('[data-conciliar-importacao]')?.addEventListener('click', async () => {
-      await this.atualizarConciliacao();
-      this.mensagem = `Conferência pronta: ${this.conciliacao?.resumo.conciliados || 0} pagamentos conferidos, ${this.conciliacao?.resumo.aprovaveisEmMassa || 0} parecem certos para marcar juntos.`;
-      await this.render();
-    });
-
-    this.el('[data-previsualizar-historico-financeiro]')?.addEventListener('click', async () => {
-      try {
-        const result = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'previsualizar' });
-        this.previaConfirmacao = result;
-        this.ultimaConfirmacao = null;
-        this.confirmacaoArmada = false;
-        this.mensagem = `Revisão pronta: ${result.transacoesPrevistas} registros podem entrar. Estoque não será alterado. Confira os detalhes antes de confirmar.`;
-      } catch (error) {
-        this.mensagem = error instanceof Error ? error.message : 'Não foi possível abrir a revisão do histórico financeiro.';
-      }
-      await this.render();
-    });
-
-    this.el('[data-armar-confirmacao-historico]')?.addEventListener('click', async () => {
-      this.confirmacaoArmada = true;
-      this.mensagem = 'Tudo certo para confirmar. Respire, revise uma última vez e toque em confirmar agora.';
-      await this.render();
-    });
-
-    this.el('[data-confirmar-historico-financeiro]')?.addEventListener('click', async () => {
-      const previaId = this.el<HTMLElement>('[data-confirmar-historico-financeiro]')?.dataset.previaId || this.previaConfirmacao?.previaId;
-      try {
-        if (!previaId) {
-          this.mensagem = 'Abra a revisão antes de confirmar o histórico financeiro.';
-          await this.render();
-          return;
-        }
-        const result = await this.deps.confirmarHistoricoFinanceiro.execute({ modo: 'confirmar', previaId });
-        this.ultimaConfirmacao = result;
-        this.previaConfirmacao = null;
-        this.confirmacaoArmada = false;
-        this.mensagem = `Histórico confirmado: ${result.transacoesCriadas} registros foram salvas. Estoque não foi alterado.`;
-        if (this.deps.onRascunhoAtualizado) await this.deps.onRascunhoAtualizado('descartar');
-        await this.atualizarConciliacao();
-      } catch (error) {
-        this.mensagem = error instanceof Error ? error.message : 'Não foi possível confirmar o histórico financeiro.';
-      }
-      await this.render();
-    });
-
-    this.el('[data-exportar-bloqueios-confirmacao]')?.addEventListener('click', async () => {
-      const texto = this.el<HTMLTextAreaElement>('[data-bloqueios-exportacao]')?.value || '';
-      try {
-        if (typeof navigator !== 'undefined' && navigator.clipboard) await navigator.clipboard.writeText(texto);
-        this.mensagem = 'Lista completa copiada para revisão.';
-      } catch (_) {
-        this.mensagem = 'Lista completa disponível no campo de revisão.';
-      }
-      await this.render();
-    });
-
-    this.el('[data-import-transacoes]')?.addEventListener('submit', async event => {
-      event.preventDefault();
-      const form = event.currentTarget as HTMLFormElement;
-      const data = new FormData(form);
-      const conteudo = String(data.get('conteudo') || '');
-      if (!conteudo.trim()) {
-        this.mensagem = 'Cole o conteúdo da planilha de registros antes de preparar.';
-        await this.render();
-        return;
-      }
-      const resultado = await this.deps.prepararTransacoes.execute({ nomeArquivo: String(data.get('nomeArquivo') || 'transacoes.csv'), conteudo });
-      this.mensagem = `Registros preparados: ${resultado.resumo.total} linhas, ${resultado.resumo.pendentes} precisam de atenção.`;
-      if (this.deps.onRascunhoAtualizado) await this.deps.onRascunhoAtualizado('salvar');
-      await this.render();
-    });
-
-    this.el('[data-import-financeiro]')?.addEventListener('submit', async event => {
-      event.preventDefault();
-      const form = event.currentTarget as HTMLFormElement;
-      const data = new FormData(form);
-      const conteudo = String(data.get('conteudo') || '');
-      if (!conteudo.trim()) {
-        this.mensagem = 'Cole o conteúdo da planilha financeira antes de preparar.';
-        await this.render();
-        return;
-      }
-      const resultado = await this.deps.prepararFinanceiro.execute({ nomeArquivo: String(data.get('nomeArquivo') || 'financeiro.csv'), conteudo });
-      this.mensagem = `Pagamentos preparados: ${resultado.resumo.total} linhas, ${resultado.resumo.pendentes} precisam de atenção.`;
-      if (this.deps.onRascunhoAtualizado) await this.deps.onRascunhoAtualizado('salvar');
-      await this.render();
-    });
-
-    this.all('[data-file-upload-transacoes]').forEach(input => this.bindFileInput(input, '[data-conteudo-transacoes]', '[data-nome-arquivo-transacoes]'));
-    this.all('[data-file-upload-financeiro]').forEach(input => this.bindFileInput(input, '[data-conteudo-financeiro]', '[data-nome-arquivo-financeiro]'));
-  }
-
-  private bindFileInput(input: HTMLElement, conteudoSelector: string, nomeSelector: string): void {
-    input.addEventListener('change', async event => {
-      const file = (event.currentTarget as HTMLInputElement).files?.[0];
-      if (!file) return;
-      this.setValue(nomeSelector, file.name);
-      this.setValue(conteudoSelector, await file.text());
-    });
+  private el<T extends HTMLElement = HTMLElement>(selector: string): T | null {
+    return this.root?.querySelector<T>(selector) || null;
   }
 }
