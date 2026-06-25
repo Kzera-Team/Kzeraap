@@ -1,0 +1,51 @@
+<section class="ifwrap">
+  <section class="ifcard ifdanger">
+    <span class="ifbadge warn">Precisa revisar</span>
+    <div class="iftitle">Alguns registros ainda não estão seguros.</div>
+    <p>Resolva os grupos abaixo antes de gerar a prévia. Registros bloqueados não entram no financeiro oficial.</p>
+  </section>
+
+  <div class="ifhead">Bloqueios agrupados</div>
+
+  <div class="iflist">
+    <section class="ifissue">
+      <div class="ifrow">
+        <div>
+          <div class="iftitle">Falta financeiro</div>
+          <div class="ifmeta">Venda encontrada, mas sem pagamento ou movimento confiável.</div>
+        </div>
+        <span class="ifbadge warn" data-pendencias-financeiro>0</span>
+      </div>
+      <button class="ifsecondary" data-ir-detalhes>Ver casos</button>
+    </section>
+
+    <section class="ifissue">
+      <div class="ifrow">
+        <div>
+          <div class="iftitle">Valor diferente</div>
+          <div class="ifmeta">O valor da venda não bate com o financeiro encontrado.</div>
+        </div>
+        <span class="ifbadge warn" data-pendencias-valor>0</span>
+      </div>
+      <button class="ifsecondary" data-ir-detalhes>Conferir valores</button>
+    </section>
+
+    <section class="ifissue">
+      <div class="ifrow">
+        <div>
+          <div class="iftitle">Pode estar duplicado</div>
+          <div class="ifmeta">Existe registro parecido no lote ou no histórico oficial.</div>
+        </div>
+        <span class="ifbadge warn" data-pendencias-duplicidade>0</span>
+      </div>
+      <button class="ifsecondary" data-ir-detalhes>Analisar duplicados</button>
+    </section>
+  </div>
+</section>
+
+<div class="ifbar">
+  <div class="ifbar-inner">
+    <button class="ifprimary" data-gerar-previa>Gerar prévia segura</button>
+    <div class="ifnote">A prévia só inclui registros aprovados para confirmação.</div>
+  </div>
+</div>
