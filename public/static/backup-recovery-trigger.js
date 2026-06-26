@@ -1,11 +1,5 @@
 (() => {
-  const LABEL_ID = 'backup-recovery-action';
-  const TAP_TARGET_SELECTOR = '.auth-icon';
-  const TAP_LIMIT = 10;
-  const TAP_WINDOW_MS = 4200;
-
-  let tapCount = 0;
-  let firstTapAt = 0;
+  const BUTTON_ID = 'backup-recovery-action';
 
   function closeBackupDialog() {
     document.querySelector('[data-backup-picker-overlay]')?.remove();
@@ -90,95 +84,14 @@
     document.body.appendChild(overlay);
   }
 
-  function findAuthForm() {
-    const knownForm = document.querySelector('[data-testid="setup-form"], [data-testid="login-form"], [data-testid="attention-form"]');
-    if (knownForm) return knownForm;
+  function bindRecoveryButton() {
+    const button = document.getElementById(BUTTON_ID);
+    if (!button || button.dataset.backupRecoveryBound === 'true') return;
 
-    return Array.from(document.querySelectorAll('.auth-card form'))
-      .find((form) => {
-        const title = form.querySelector('h2')?.textContent?.trim();
-        return title === 'Criar senha' || title === 'Entrar' || title === 'Confirme que é você';
-      }) || null;
-  }
-
-  function findRecoveryButtonHost() {
-    const authForm = findAuthForm();
-    if (authForm) return authForm;
-
-    const authCard = document.querySelector('.auth-card');
-    if (!authCard) return null;
-
-    const primaryButton = Array.from(authCard.querySelectorAll('button'))
-      .find((button) => ['Criar acesso', 'Entrar', 'Entrar com senha'].includes(button.textContent?.trim() || ''));
-
-    return primaryButton?.parentElement || authCard;
-  }
-
-  function mountRecoveryButton() {
-    const existing = document.getElementById(LABEL_ID);
-    if (existing && document.body.contains(existing)) return;
-    if (existing) existing.remove();
-
-    const host = findRecoveryButtonHost();
-    if (!host) return;
-
-    const button = document.createElement('button');
-    button.id = LABEL_ID;
-    button.type = 'button';
-    button.textContent = 'Recuperar backup';
-    button.style.display = 'block';
-    button.style.width = '100%';
-    button.style.marginTop = '10px';
-    button.style.border = '1px solid rgba(167, 139, 250, 0.55)';
-    button.style.borderRadius = '14px';
-    button.style.padding = '12px 14px';
-    button.style.background = 'transparent';
-    button.style.color = '#c4b5fd';
-    button.style.fontWeight = '700';
-    button.style.fontSize = '15px';
-    button.style.position = 'relative';
-    button.style.zIndex = '2';
+    button.dataset.backupRecoveryBound = 'true';
     button.addEventListener('click', () => showVisiblePickerDialog('recover-backup-button'));
-
-    const primaryButton = Array.from(host.querySelectorAll('button'))
-      .find((candidate) => ['Criar acesso', 'Entrar', 'Entrar com senha'].includes(candidate.textContent?.trim() || ''));
-
-    if (primaryButton?.parentElement === host) {
-      primaryButton.insertAdjacentElement('afterend', button);
-      return;
-    }
-
-    host.appendChild(button);
   }
 
-  function handleLogoTap(event) {
-    const target = event.target;
-    if (!(target instanceof Element) || !target.closest(TAP_TARGET_SELECTOR)) return;
-
-    const now = Date.now();
-    if (!firstTapAt || now - firstTapAt > TAP_WINDOW_MS) {
-      firstTapAt = now;
-      tapCount = 0;
-    }
-
-    tapCount += 1;
-
-    if (tapCount >= TAP_LIMIT) {
-      tapCount = 0;
-      firstTapAt = 0;
-      showVisiblePickerDialog('auth-logo-10-taps');
-    }
-  }
-
-  mountRecoveryButton();
-  window.addEventListener('load', mountRecoveryButton);
-  window.setTimeout(mountRecoveryButton, 100);
-  window.setTimeout(mountRecoveryButton, 500);
-  window.setTimeout(mountRecoveryButton, 1200);
-
-  const observer = new MutationObserver(mountRecoveryButton);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
-
-  document.addEventListener('click', handleLogoTap, true);
-  document.addEventListener('touchend', handleLogoTap, true);
+  bindRecoveryButton();
+  window.addEventListener('load', bindRecoveryButton);
 })();
