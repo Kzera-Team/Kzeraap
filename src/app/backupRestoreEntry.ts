@@ -9,15 +9,13 @@ import type { PerfilRecord } from '../runtime/PerfilPayloadFields';
 import { PerfilRepository } from '../infrastructure/repositories/PerfilRepository';
 import { FinanceiroProtegidoRepository, type FinanceiroProtegidoRecord } from '../infrastructure/repositories/FinanceiroProtegidoRepository';
 import { RegistroImportacaoFinanceiraRepository, RegistroImportacaoTransacaoRepository } from '../infrastructure/repositories/ImportacaoStagingRepository';
-
+import { showLoadingModal } from '../presentation/shared/components/LoadingModal';
 const stores = ['perfis', 'itens', 'balancas', 'contasFinanceiras', 'movimentosFinanceiros', 'pagamentosTransacao', 'transacoesFinanceiras', 'lotesImportacaoTransacoes', 'registrosImportacaoTransacoes', 'lotesImportacaoFinanceira', 'registrosImportacaoFinanceira', 'pacotesConfirmacaoHistorica'];
 const clock = { now: () => new Date() };
-
 function repo(storeName: string) {
   return new IndexedDbRepository(new IndexedDbConnection({ databaseName: 'kzera_operacional_1102', version: 5, stores }), storeName);
 }
-
-function status(message: string) {
+function status(message: string, options: { timeoutMs?: number | null } = {}) {
   const box = document.createElement('div');
   box.textContent = message;
   box.style.position = 'fixed';
@@ -30,16 +28,16 @@ function status(message: string) {
   box.style.background = '#fff';
   box.style.color = '#111';
   document.body.appendChild(box);
-  window.setTimeout(() => box.remove(), 4000);
+  if (options.timeoutMs !== null) {
+    window.setTimeout(() => box.remove(), options.timeoutMs ?? 4000);
+  }
+  return () => box.remove();
 }
-
 async function restore(file: File) {
   const password = window.prompt('Digite a mesma senha de login para restaurar este backup.');
   if (!password) return;
-
   const security = createFoundationSecurity(new RuntimeMetadataKeyValueStore(new BrowserKeyValueStore('kzera-runtime')), clock);
   await new LoginUseCase(security.accessCoordinator).execute({ password });
-
   const perfisBase = new IndexedDbRepository<PerfilRecord>(new IndexedDbConnection({ databaseName: 'kzera_operacional_perfis_seguro_1133', version: 1, stores: ['perfis'] }), 'perfis');
   const importer = new BackupImportUseCase({
     perfis: new PerfilRepository(perfisBase, security.session),
@@ -54,16 +52,16 @@ async function restore(file: File) {
     lotesImportacaoFinanceira: repo('lotesImportacaoFinanceira'),
     registrosImportacaoFinanceira: new RegistroImportacaoFinanceiraRepository(repo('registrosImportacaoFinanceira') as never, security.session)
   }, security.session);
-
   const result = await importer.execute(await file.text());
   security.resourceScope.releaseAll();
   status(`Backup restaurado: ${result.perfis} perfis, ${result.itens} itens.`);
   window.setTimeout(() => window.location.reload(), 900);
 }
-
 window.addEventListener('kzera:backup-file-selected', event => {
   const file = (event as CustomEvent<{ file?: File }>).detail?.file;
   if (!file) return;
-  status('Restaurando backup...');
-  restore(file).catch(error => status(error instanceof Error ? error.message : 'Não foi possível restaurar.'));
+  const loading = showLoadingModal({ message: 'Restaurando backup...' });
+  restore(file)
+    .catch(error => status(error instanceof Error ? error.message : 'Não foi possível restaurar.'))
+    .finally(() => loading.close());
 });
