@@ -1,6 +1,4 @@
 (() => {
-  const BUTTON_ID = 'backup-recovery-action';
-
   function closeBackupDialog() {
     document.querySelector('[data-backup-picker-overlay]')?.remove();
   }
@@ -84,14 +82,5 @@
     document.body.appendChild(overlay);
   }
 
-  function bindRecoveryButton() {
-    const button = document.getElementById(BUTTON_ID);
-    if (!button || button.dataset.backupRecoveryBound === 'true') return;
-
-    button.dataset.backupRecoveryBound = 'true';
-    button.addEventListener('click', () => showVisiblePickerDialog('recover-backup-button'));
-  }
-
-  bindRecoveryButton();
-  window.addEventListener('load', bindRecoveryButton);
+  window.kzeraAbrirSeletorBackup = showVisiblePickerDialog;
 })();
