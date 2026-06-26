@@ -1,3 +1,4 @@
+import '../presentation/shared/components/FeedbackComponents/registerFeedbackComponents';
 import { createKzeraAuthenticatedApp } from './createKzeraAuthenticatedApp';
 
 const root = document.getElementById('app');
