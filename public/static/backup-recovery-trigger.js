@@ -90,20 +90,48 @@
     document.body.appendChild(overlay);
   }
 
+  function findRecoveryButtonHost() {
+    const setupForm = document.querySelector('[data-testid="setup-form"]');
+    if (setupForm) return setupForm;
+
+    const authCard = document.querySelector('.auth-card');
+    if (!authCard) return null;
+
+    const primaryButton = Array.from(authCard.querySelectorAll('button'))
+      .find((button) => button.textContent?.trim() === 'Criar acesso');
+
+    return primaryButton?.parentElement || authCard;
+  }
+
   function mountRecoveryButton() {
     if (document.getElementById(LABEL_ID)) return;
 
-    const setupForm = document.querySelector('[data-testid="setup-form"]');
-    if (!setupForm) return;
+    const host = findRecoveryButtonHost();
+    if (!host) return;
 
     const button = document.createElement('button');
     button.id = LABEL_ID;
     button.type = 'button';
     button.textContent = 'Recuperar backup';
+    button.style.width = '100%';
     button.style.marginTop = '10px';
+    button.style.border = '1px solid rgba(167, 139, 250, 0.45)';
+    button.style.borderRadius = '14px';
+    button.style.padding = '12px 14px';
+    button.style.background = 'transparent';
+    button.style.color = '#c4b5fd';
+    button.style.fontWeight = '700';
     button.addEventListener('click', () => showVisiblePickerDialog('recover-backup-button'));
 
-    setupForm.appendChild(button);
+    const primaryButton = Array.from(host.querySelectorAll('button'))
+      .find((candidate) => candidate.textContent?.trim() === 'Criar acesso');
+
+    if (primaryButton?.parentElement === host) {
+      primaryButton.insertAdjacentElement('afterend', button);
+      return;
+    }
+
+    host.appendChild(button);
   }
 
   function handleLogoTap(event) {
