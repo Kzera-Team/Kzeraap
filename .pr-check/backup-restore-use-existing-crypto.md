@@ -1,10 +1,10 @@
-# Escopo — restauração de backup com cripto existente
+# Escopo — restauração com cripto existente
 
 Base atualizada: sim
 
 Arquivos alterados:
 - src/application/backup/BackupImportUseCase.ts
-- src/app/backupRestoreMain.ts
+- src/app/backupRestoreEntry.ts
 - public/index.html
 - package.json
 
