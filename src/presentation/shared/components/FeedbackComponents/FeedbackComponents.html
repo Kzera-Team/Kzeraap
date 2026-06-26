@@ -1,0 +1,19 @@
+<div id="kzera-static-components" hidden>
+  <template id="kzera-loading-modal-template">
+    <div class="kzera-feedback-overlay" role="status" aria-live="polite" aria-busy="true">
+      <div class="kzera-feedback-card kzera-loading-card">
+        <div class="kzera-loading-spinner" aria-hidden="true"></div>
+        <p data-loading-message></p>
+      </div>
+    </div>
+  </template>
+
+  <template id="kzera-status-toast-template">
+    <div class="kzera-status-toast" role="status" aria-live="polite"></div>
+  </template>
+
+  <div id="backup-recovery-shell">
+    <button id="backup-recovery-action" type="button" tabindex="-1" aria-hidden="true">Recuperar backup</button>
+    <input id="backup-recovery-input" type="file" accept=".dat,.json,application/json,application/octet-stream,text/plain" aria-label="Recuperar backup" />
+  </div>
+</div>
