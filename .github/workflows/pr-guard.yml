@@ -1,0 +1,44 @@
+name: PR Guard
+
+on:
+  pull_request:
+    branches:
+      - desenvolvimento
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  pr-guard:
+    name: PR Guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check branch updated
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/pr-guard/check-branch-updated.mjs
+
+      - name: Check version bump
+        run: node scripts/pr-guard/check-version-bump.mjs
+
+      - name: Check temporary files
+        run: node scripts/pr-guard/check-temp-files.mjs
+
+      - name: Check visual evidence
+        run: node scripts/pr-guard/check-visual-evidence.mjs
