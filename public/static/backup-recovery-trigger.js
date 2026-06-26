@@ -84,14 +84,18 @@
     document.body.appendChild(overlay);
   }
 
-  function bindRecoveryButton() {
-    const button = document.getElementById(BUTTON_ID);
-    if (!button || button.dataset.backupRecoveryBound === 'true') return;
-
-    button.dataset.backupRecoveryBound = 'true';
-    button.addEventListener('click', () => showVisiblePickerDialog('recover-backup-button'));
+  function isRecoveryButtonTarget(target) {
+    return target instanceof Element && Boolean(target.closest(`#${BUTTON_ID}`));
   }
 
-  bindRecoveryButton();
-  window.addEventListener('load', bindRecoveryButton);
+  function handleRecoveryButtonActivation(event) {
+    if (!isRecoveryButtonTarget(event.target)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    showVisiblePickerDialog('recover-backup-button');
+  }
+
+  document.addEventListener('click', handleRecoveryButtonActivation, true);
+  document.addEventListener('touchend', handleRecoveryButtonActivation, true);
+  window.kzeraAbrirSeletorBackup = showVisiblePickerDialog;
 })();
