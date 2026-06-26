@@ -1,0 +1,23 @@
+name: Test Evidence Guard
+
+on:
+  pull_request:
+    branches:
+      - desenvolvimento
+
+jobs:
+  test-evidence-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Block PR without real app evidence
+        run: node scripts/test-evidence-guard.mjs
