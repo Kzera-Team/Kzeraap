@@ -1,1 +1,0 @@
-backupRestoreMain.ts não é usado. O entrypoint correto é backupRestoreEntry.ts.
