@@ -90,23 +90,26 @@
     document.body.appendChild(overlay);
   }
 
-  function findSetupFormByTitle() {
-    return Array.from(document.querySelectorAll('form'))
-      .find((form) => form.querySelector('h2')?.textContent?.trim() === 'Criar senha') || null;
+  function findAuthForm() {
+    const knownForm = document.querySelector('[data-testid="setup-form"], [data-testid="login-form"], [data-testid="attention-form"]');
+    if (knownForm) return knownForm;
+
+    return Array.from(document.querySelectorAll('.auth-card form'))
+      .find((form) => {
+        const title = form.querySelector('h2')?.textContent?.trim();
+        return title === 'Criar senha' || title === 'Entrar' || title === 'Confirme que é você';
+      }) || null;
   }
 
   function findRecoveryButtonHost() {
-    const setupForm = document.querySelector('[data-testid="setup-form"]');
-    if (setupForm) return setupForm;
-
-    const setupFormByTitle = findSetupFormByTitle();
-    if (setupFormByTitle) return setupFormByTitle;
+    const authForm = findAuthForm();
+    if (authForm) return authForm;
 
     const authCard = document.querySelector('.auth-card');
     if (!authCard) return null;
 
     const primaryButton = Array.from(authCard.querySelectorAll('button'))
-      .find((button) => button.textContent?.trim() === 'Criar acesso');
+      .find((button) => ['Criar acesso', 'Entrar', 'Entrar com senha'].includes(button.textContent?.trim() || ''));
 
     return primaryButton?.parentElement || authCard;
   }
@@ -138,7 +141,7 @@
     button.addEventListener('click', () => showVisiblePickerDialog('recover-backup-button'));
 
     const primaryButton = Array.from(host.querySelectorAll('button'))
-      .find((candidate) => candidate.textContent?.trim() === 'Criar acesso');
+      .find((candidate) => ['Criar acesso', 'Entrar', 'Entrar com senha'].includes(candidate.textContent?.trim() || ''));
 
     if (primaryButton?.parentElement === host) {
       primaryButton.insertAdjacentElement('afterend', button);
