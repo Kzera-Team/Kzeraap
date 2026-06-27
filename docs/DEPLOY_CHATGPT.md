@@ -6,8 +6,6 @@ Objetivo principal:
 
 > instalar dependências, validar o projeto, subir o servidor local e confirmar que a URL real responde.
 
-A captura de tela é apenas uma evidência adicional quando a tarefa exigir validação visual. Ela não deve impedir o agente de concluir que o ambiente de desenvolvimento está instalado e rodando.
-
 ---
 
 ## 1. O que precisa existir antes
@@ -367,8 +365,6 @@ O ambiente pode ser tratado como operacional quando:
 
 Validação por navegador é uma camada adicional.
 
-Ela deve ser feita quando a tarefa pedir evidência visual, UX, layout, fluxo real ou comparação de tela.
-
 Se o navegador estiver bloqueado por policy do container, informe separadamente:
 
 ```text
@@ -379,18 +375,7 @@ Validação por navegador: bloqueada por policy do container
 
 ---
 
-## 13. O que não vale como evidência visual
-
-Quando a tarefa exigir validação visual, não use:
-
-- HTML isolado;
-- mockup no lugar do app;
-- imagem montada manualmente;
-- arquivo aberto fora da URL real do app.
-
----
-
-## 14. Problema encontrado no projeto
+## 13. Problema encontrado no projeto
 
 Durante a validação, foi encontrado um caminho errado no script de backup.
 
@@ -418,7 +403,7 @@ Essa correção pode ir para Git em branch própria.
 
 ---
 
-## 15. Não commitar estes arquivos
+## 14. Não commitar estes arquivos
 
 Não coloque no Git:
 
@@ -440,7 +425,7 @@ Isso é só ajuste local do ambiente.
 
 ---
 
-## 16. Resultado já obtido em validação anterior
+## 15. Resultado já obtido em validação anterior
 
 Resultado real obtido em uma execução onde o Chromium pôde ser liberado:
 
