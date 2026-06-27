@@ -208,3 +208,17 @@ Se o controle só aumenta preenchimento e não aumenta qualidade, não deve entr
 Se uma alteração visual não puder entregar mockup, print real, diff ou percentual no PR, isso deve ser tratado como impedimento.
 
 Esse impedimento só destrava se houver decisão explícita do líder, responsável e ação posterior.
+
+## Travas e controles novos
+
+Workflow, script de bloqueio, campo obrigatório no PR ou nova trava só entram quando necessários.
+
+Antes de criar controle novo, confirmar:
+
+- o usuário pediu trava ou apenas regra/checklist;
+- já existe trava para o caso;
+- o controle reduz risco real;
+- não aumenta burocracia sem ganho;
+- não enfraquece regra existente.
+
+Se checklist simples resolve sem perda de controle, não criar trava.
