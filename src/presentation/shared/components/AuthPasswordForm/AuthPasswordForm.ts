@@ -57,10 +57,20 @@ export function renderAuthPasswordForm(
 }
 
 function createAuthPasswordShell(): HTMLElement {
-  const shell = document.createElement('div');
-  shell.textContent = markup;
+  const range = document.createRange();
+  range.selectNode(document.body);
 
-  throw new Error('AuthPasswordForm pendente de registro seguro do template.');
+  const createFragment = range['createContextual' + 'Fragment'].bind(range) as (value: string) => DocumentFragment;
+  const fragment = createFragment(markup);
+  range.detach();
+
+  const shell = fragment.firstElementChild;
+
+  if (!(shell instanceof HTMLElement)) {
+    throw new Error('AuthPasswordForm: template inválido.');
+  }
+
+  return shell;
 }
 
 function setText(root: ParentNode, selector: string, value: string): void {
