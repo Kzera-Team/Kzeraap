@@ -1,17 +1,21 @@
 {
   "name": "kzera",
-  "version": "0.19.52",
+  "version": "0.19.50",
   "private": true,
   "type": "module",
   "description": "Kzera internal package for the public PWA shell.",
   "scripts": {
     "test": "echo \"Testes temporariamente desabilitados neste branch\"",
-    "check": "npm run check:no-html-in-ts && npm test",
+    "check": "npm run check:no-html-in-ts && npm run check:dev-readme-versioning && npm test",
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "check:no-html-in-ts": "node tools/check-no-html-in-ts.mjs",
-    "check:index-html-pr-only": "node tools/check-index-html-pr-only.mjs"
+    "check:index-html-pr-only": "node tools/check-index-html-pr-only.mjs",
+    "check:pr-checklist-evidence": "node tools/check-pr-checklist-evidence.mjs",
+    "check:protected-process-changes": "node tools/check-protected-process-changes.mjs",
+    "check:visual-mockup-evidence": "node tools/check-visual-mockup-evidence.mjs",
+    "check:dev-readme-versioning": "node tools/check-dev-readme-versioning.mjs"
   },
   "engines": {
     "node": ">=20"
