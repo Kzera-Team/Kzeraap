@@ -21,3 +21,33 @@ export class FeedbackBinder {
     }
   }
 }
+
+interface FeedbackSelectors {
+  loading: string;
+  mensagem: string;
+  erro: string;
+}
+
+interface FeedbackState {
+  loading?: boolean;
+  mensagem?: string;
+  erro?: string;
+}
+
+export function bindFeedback(root: ParentNode, selectors: FeedbackSelectors, state: FeedbackState): void {
+  bindText(root, selectors.mensagem, state.mensagem);
+  bindText(root, selectors.erro, state.erro);
+
+  const loading = root.querySelector<HTMLElement>(selectors.loading);
+  if (loading) {
+    loading.hidden = !state.loading;
+  }
+}
+
+function bindText(root: ParentNode, selector: string, value?: string): void {
+  const element = root.querySelector<HTMLElement>(selector);
+  if (!element) return;
+
+  element.textContent = value ?? '';
+  element.hidden = !value;
+}
