@@ -1,0 +1,13 @@
+<section class="{{shellClass}}" data-testid="codigo-perfil-config">
+  {{introHtml}}
+  {{errorHtml}}
+  <form class="kzera-card code-rule-form" data-testid="codigo-perfil-form">
+    <div class="kzera-section-title compact-title"><div><span class="eyebrow">Construtor</span><h2>Blocos do Código do Perfil</h2></div></div>
+    <p class="form-hint">Configure pelo menos 3 campos/blocos para salvar.</p>
+    <div class="code-rule-builder" data-testid="codigo-perfil-builder">{{partsHtml}}</div>
+    <div class="action-row"><button class="icon-button text-icon" type="button" data-code-add="text" aria-label="Adicionar texto livre" title="Adicionar texto livre">+ Texto livre</button><button class="icon-button text-icon" type="button" data-code-add="column" aria-label="Adicionar coluna" title="Adicionar coluna">+ Coluna</button></div>
+    <div class="code-rule-preview" data-testid="codigo-perfil-preview">Exemplo: {{preview}}</div>
+    {{previewErrorHtml}}
+    <button class="icon-button primary-icon text-icon" type="submit" aria-label="{{submitLabel}}" title="{{submitLabel}}">{{submitLabel}}</button>
+  </form>
+</section>

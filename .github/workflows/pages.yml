@@ -5,32 +5,14 @@ on:
     branches:
       - desenvolvimento
   workflow_dispatch:
-    inputs:
-      debug_retention_days:
-        description: Dias para manter artifacts de debug
-        required: false
-        default: '7'
-      upload_debug_artifacts:
-        description: Publicar artifacts de diagnóstico
-        required: false
-        default: 'true'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-env:
-  KZERA_PAGE_URL: https://jjjtestejoao-ui.github.io/Kzeraap/
-  KZERA_DIST_ARTIFACT_PREFIX: dist-debug
-  KZERA_DEVOPS_ARTIFACT_PREFIX: devops-debug
-
 concurrency:
-  group: pages-${{ github.ref_name }}
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -47,118 +29,11 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
 
-      - name: Capture preflight metadata
-        run: |
-          mkdir -p .devops-debug
-          {
-            echo "workflow=${GITHUB_WORKFLOW}"
-            echo "run_id=${GITHUB_RUN_ID}"
-            echo "run_attempt=${GITHUB_RUN_ATTEMPT}"
-            echo "sha=${GITHUB_SHA}"
-            echo "ref=${GITHUB_REF}"
-            echo "ref_name=${GITHUB_REF_NAME}"
-            echo "runner_os=${RUNNER_OS}"
-            echo "node=$(node -v)"
-            echo "npm=$(npm -v)"
-            echo "has_package_lock=$(test -f package-lock.json && echo true || echo false)"
-            echo "has_pnpm_lock=$(test -f pnpm-lock.yaml && echo true || echo false)"
-            echo "has_yarn_lock=$(test -f yarn.lock && echo true || echo false)"
-          } > .devops-debug/build-env.txt
-          cp package.json .devops-debug/package.json
-          cp vite.config.ts .devops-debug/vite.config.ts
-          if [ -f pnpm-lock.yaml ]; then
-            grep -n "vite:" pnpm-lock.yaml | head -20 > .devops-debug/pnpm-lock-vite-lines.txt || true
-          fi
-
       - name: Install dependencies
         run: npm install --include=dev --registry=https://registry.npmjs.org/
 
-      - name: Capture dependency metadata
-        if: always()
-        run: |
-          mkdir -p .devops-debug
-          npm list vite --depth=0 > .devops-debug/npm-list-vite.txt 2>&1 || true
-          npm config list > .devops-debug/npm-config.txt 2>&1 || true
-          find node_modules/.bin -maxdepth 1 -type f -o -type l 2>/dev/null | sort > .devops-debug/node-bin.txt || true
-
       - name: Build
         run: npm exec vite -- build
-
-      - name: Verify dist output
-        run: |
-          test -f dist/index.html
-          test -d dist/assets
-          find dist -maxdepth 4 -type f | sort > .devops-debug/dist-tree.txt
-          wc -c dist/index.html > .devops-debug/dist-index-size.txt
-
-      - name: Write public deploy metadata
-        run: |
-          APP_VERSION=$(node -p "require('./package.json').version")
-          BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          DIST_ARTIFACT_NAME="${KZERA_DIST_ARTIFACT_PREFIX}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          DEVOPS_ARTIFACT_NAME="${KZERA_DEVOPS_ARTIFACT_PREFIX}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-
-          {
-            echo "run_id=${GITHUB_RUN_ID}"
-            echo "run_attempt=${GITHUB_RUN_ATTEMPT}"
-            echo "sha=${GITHUB_SHA}"
-            echo "ref=${GITHUB_REF}"
-            echo "ref_name=${GITHUB_REF_NAME}"
-            echo "app_version=${APP_VERSION}"
-            echo "build_time_utc=${BUILD_TIME}"
-            echo "artifact_name=${DIST_ARTIFACT_NAME}"
-            echo "devops_artifact_name=${DEVOPS_ARTIFACT_NAME}"
-            echo "page_url=${KZERA_PAGE_URL}"
-          } > dist/kzera-debug-manifest.txt
-
-          printf '{\n' > dist/latest-run.json
-          printf '  "repository": "jjjtestejoao-ui/Kzeraap",\n' >> dist/latest-run.json
-          printf '  "workflow": "Deploy ambiente teste",\n' >> dist/latest-run.json
-          printf '  "run_id": "%s",\n' "${GITHUB_RUN_ID}" >> dist/latest-run.json
-          printf '  "run_attempt": "%s",\n' "${GITHUB_RUN_ATTEMPT}" >> dist/latest-run.json
-          printf '  "sha": "%s",\n' "${GITHUB_SHA}" >> dist/latest-run.json
-          printf '  "ref": "%s",\n' "${GITHUB_REF}" >> dist/latest-run.json
-          printf '  "ref_name": "%s",\n' "${GITHUB_REF_NAME}" >> dist/latest-run.json
-          printf '  "app_version": "%s",\n' "${APP_VERSION}" >> dist/latest-run.json
-          printf '  "build_time_utc": "%s",\n' "${BUILD_TIME}" >> dist/latest-run.json
-          printf '  "artifact_name": "%s",\n' "${DIST_ARTIFACT_NAME}" >> dist/latest-run.json
-          printf '  "devops_artifact_name": "%s",\n' "${DEVOPS_ARTIFACT_NAME}" >> dist/latest-run.json
-          printf '  "page_url": "%s"\n' "${KZERA_PAGE_URL}" >> dist/latest-run.json
-          printf '}\n' >> dist/latest-run.json
-
-          cp dist/latest-run.json .devops-debug/latest-run.json
-          cp dist/kzera-debug-manifest.txt .devops-debug/kzera-debug-manifest.txt
-
-      - name: Upload dist debug artifact
-        id: upload_dist_debug
-        if: ${{ success() && (inputs.upload_debug_artifacts || 'true') == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-debug-${{ github.run_id }}-${{ github.run_attempt }}
-          path: dist
-          retention-days: ${{ inputs.debug_retention_days || '7' }}
-
-      - name: Upload DevOps diagnostics
-        if: ${{ always() && (inputs.upload_debug_artifacts || 'true') == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: devops-debug-${{ github.run_id }}-${{ github.run_attempt }}
-          path: .devops-debug
-          if-no-files-found: ignore
-          retention-days: ${{ inputs.debug_retention_days || '7' }}
-
-      - name: Write GitHub Actions summary
-        if: always()
-        run: |
-          echo "## Kzera deploy debug" >> "$GITHUB_STEP_SUMMARY"
-          echo "Run ID: ${GITHUB_RUN_ID}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Run attempt: ${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Commit SHA: ${GITHUB_SHA}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Ref: ${GITHUB_REF}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Dist artifact: dist-debug-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_STEP_SUMMARY"
-          echo "DevOps artifact: devops-debug-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Dist artifact ID: ${{ steps.upload_dist_debug.outputs.artifact-id }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Public metadata: ${KZERA_PAGE_URL}latest-run.json" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,0 +1,27 @@
+<section class="kzera-screen" data-testid="transacoes-financeiras-historico">
+  <header class="kzera-operational-header"><div class="kzera-operational-title"><span class="eyebrow">Dinheiro</span><h1>Resumo do dinheiro</h1></div></header>
+  <p class="form-hint">O histórico importado entra no resumo do dinheiro. Ele não muda o estoque.</p>
+  {{mensagem}}
+  <form class="kzera-card soft-card" data-filtros-financeiros>
+    <h3>Encontrar registros</h3>
+    <div class="import-grid two-cols">
+      <label><span>De</span><input type="date" name="dataInicio" value="{{dataInicio}}" /></label>
+      <label><span>Até</span><input type="date" name="dataFim" value="{{dataFim}}" /></label>
+      <label><span>Perfil/comprador</span><input name="perfil" value="{{perfil}}" placeholder="Nome ou código" /></label>
+      <label><span>Forma ou referência</span><input name="metodo" value="{{metodo}}" placeholder="Pix, cripto, referência" /></label>
+      <label><span>Tipo</span><select name="origem"><option value="todas" {{origemTodasSelected}}>Todas</option><option value="importado_csv" {{origemImportadoSelected}}>Importado</option><option value="manual" {{origemManualSelected}}>Novo registro</option></select></label>
+      <label><span>Status</span><select name="statusFinanceiro"><option value="todos" {{statusTodosSelected}}>Todos</option><option value="pago" {{statusPagoSelected}}>Pago</option><option value="parcial" {{statusParcialSelected}}>Parcial</option><option value="pendente" {{statusPendenteSelected}}>Pendente</option></select></label>
+    </div>
+    <div class="compact-actions"><button class="icon-button text-icon primary-icon" type="submit">Filtrar</button><button class="icon-button text-icon" type="button" data-limpar-filtros-financeiros>Limpar filtros</button></div>
+  </form>
+  <details class="inline-details"><summary>Ver números do período</summary><div class="import-staging-summary" aria-label="Resumo do dinheiro">
+    <span>Registros: {{totalTransacoes}}</span>
+    <span>Faturamento: {{faturamento}}</span>
+    <span>Valor pago: {{valorPago}}</span>
+    <span>Pendente: {{valorPendente}}</span>
+    <span>Custo: {{custo}}</span>
+    <span>Lucro: {{lucro}}</span>
+    <span>Pagamentos conferidos: {{movimentosConfirmados}}</span>
+    <span>Pagamentos pendentes: {{movimentosPendentes}}</span>
+  </div></details>
+</section>

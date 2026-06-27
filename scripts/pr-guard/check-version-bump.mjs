@@ -30,10 +30,10 @@ const changedFiles = git(['diff', '--name-only', `${baseSha}..${headSha}`])
 const requiresVersionBump = changedFiles.some((file) => {
   if (file === 'package.json') return false;
   if (file.startsWith('.pr-check/')) return false;
-  if (file.startsWith('.github/workflows/')) return false;
   if (file.startsWith('src/')) return true;
   if (file.startsWith('public/')) return true;
   if (file.startsWith('scripts/')) return true;
+  if (file.startsWith('.github/workflows/')) return true;
   return false;
 });
 

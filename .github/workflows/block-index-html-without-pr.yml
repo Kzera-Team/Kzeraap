@@ -1,4 +1,4 @@
-name: Bloquear index html sem PR
+name: Bloquear index.html sem PR
 
 on:
   push:

@@ -1,0 +1,49 @@
+<section class="kzera-screen" data-testid="relatorios-operacionais">
+  <header class="kzera-operational-header"><div class="kzera-operational-title"><span class="eyebrow">Relatórios</span><h1>Visão rápida do trabalho</h1></div></header>
+  <p class="form-hint">Relatórios simples para conferir dinheiro, cadastros e estoque atual. Operação comercial completa entra aqui quando o módulo principal existir.</p>
+  {{mensagem}}
+  {{avisos}}
+  <form class="kzera-card soft-card" data-filtros-relatorios>
+    <h3>Filtrar período</h3>
+    <div class="import-grid two-cols">
+      <label><span>De</span><input type="date" name="dataInicio" value="{{dataInicio}}" /></label>
+      <label><span>Até</span><input type="date" name="dataFim" value="{{dataFim}}" /></label>
+      <label><span>Tipo</span><select name="origem"><option value="todas" {{origemTodasSelected}}>Todas</option><option value="importado_csv" {{origemImportadoSelected}}>Importado</option><option value="manual" {{origemManualSelected}}>Novo registro</option><option value="sistema_antigo" {{origemSistemaAntigoSelected}}>Sistema antigo</option><option value="conciliacao" {{origemConciliacaoSelected}}>Conferência</option></select></label>
+      <label><span>Status</span><select name="statusFinanceiro"><option value="todos" {{statusTodosSelected}}>Todos</option><option value="pago" {{statusPagoSelected}}>Pago</option><option value="parcial" {{statusParcialSelected}}>Parcial</option><option value="pendente" {{statusPendenteSelected}}>Pendente</option><option value="cancelado" {{statusCanceladoSelected}}>Cancelado</option></select></label>
+    </div>
+    <div class="compact-actions"><button class="icon-button text-icon primary-icon" type="submit">Atualizar</button><button class="icon-button text-icon" type="button" data-limpar-filtros-relatorios>Limpar filtros</button></div>
+  </form>
+  <section class="kzera-card soft-card" aria-label="Resumo financeiro">
+    <h3>Dinheiro do período</h3>
+    <div class="relatorio-resumo-grid">
+      <span>Registros: {{financeiroTotalTransacoes}}</span>
+      <span>Faturamento: {{financeiroFaturamento}}</span>
+      <span>Pago: {{financeiroValorPago}}</span>
+      <span>Pendente: {{financeiroValorPendente}}</span>
+      <span>Custo: {{financeiroCusto}}</span>
+      <span>Lucro: {{financeiroLucro}}</span>
+      <span>Média por registro: {{financeiroTicketMedio}}</span>
+    </div>
+  </section>
+  <section class="kzera-card soft-card" aria-label="Cadastros e estoque">
+    <h3>Cadastros e estoque</h3>
+    <div class="relatorio-resumo-grid">
+      <span>Perfis ativos: {{perfisAtivos}}</span>
+      <span>Perfis arquivados: {{perfisArquivados}}</span>
+      <span>Itens ativos: {{itensAtivos}}</span>
+      <span>Itens arquivados: {{itensArquivados}}</span>
+      <span>Itens com estoque: {{itensComEstoque}}</span>
+      <span>Itens sem estoque: {{itensSemEstoque}}</span>
+      <span>Variações ativas: {{variacoesAtivas}}</span>
+      <span>Estoques ativos: {{lotesAtivos}}</span>
+    </div>
+  </section>
+  <details class="inline-details"><summary>Ver quebras do dinheiro</summary>
+    <div class="kzera-card soft-card">
+      <h3>Por status</h3>
+      <table class="kzera-simple-table"><thead><tr><th>Status</th><th>Registros</th><th>Total</th></tr></thead><tbody>{{statusRows}}</tbody></table>
+      <h3>Por tipo de origem</h3>
+      <table class="kzera-simple-table"><thead><tr><th>Tipo</th><th>Registros</th><th>Total</th></tr></thead><tbody>{{origemRows}}</tbody></table>
+    </div>
+  </details>
+</section>

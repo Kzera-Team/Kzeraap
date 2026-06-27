@@ -1,0 +1,13 @@
+<div class="kzera-modal-backdrop" data-testid="modal-retomada-importacao" role="dialog" aria-modal="true" aria-label="Importação em andamento">
+  <section class="kzera-modal-card">
+    <span class="eyebrow">Importação em andamento</span>
+    <h2>Continuar de onde parou?</h2>
+    <p>Você tinha uma importação em andamento:</p>
+    <ul class="compact-list">{{linhas}}</ul>
+    <p class="form-hint">Selecione "Sim" para navegar até a importação ou "Não" para descartar.</p>
+    <div class="backup-modal-actions">
+      <button type="button" class="icon-button-text primary" data-retomada-sim aria-label="Continuar importação" title="Continuar importação">Sim, continuar</button>
+      <button type="button" class="icon-button-text" data-retomada-nao aria-label="Descartar rascunho" title="Descartar rascunho">Não, descartar</button>
+    </div>
+  </section>
+</div>
