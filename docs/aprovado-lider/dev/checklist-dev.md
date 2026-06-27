@@ -12,6 +12,24 @@ Toda entrega só pode seguir se provar:
 
 Se qualquer item falhar, bloquear.
 
+## Regras objetivas contra erro de entrega
+
+1. Garantia só depois de validação máxima possível.
+   Antes de usar termos como `garanto`, `validado` ou `sem quebra detectável`, executar todas as validações possíveis com as ferramentas disponíveis. Se alguma validação possível não foi feita, declarar validação parcial.
+
+2. Conferir o pacote real antes de informar.
+   Antes de mandar árvore, lista de arquivos ou ZIP, abrir o pacote final e confirmar o conteúdo real. Não citar arquivo que não está no pacote.
+
+3. Arquivo central não recebe fluxo novo.
+   Se a alteração adiciona estado, handler, renderização, integração pesada ou regra em arquivo central/grande, extrair para módulo próprio. Funcionar não basta.
+
+4. Trava só quando necessária.
+   Antes de criar workflow, script, bloqueio ou campo obrigatório, confirmar se o usuário pediu trava, se já existe uma e se checklist simples resolve sem perda de controle.
+
+5. Alteração de processo deve ser declarada.
+   Se alterar checklist, processo, workflow, PR template, script de bloqueio ou regra de entrega, avisar claramente na entrega.
+
+
 ## 1. Pedido e escopo
 
 - O pedido foi classificado?
