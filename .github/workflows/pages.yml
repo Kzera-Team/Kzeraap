@@ -35,11 +35,29 @@ jobs:
       - name: Build
         run: npm exec vite -- build
 
+      - name: Write debug manifest
+        run: |
+          echo "run_id=${GITHUB_RUN_ID}" > dist/kzera-debug-manifest.txt
+          echo "run_attempt=${GITHUB_RUN_ATTEMPT}" >> dist/kzera-debug-manifest.txt
+          echo "sha=${GITHUB_SHA}" >> dist/kzera-debug-manifest.txt
+          echo "ref=${GITHUB_REF}" >> dist/kzera-debug-manifest.txt
+          echo "artifact_name=dist-debug-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> dist/kzera-debug-manifest.txt
+
       - name: Upload dist debug artifact
+        id: upload_dist_debug
         uses: actions/upload-artifact@v4
         with:
-          name: dist-debug
+          name: dist-debug-${{ github.run_id }}-${{ github.run_attempt }}
           path: dist
+
+      - name: Write GitHub Actions summary
+        run: |
+          echo "## Kzera deploy debug" >> "$GITHUB_STEP_SUMMARY"
+          echo "Run ID: ${GITHUB_RUN_ID}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Run attempt: ${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Commit SHA: ${GITHUB_SHA}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact name: dist-debug-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact ID: ${{ steps.upload_dist_debug.outputs.artifact-id }}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
