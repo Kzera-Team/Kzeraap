@@ -119,6 +119,16 @@ A intenção é preservar qualidade sem transformar processo em burocracia.
 
 ## 3. Antes de entregar
 
+### 3.0 Validação antes de afirmar garantia
+
+Antes de declarar entrega como garantida, validada ou sem quebra detectável:
+
+- executar todas as validações possíveis no ambiente disponível;
+- conferir o pacote final real antes de listar arquivos/árvore;
+- repetir a validação após qualquer correção;
+- declarar validação parcial quando algo possível não foi feito;
+- não vender evidência manual como prova técnica.
+
 ### 3.1 Definition of Done
 
 A entrega só pode fechar se tiver:
