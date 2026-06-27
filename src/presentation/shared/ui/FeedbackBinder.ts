@@ -1,32 +1,23 @@
-export interface FeedbackState {
-  mensagem?: string;
-  erro?: string;
-  loading?: boolean;
+export interface FeedbackBinderHandle {
+  dispose(): void;
 }
 
-export function bindFeedback(root: HTMLElement, selectors: {
-  loading: string;
-  mensagem: string;
-  erro: string;
-}, state: FeedbackState): void {
-  const loading = root.querySelector(selectors.loading) as HTMLElement | null;
-  const mensagem = root.querySelector(selectors.mensagem) as HTMLElement | null;
-  const erro = root.querySelector(selectors.erro) as HTMLElement | null;
+export class FeedbackBinder {
+  private readonly disposers: Array<() => void> = [];
 
-  if (loading) {
-    loading.hidden = !state.loading;
-    loading.classList.add('loading-state');
+  on<K extends keyof WindowEventMap>(target: Window, type: K, listener: (event: WindowEventMap[K]) => void): FeedbackBinderHandle;
+  on<K extends keyof HTMLElementEventMap>(target: HTMLElement, type: K, listener: (event: HTMLElementEventMap[K]) => void): FeedbackBinderHandle;
+  on(target: EventTarget, type: string, listener: EventListener): FeedbackBinderHandle {
+    target.addEventListener(type, listener);
+    const dispose = () => target.removeEventListener(type, listener);
+    this.disposers.push(dispose);
+
+    return { dispose };
   }
 
-  if (mensagem) {
-    mensagem.hidden = !state.mensagem;
-    mensagem.textContent = state.mensagem || '';
-    mensagem.classList.add('toast', 'toast-success');
-  }
-
-  if (erro) {
-    erro.hidden = !state.erro;
-    erro.textContent = state.erro || '';
-    erro.classList.add('toast', 'toast-error');
+  dispose(): void {
+    while (this.disposers.length) {
+      this.disposers.pop()?.();
+    }
   }
 }
