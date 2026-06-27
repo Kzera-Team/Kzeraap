@@ -1,10 +1,12 @@
 # DEPLOY_CHATGPT
 
-Manual curto para subir o Kzeraap no ambiente ChatGPT/container e tirar print real da tela.
+Manual para subir o Kzeraap no ambiente ChatGPT/container.
 
-A regra é simples:
+Objetivo principal:
 
-> Se não abriu a URL real no navegador e não gerou print, não está final.
+> instalar dependências, validar o projeto, subir o servidor local e confirmar que a URL real responde.
+
+A captura de tela é apenas uma evidência adicional quando a tarefa exigir validação visual. Ela não deve impedir o agente de concluir que o ambiente de desenvolvimento está instalado e rodando.
 
 ---
 
@@ -18,8 +20,8 @@ Você precisa ter:
 - npm;
 - curl;
 - Python 3;
-- Playwright para Python;
-- Chromium instalado.
+- Playwright para Python, somente se precisar validar via navegador;
+- Chromium ou outro navegador compatível, somente se precisar validar via navegador.
 
 Ambiente onde isso funcionou:
 
@@ -68,7 +70,7 @@ npm install --include=dev
 
 Se terminar sem erro, siga.
 
-Se der erro de npm bloqueado, pare e consulte:
+Se der erro de npm bloqueado, consulte:
 
 ```text
 .claude/devops-npm-bloqueio.md
@@ -91,7 +93,7 @@ Resultado esperado:
 sem erro bloqueante
 ```
 
-Se falhar, não avance como final.
+Se falhar, corrija o erro antes de tratar o ambiente como validado.
 
 ---
 
@@ -130,7 +132,7 @@ http://127.0.0.1:5283/Kzeraap/
 
 ---
 
-## 7. Teste a URL antes do navegador
+## 7. Confirme que o servidor responde
 
 Abra outro terminal e rode:
 
@@ -147,22 +149,22 @@ Content-Type: text/html
 
 Se não responder `200`, o servidor ou a URL estão errados.
 
-Teste também:
+Também pode testar:
 
 ```bash
 curl -I http://localhost:5283/Kzeraap/
 curl -I http://0.0.0.0:5283/Kzeraap/
 ```
 
+Quando `install`, `check`, `build`, `dev` e `curl 200` passam, o ambiente local está operacional.
+
 ---
 
-## 8. Se o servidor responde, mas o navegador não abre
+## 8. Validação por navegador, quando necessário
 
-Não mexa no código ainda.
+Use esta parte somente quando a tarefa exigir abrir o app em navegador real ou gerar evidência visual.
 
-Primeiro verifique se o Chromium está bloqueado.
-
-Rode:
+Primeiro verifique se o Chromium do sistema está bloqueado por policy:
 
 ```bash
 find /etc -path '*chrom*polic*' -type f -print -exec sed -n '1,120p' {} \;
@@ -176,11 +178,11 @@ Se aparecer isto:
 }
 ```
 
-O navegador está bloqueando tudo, inclusive localhost.
+esse Chromium pode bloquear até `localhost`.
 
 ---
 
-## 9. Libere o Chromium somente se autorizado
+## 9. Se autorizado, liberar a policy local do Chromium
 
 Só faça isso com autorização explícita.
 
@@ -194,8 +196,6 @@ Isso altera só o ambiente do container.
 Não é código do projeto.
 
 Não vai para Git.
-
-Se funcionar, siga para o passo 11.
 
 ---
 
@@ -278,7 +278,7 @@ Failed to install browsers
 
 então o container não consegue baixar o navegador.
 
-Nesse caso, a correção é pedir um pacote offline com um destes itens:
+Nesse caso, peça um pacote offline com um destes itens:
 
 ```text
 Chromium portátil
@@ -294,27 +294,17 @@ Extraia em:
 
 Depois use o binário extraído no `executable_path`.
 
-Sem permissão para remover a policy e sem outro binário de navegador, não há como gerar print real nesse container.
-
-Status correto nesse caso:
-
-```text
-BLOQUEADA
-```
-
-Motivo:
-
-```text
-Servidor e app funcionam, mas o navegador real está bloqueado por policy root-owned.
-```
+Sem permissão para remover a policy e sem outro binário de navegador, a validação por navegador fica bloqueada, mas isso não invalida os passos de instalação, build, servidor e `curl`.
 
 ---
 
-## 11. Tire o print pela URL real
+## 11. Script opcional para validar via navegador
 
-Com o app ainda rodando, execute.
+Use somente se a tarefa pedir navegador real ou evidência visual.
 
-Se a policy do Chromium do sistema foi liberada, use `/usr/bin/chromium`:
+Se a policy do Chromium do sistema foi liberada, use `/usr/bin/chromium`.
+
+Se estiver usando Chromium do Playwright ou Chromium portátil, troque `executable_path` pelo caminho real.
 
 ```bash
 python3 - <<'PY'
@@ -322,11 +312,12 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 url = 'http://127.0.0.1:5283/Kzeraap/'
-out = '/mnt/data/kzera_login_url_real_final.png'
+out = '/mnt/data/kzera_navegador_validacao.png'
+chromium_path = '/usr/bin/chromium'
 
 with sync_playwright() as p:
     browser = p.chromium.launch(
-        executable_path='/usr/bin/chromium',
+        executable_path=chromium_path,
         headless=True,
         args=[
             '--no-sandbox',
@@ -335,7 +326,6 @@ with sync_playwright() as p:
             '--disable-setuid-sandbox',
             '--disable-extensions',
             '--disable-background-networking',
-            '--disable-web-security',
             '--allow-insecure-localhost'
         ]
     )
@@ -355,61 +345,48 @@ print('SCREENSHOT_PATH:', out)
 PY
 ```
 
-Se estiver usando Chromium do Playwright ou Chromium portátil, troque esta linha:
-
-```python
-executable_path='/usr/bin/chromium'
-```
-
-pelo caminho real do navegador alternativo.
-
-Resultado esperado:
+Resultado esperado quando a validação visual for necessária:
 
 ```text
 TITLE: Vevelt
 TEXT contém: Criar senha
 SCREENSHOT_EXISTS: True
-SCREENSHOT_PATH: /mnt/data/kzera_login_url_real_final.png
 ```
 
 ---
 
-## 12. O que prova que deu certo
+## 12. Critério de ambiente operacional
 
-Só marque como final se tiver tudo isto:
+O ambiente pode ser tratado como operacional quando:
 
 - `npm install --include=dev` passou;
 - `npm run check` passou;
 - `npm run build` passou;
 - `npm run dev` subiu;
-- `curl` retornou `200 OK` na URL real;
-- Chromium abriu a URL real;
-- texto da tela apareceu;
-- screenshot foi salvo.
+- `curl` retornou `200 OK` na URL real.
 
-Se faltar qualquer item, diga:
+Validação por navegador é uma camada adicional.
 
-```text
-Status: PARCIAL
-```
+Ela deve ser feita quando a tarefa pedir evidência visual, UX, layout, fluxo real ou comparação de tela.
 
-ou:
+Se o navegador estiver bloqueado por policy do container, informe separadamente:
 
 ```text
-Status: BLOQUEADA
+Ambiente do projeto: OK
+Servidor local: OK
+Validação por navegador: bloqueada por policy do container
 ```
 
 ---
 
-## 13. O que não vale como prova
+## 13. O que não vale como evidência visual
 
-Não vale:
+Quando a tarefa exigir validação visual, não use:
 
-- print de HTML isolado;
-- print de mockup;
-- print montado manualmente;
-- print sem URL real;
-- dizer que funcionou só porque o build passou.
+- HTML isolado;
+- mockup no lugar do app;
+- imagem montada manualmente;
+- arquivo aberto fora da URL real do app.
 
 ---
 
@@ -463,9 +440,9 @@ Isso é só ajuste local do ambiente.
 
 ---
 
-## 16. Resultado obtido neste teste
+## 16. Resultado já obtido em validação anterior
 
-Resultado real obtido após liberar o Chromium:
+Resultado real obtido em uma execução onde o Chromium pôde ser liberado:
 
 ```text
 URL: http://127.0.0.1:5283/Kzeraap/#home
@@ -478,12 +455,6 @@ Senha
 Confirmar senha
 Criar acesso
 v0.19.50
-Screenshot: /mnt/data/kzera_login_url_real_final.png
 ```
 
-Status da prova de ambiente:
-
-```text
-FINAL para provar que o ambiente abriu a tela pela URL real.
-PARCIAL para Git, porque a correção ainda precisa ser aplicada/mergeada.
-```
+Esse resultado serve como referência histórica. Em novas execuções, valide novamente pelo menos até `curl 200` para confirmar que o ambiente atual está operacional.
