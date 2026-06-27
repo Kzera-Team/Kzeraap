@@ -4,7 +4,7 @@ Esta pasta concentra as regras obrigatórias de desenvolvimento, entrega e gover
 
 ## Versionamento do processo
 
-Versão atual: `1.1.4`
+Versão atual: `1.1.5`
 Data: `2026-06-27`
 Dono: líder do projeto
 
@@ -18,93 +18,68 @@ Toda alteração nos documentos oficiais desta pasta deve atualizar esta seção
 
 Se os documentos de processo forem alterados e esta seção não for atualizada, a entrega deve bloquear.
 
-## Alterações recentes
+## Alterações desta versão
 
-### 1.1.4 — 2026-06-27
+- Adicionadas regras objetivas para evitar repetição de erros de entrega:
+  - garantia só após validação máxima possível;
+  - conferência real do pacote antes de informar árvore/arquivos;
+  - arquivo central não recebe fluxo novo;
+  - trava só quando necessária;
+  - alteração de processo deve ser declarada.
 
-Resumo:
-- adicionada exigência explícita de evidência/prova de validação;
-- adicionada separação clara entre evidência declarada e evidência realmente executada;
-- adicionada regra para não marcar etapa como concluída quando houver pendência;
-- adicionada proteção contra alteração de checklist/processo sem atualização de versão;
-- adicionada regra de preservação de histórico e exceções.
+## Regra-mãe
 
-Motivo:
-- evitar entregas marcadas como completas sem prova objetiva;
-- impedir alteração silenciosa de regras;
-- reduzir retrabalho por falta de conferência antes/depois.
+Toda entrega só pode seguir se provar:
 
-Impacto:
-- PRs que alterem processo precisam declarar versão;
-- PRs precisam preencher checklist com evidências;
-- mudanças visuais precisam de evidência visual ou justificativa objetiva.
+1. o escopo estava claro antes de codar;
+2. a solução ficou no lugar certo, sem duplicação e sem misturar responsabilidades;
+3. a evidência entregue corresponde ao que realmente foi validado.
 
-### 1.1.3 — 2026-06-27
+Se qualquer um dos três falhar, a entrega deve bloquear.
 
-Resumo:
-- consolidado processo de desenvolvimento;
-- incluídos checklist dev, checklist visual, governança e controles futuros.
+## Arquivos oficiais
 
-Motivo:
-- padronizar desenvolvimento por IA e reduzir erro operacional.
+- `processo-dev.md`: fluxo obrigatório antes, durante e depois de codar.
+- `checklist-dev.md`: checklist geral de desenvolvimento, refatoração, responsabilidade, duplicação, rollback e entrega honesta.
+- `checklist-visual.md`: regras para tela, mockup, print real e garantia visual.
+- `governanca-e-excecoes.md`: dono, proteção, exceções, decisões, incidentes e registros fiéis.
+- `controles-futuros.md`: controles que não entram agora, critérios para entrada futura e motivo de adiamento.
 
-Impacto:
-- agentes devem consultar este processo antes de alterar código.
+## Uso no dia a dia
 
-## Documentos oficiais
+Toda tarefa:
 
-- `processo-dev.md` — fluxo obrigatório antes, durante e depois de codar.
-- `checklist-dev.md` — checklist técnico obrigatório.
-- `checklist-visual.md` — checklist obrigatório para alteração visual.
-- `governanca-e-excecoes.md` — dono, exceções, proteção e revisão.
-- `controles-futuros.md` — controles previstos, mas ainda não ativados.
+- leia `processo-dev.md` antes de iniciar;
+- aplique `checklist-dev.md` antes e depois de codar.
 
-## Regra de uso
+Somente se houver impacto visual:
 
-Antes de qualquer implementação:
+- aplique `checklist-visual.md` quando houver tela, layout, HTML, CSS, componente visual, mockup ou fluxo com impacto visual.
 
-1. ler `processo-dev.md`;
-2. aplicar `checklist-dev.md`;
-3. aplicar `checklist-visual.md` se houver impacto visual;
-4. respeitar `governanca-e-excecoes.md`;
-5. não criar controle novo se `controles-futuros.md` classificar como futuro.
+Somente se houver exceção, governança ou registro sensível:
 
-## Regras absolutas
+- use `governanca-e-excecoes.md` quando houver exceção, mudança de regra, alteração de processo, incidente, decisão técnica relevante, mudança em documento protegido ou pedido de transcrição/registro fiel.
 
-- Não alterar processo sem autorização explícita do dono.
-- Não alterar checklist sem atualizar este README.
-- Não declarar validação executada se não foi executada.
-- Não entregar como concluído se houver pendência.
-- Não mascarar pendência como observação.
-- Não criar arquivo temporário no projeto final.
-- Não remover regra anterior sem avisar.
-- Não usar exceção sem registrar motivo.
+Somente quando alguém propuser novo controle, automação ou trava:
 
-## Como uma entrega deve provar conformidade
+- consulte `controles-futuros.md` antes de criar nova regra;
+- se o controle ainda não atende ao critério de entrada, não implementar agora.
 
-Toda entrega deve informar:
+Regra de uso:
 
-- pedido classificado;
-- arquivos alterados;
-- arquivos não alterados por decisão;
-- reaproveitamento verificado;
-- responsabilidade/camada confirmada;
-- duplicação revisada;
-- validações rodadas;
-- validações não rodadas;
-- pendências restantes;
-- evidência visual quando aplicável.
+- não tratar todos os documentos como leitura completa obrigatória em toda tarefa;
+- aplicar apenas os documentos correspondentes ao tipo da entrega;
+- se houver dúvida sobre qual documento se aplica, bloquear e confirmar antes de seguir.
 
-## Bloqueios esperados
+## Proteção
 
-Uma entrega deve bloquear se:
+Checklist, processo, workflow, PR template, scripts de bloqueio, mockups aprovados e thresholds não podem ser alterados sem aprovação do dono.
 
-- alterou processo sem autorização;
-- alterou checklist sem versionar;
-- mexeu em arquivo protegido sem justificativa;
-- criou componente duplicado sem verificar existente;
-- misturou visual com regra de negócio;
-- alterou fluxo sensível sem revisar compatibilidade;
-- declarou teste não executado;
-- faltou evidência de mockup/print quando visual;
-- deixou pendência e marcou como completo.
+O dono dos documentos de processo é o líder do projeto.
+No contexto atual, o dono é o usuário solicitante.
+
+## Limite
+
+Checklist reduz risco, mas não substitui revisão humana, arquitetura nem validação real da entrega.
+Evidência manual não é prova automatizada.
+Garantia sempre deve declarar escopo.
