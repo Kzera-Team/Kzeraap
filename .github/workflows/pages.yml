@@ -35,6 +35,12 @@ jobs:
       - name: Build
         run: npm exec vite -- build
 
+      - name: Upload dist debug artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-debug
+          path: dist
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
