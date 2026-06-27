@@ -195,11 +195,126 @@ Não é código do projeto.
 
 Não vai para Git.
 
+Se funcionar, siga para o passo 11.
+
 ---
 
-## 10. Tire o print pela URL real
+## 10. Se der Permission denied ou Operation not permitted
 
-Com o app ainda rodando, execute:
+Se estes comandos falharem:
+
+```bash
+mv /etc/chromium/policies/managed/* /tmp/chromium-policies-managed-kzera-backup/
+chmod u+w /etc/chromium/policies/managed
+```
+
+com algum destes resultados:
+
+```text
+Permission denied
+Operation not permitted
+```
+
+então a policy é root-owned e não removível pelo agente.
+
+Nesse caso, pare de insistir no Chromium do sistema.
+
+Não adianta repetir flags como:
+
+```text
+--single-process
+--no-zygote
+--disable-gpu-compositing
+--use-gl=swiftshader
+--in-process-gpu
+--temp-profile
+```
+
+Essas flags continuam usando o mesmo Chromium bloqueado pela policy.
+
+A próxima ação é usar outro binário de navegador que não leia a policy do sistema.
+
+### 10.1. Tente instalar Chromium do Playwright em pasta de usuário
+
+Rode:
+
+```bash
+export PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers
+python3 -m playwright install chromium
+```
+
+Depois procure o binário baixado:
+
+```bash
+find /tmp/pw-browsers -type f \( -name chrome -o -name chromium \)
+```
+
+Se encontrar um caminho como:
+
+```text
+/tmp/pw-browsers/chromium-*/chrome-linux/chrome
+```
+
+use esse caminho no Playwright:
+
+```python
+browser = p.chromium.launch(
+    executable_path='/tmp/pw-browsers/chromium-*/chrome-linux/chrome',
+    headless=True,
+    args=['--no-sandbox']
+)
+```
+
+Substitua o `*` pelo caminho real encontrado no `find`.
+
+### 10.2. Se o download falhar por DNS/rede
+
+Se aparecer erro parecido com:
+
+```text
+getaddrinfo EAI_AGAIN cdn.playwright.dev
+Failed to install browsers
+```
+
+então o container não consegue baixar o navegador.
+
+Nesse caso, a correção é pedir um pacote offline com um destes itens:
+
+```text
+Chromium portátil
+ou
+pasta Playwright browsers já baixada
+```
+
+Extraia em:
+
+```text
+/tmp/pw-browsers
+```
+
+Depois use o binário extraído no `executable_path`.
+
+Sem permissão para remover a policy e sem outro binário de navegador, não há como gerar print real nesse container.
+
+Status correto nesse caso:
+
+```text
+BLOQUEADA
+```
+
+Motivo:
+
+```text
+Servidor e app funcionam, mas o navegador real está bloqueado por policy root-owned.
+```
+
+---
+
+## 11. Tire o print pela URL real
+
+Com o app ainda rodando, execute.
+
+Se a policy do Chromium do sistema foi liberada, use `/usr/bin/chromium`:
 
 ```bash
 python3 - <<'PY'
@@ -240,6 +355,14 @@ print('SCREENSHOT_PATH:', out)
 PY
 ```
 
+Se estiver usando Chromium do Playwright ou Chromium portátil, troque esta linha:
+
+```python
+executable_path='/usr/bin/chromium'
+```
+
+pelo caminho real do navegador alternativo.
+
 Resultado esperado:
 
 ```text
@@ -251,7 +374,7 @@ SCREENSHOT_PATH: /mnt/data/kzera_login_url_real_final.png
 
 ---
 
-## 11. O que prova que deu certo
+## 12. O que prova que deu certo
 
 Só marque como final se tiver tudo isto:
 
@@ -278,7 +401,7 @@ Status: BLOQUEADA
 
 ---
 
-## 12. O que não vale como prova
+## 13. O que não vale como prova
 
 Não vale:
 
@@ -290,7 +413,7 @@ Não vale:
 
 ---
 
-## 13. Problema encontrado no projeto
+## 14. Problema encontrado no projeto
 
 Durante a validação, foi encontrado um caminho errado no script de backup.
 
@@ -318,7 +441,7 @@ Essa correção pode ir para Git em branch própria.
 
 ---
 
-## 14. Não commitar estes arquivos
+## 15. Não commitar estes arquivos
 
 Não coloque no Git:
 
@@ -333,13 +456,14 @@ Também não coloque no Git nada sobre:
 ```text
 /etc/chromium/policies/managed/
 /tmp/chromium-policies-managed-kzera-backup/
+/tmp/pw-browsers/
 ```
 
 Isso é só ajuste local do ambiente.
 
 ---
 
-## 15. Resultado obtido neste teste
+## 16. Resultado obtido neste teste
 
 Resultado real obtido após liberar o Chromium:
 
