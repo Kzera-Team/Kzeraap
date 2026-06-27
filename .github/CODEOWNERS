@@ -1,0 +1,21 @@
+# CODEOWNERS — proteção de processo KZERA
+#
+# ATENÇÃO:
+# Substitua @lider-kzera pelo usuário ou time real responsável no GitHub.
+# Enquanto o owner não existir no GitHub, a revisão obrigatória por CODEOWNERS não terá efeito real.
+#
+# Depois de configurar o owner real:
+# Settings → Branches → Branch protection rules
+# → Require review from Code Owners
+
+docs/aprovado-lider/dev/ @lider-kzera
+docs/aprovado-lider/checklist-bloqueio-obrigatorio.md @lider-kzera
+.github/workflows/ @lider-kzera
+.github/pull_request_template.md @lider-kzera
+.github/CODEOWNERS @lider-kzera
+tools/check-pr-checklist-evidence.mjs @lider-kzera
+tools/check-visual-mockup-evidence.mjs @lider-kzera
+tools/check-protected-process-changes.mjs @lider-kzera
+
+tools/check-dev-readme-versioning.mjs @lider-kzera
+.github/workflows/require-dev-readme-versioning.yml @lider-kzera

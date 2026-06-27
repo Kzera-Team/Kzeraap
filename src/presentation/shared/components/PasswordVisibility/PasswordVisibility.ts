@@ -1,16 +1,15 @@
 export interface PasswordVisibilityToggleOptions {
   input: HTMLInputElement;
-  toggle: HTMLButtonElement;
+  toggle: HTMLElement;
 }
 
 export function bindPasswordVisibilityToggle(options: PasswordVisibilityToggleOptions): void {
-  const { input, toggle } = options;
+  options.toggle.addEventListener('click', () => {
+    const visible = options.input.type === 'text';
 
-  toggle.addEventListener('click', () => {
-    const visible = input.type === 'text';
-    input.type = visible ? 'password' : 'text';
-    toggle.textContent = visible ? '👁' : '🙈';
-    toggle.setAttribute('aria-label', visible ? 'Mostrar senha' : 'Ocultar senha');
-    input.focus();
+    options.input.type = visible ? 'password' : 'text';
+    options.toggle.textContent = visible ? '👁' : '🙈';
+    options.toggle.setAttribute('aria-label', visible ? 'Mostrar senha' : 'Ocultar senha');
+    options.input.focus();
   });
 }

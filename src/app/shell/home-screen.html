@@ -1,0 +1,24 @@
+<div class="kzera-mobile-shell kzera-home-shell">{{drawerHtml}}
+  <header class="kzera-home-topbar" aria-label="Início">
+    <div class="kzera-home-brand"><div><strong>Hoje no app</strong></div></div>
+  </header>
+  <main class="kzera-home-main" aria-label="Ações do início">
+    <section class="kzera-home-primary" aria-label="Ações principais">
+      <button type="button" class="home-action-card" data-nav="perfis" aria-label="Abrir perfis" title="Abrir perfis"><span>Perfis</span><strong>{{perfisAtivos}}</strong><small>Abrir</small></button>
+      <button type="button" class="home-action-card" data-nav="itens" aria-label="Abrir itens" title="Abrir itens"><span>Itens</span><strong>{{itensAtivos}}</strong><small>Abrir</small></button>
+    </section>
+    <section class="kzera-home-actions" aria-label="Criar novo registro">
+      <button class="icon-button text-icon" data-quick="novo-perfil" aria-label="Novo perfil" title="Novo perfil">+ Perfil</button>
+      <button class="icon-button text-icon" data-quick="novo-item" aria-label="Novo item" title="Novo item">+ Item</button>
+    </section>
+    <details class="kzera-utility-panel kzera-home-more"><summary>Mais</summary><div class="kzera-home-more-grid">
+      <button class="icon-button text-icon" data-nav="importacao-perfis" aria-label="Importar Perfis" title="Importar Perfis">Importar Perfis</button>
+      <button class="icon-button text-icon" data-nav="importacao-itens" aria-label="Importar Itens" title="Importar Itens">Importar Itens</button>
+      <button class="icon-button text-icon" data-nav="importacao-transacoes" aria-label="Importar Transações" title="Importar Transações">Importar Transações</button>
+      <button class="icon-button text-icon" data-nav="relatorios" aria-label="Relatórios" title="Relatórios">Relatórios</button>
+      <button class="icon-button text-icon" data-nav="codigo" aria-label="Código do Perfil" title="Código do Perfil">Código</button>
+      <button class="icon-button text-icon" data-nav="configuracoes" aria-label="Configurações" title="Configurações">Configurações</button>
+    </div></details>
+    {{backupStatusHtml}}
+  </main>
+</div>

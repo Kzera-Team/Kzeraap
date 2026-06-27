@@ -60,8 +60,7 @@ function createAuthPasswordShell(): HTMLElement {
   const range = document.createRange();
   range.selectNode(document.body);
 
-  const createFragment = range['createContextual' + 'Fragment'].bind(range) as (value: string) => DocumentFragment;
-  const fragment = createFragment(markup);
+  const fragment = range.createContextualFragment(markup);
   range.detach();
 
   const shell = fragment.firstElementChild;

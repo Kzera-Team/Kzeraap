@@ -4,7 +4,6 @@ import { join } from 'node:path';
 const srcDir = 'src';
 
 const legacyAllowedFiles = new Set([
-  "src/app/backupRestoreEntry.ts",
   "src/app/createItemCatalogoUiApp.ts",
   "src/app/createKzeraAuthenticatedApp.ts",
   "src/app/createPerfilUiApp.ts",

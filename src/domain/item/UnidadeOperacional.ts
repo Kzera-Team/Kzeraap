@@ -37,5 +37,7 @@ export function unidadeBanco(unidade: UnidadeOperacional): 'mg' | 'ml' {
 }
 
 function configUnidade(unidade: UnidadeOperacional): UnidadeOperacionalConfig {
-  return UNIDADES_OPERACIONAIS.find(config => config.unidade === unidade) || UNIDADES_OPERACIONAIS[0];
+  const config = UNIDADES_OPERACIONAIS.find(item => item.unidade === unidade);
+  if (!config) throw new Error('Configuração de unidade operacional não encontrada.');
+  return config;
 }

@@ -1,0 +1,14 @@
+<div class="kzera-modal-backdrop" data-testid="backup-modal" role="dialog" aria-modal="true" aria-label="Cópia de segurança">
+  <section class="kzera-modal-card backup-modal-card">
+    <span class="eyebrow">Cópia de segurança {{label}}</span>
+    <h2>Salvar cópia de segurança</h2>
+    <p>Precisamos salvar uma cópia de segurança agora. É para proteger seu trabalho, não para te culpar.</p>
+    <p>A cópia sai protegida pela senha deste aparelho e vai para um arquivo discreto <code>.dat</code>. Configurações não entram na cópia.</p>
+    {{mandatoryHtml}}
+    {{messageHtml}}
+    <div class="backup-modal-actions">
+      <button type="button" class="icon-text-button primary" data-backup-export aria-label="Salvar cópia de segurança" title="Salvar cópia de segurança">⇩ Salvar cópia</button>
+      {{postponeHtml}}
+    </div>
+  </section>
+</div>
