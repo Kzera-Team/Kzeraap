@@ -1,214 +1,174 @@
 # DEPLOY_CHATGPT
 
-Documento operacional para qualquer agente da equipe replicar a validação do Kzeraap no ambiente ChatGPT/container.
+Manual curto para subir o Kzeraap no ambiente ChatGPT/container e tirar print real da tela.
 
-## Objetivo
+A regra é simples:
 
-Provar, com evidência real, que o projeto:
+> Se não abriu a URL real no navegador e não gerou print, não está final.
 
-1. instala dependências;
-2. executa checks;
-3. gera build;
-4. sobe servidor local;
-5. responde na URL correta;
-6. abre no navegador real;
-7. renderiza a tela de login;
-8. gera screenshot da tela renderizada pela URL real.
+---
 
-Sem screenshot vindo da URL real, a entrega não é final.
+## 1. O que precisa existir antes
 
-## Ambiente usado nesta validação
+Você precisa ter:
 
-Ambiente:
+- ZIP completo do projeto, ou repositório acessível;
+- terminal bash;
+- Node.js;
+- npm;
+- curl;
+- Python 3;
+- Playwright para Python;
+- Chromium instalado.
 
-```text
-Container Linux efêmero do ChatGPT
-Shell: bash
-Diretório de trabalho usado: /mnt/data/kzeraap_run
-Projeto recebido via ZIP enviado pelo usuário
-Repositório remoto: jjjtestejoao-ui/Kzeraap
-Branch base: desenvolvimento
-```
-
-Versões observadas:
+Ambiente onde isso funcionou:
 
 ```text
 Node: v22.16.0
 npm: 10.9.2
 Git: 2.47.3
 Vite: 5.4.11
+Sistema: container Linux do ChatGPT
 ```
 
-Ferramentas necessárias:
+Pasta usada no teste:
 
 ```text
-node
-npm
-bash
-curl
-python3
-playwright Python module
-chromium executável no sistema
+/mnt/data/kzeraap_run
 ```
 
-Observações importantes do ambiente:
+---
 
-- `git clone` pode falhar por DNS/bloqueio de rede (`Could not resolve host: github.com`).
-- Se isso ocorrer, usar ZIP do projeto enviado pelo usuário.
-- O Chromium pode estar bloqueado por política local.
-- O app usa base pública `/Kzeraap/`.
-- A URL local correta deve incluir `/Kzeraap/`.
+## 2. Prepare o projeto
 
-## Regra principal
-
-Não tratar falha visual como bug do app antes de separar as camadas:
-
-- arquivo/projeto recebido;
-- instalação;
-- checks;
-- build;
-- servidor;
-- host/porta;
-- URL correta;
-- navegador/Chromium;
-- ferramenta de screenshot;
-- app/código.
-
-## Passo a passo executado
-
-### 1. Preparar diretório do projeto
-
-Extrair o ZIP do projeto para um diretório limpo.
-
-Exemplo usado:
+Entre na pasta onde o projeto foi extraído:
 
 ```bash
-cd /mnt/data
-mkdir -p kzeraap_run
-# extrair o ZIP recebido para /mnt/data/kzeraap_run
 cd /mnt/data/kzeraap_run
 ```
 
-Confirmar arquivos mínimos:
+Confira se está na pasta certa:
 
 ```bash
 ls
 cat package.json
 ```
 
-O `package.json` deve conter scripts como:
+Tem que aparecer `package.json`.
 
-```text
-dev
-build
-preview
-check
-```
+---
 
-### 2. Verificar ferramentas
+## 3. Instale as dependências
 
-```bash
-node -v
-npm -v
-git --version
-python3 --version
-which chromium || which chromium-browser || which google-chrome
-```
-
-### 3. Instalar dependências
-
-Comando usado com sucesso neste ambiente:
+Rode:
 
 ```bash
 npm install --include=dev
 ```
 
-Se o ambiente bloquear npm, consultar documentos existentes:
+Se terminar sem erro, siga.
+
+Se der erro de npm bloqueado, pare e consulte:
 
 ```text
 .claude/devops-npm-bloqueio.md
 docs/AMBIENTE_BUILD_LOGIN.md
 ```
 
-Nesses casos, pode ser necessário usar `pnpm install`, conforme o ambiente remoto disponível.
+Nesses casos, pode precisar usar `pnpm install`.
 
-### 4. Rodar checks
+---
+
+## 4. Rode os checks
 
 ```bash
 npm run check
 ```
 
-Critério:
+Resultado esperado:
 
 ```text
-comando termina sem erro bloqueante
+sem erro bloqueante
 ```
 
-### 5. Rodar build
+Se falhar, não avance como final.
+
+---
+
+## 5. Rode o build
 
 ```bash
 npm run build
 ```
 
-Critério:
+Resultado esperado:
 
 ```text
-pasta dist/ gerada
-build sem erro
+build finalizado
+pasta dist criada
 ```
 
-### 6. Subir servidor local
+---
 
-Comando recomendado:
+## 6. Suba o app local
+
+Use host aberto para evitar erro de acesso:
 
 ```bash
 npm run dev -- --host 0.0.0.0 --port 5283
 ```
 
-A porta pode mudar. Usar sempre a porta mostrada pelo terminal.
+A porta pode mudar. Use a porta que aparecer no terminal.
 
-Exemplo de saída esperada:
+A URL precisa ter `/Kzeraap/` no final.
+
+Exemplo:
 
 ```text
-VITE v5.4.11 ready
-Local:   http://localhost:5283/Kzeraap/
-Network: http://<ip-do-container>:5283/Kzeraap/
+http://127.0.0.1:5283/Kzeraap/
 ```
 
-### 7. Validar HTTP antes do navegador
+---
 
-Testar as URLs:
+## 7. Teste a URL antes do navegador
+
+Abra outro terminal e rode:
 
 ```bash
 curl -I http://127.0.0.1:5283/Kzeraap/
-curl -I http://localhost:5283/Kzeraap/
-curl -I http://0.0.0.0:5283/Kzeraap/
 ```
 
-Esperado:
+Resultado esperado:
 
 ```text
 HTTP/1.1 200 OK
 Content-Type: text/html
 ```
 
-Se `curl` responde 200, o servidor está funcionando. Se o navegador falhar depois disso, investigar navegador/ambiente antes de alterar código.
+Se não responder `200`, o servidor ou a URL estão errados.
 
-### 8. Verificar bloqueio do Chromium
+Teste também:
 
-Problema encontrado neste ambiente:
-
-```text
-Chromium/Playwright retornava net::ERR_BLOCKED_BY_ADMINISTRATOR
+```bash
+curl -I http://localhost:5283/Kzeraap/
+curl -I http://0.0.0.0:5283/Kzeraap/
 ```
 
-Causa encontrada:
+---
+
+## 8. Se o servidor responde, mas o navegador não abre
+
+Não mexa no código ainda.
+
+Primeiro verifique se o Chromium está bloqueado.
+
+Rode:
 
 ```bash
 find /etc -path '*chrom*polic*' -type f -print -exec sed -n '1,120p' {} \;
 ```
 
-Foi encontrada política:
+Se aparecer isto:
 
 ```json
 {
@@ -216,26 +176,30 @@ Foi encontrada política:
 }
 ```
 
-Isso bloqueia qualquer URL, inclusive `localhost` e `127.0.0.1`.
+O navegador está bloqueando tudo, inclusive localhost.
 
-### 9. Liberar Chromium no container, se autorizado
+---
 
-Somente executar se houver autorização explícita para alterar o ambiente local do container.
+## 9. Libere o Chromium somente se autorizado
 
-Comando usado:
+Só faça isso com autorização explícita.
 
 ```bash
 mkdir -p /tmp/chromium-policies-managed-kzera-backup
 mv /etc/chromium/policies/managed/* /tmp/chromium-policies-managed-kzera-backup/
 ```
 
-Isso não altera o projeto e não deve ir para Git.
+Isso altera só o ambiente do container.
 
-Depois disso, testar novamente o navegador.
+Não é código do projeto.
 
-### 10. Capturar screenshot pela URL real
+Não vai para Git.
 
-Exemplo de script usado com Playwright Python:
+---
+
+## 10. Tire o print pela URL real
+
+Com o app ainda rodando, execute:
 
 ```bash
 python3 - <<'PY'
@@ -276,7 +240,108 @@ print('SCREENSHOT_PATH:', out)
 PY
 ```
 
-Evidência obtida nesta validação:
+Resultado esperado:
+
+```text
+TITLE: Vevelt
+TEXT contém: Criar senha
+SCREENSHOT_EXISTS: True
+SCREENSHOT_PATH: /mnt/data/kzera_login_url_real_final.png
+```
+
+---
+
+## 11. O que prova que deu certo
+
+Só marque como final se tiver tudo isto:
+
+- `npm install --include=dev` passou;
+- `npm run check` passou;
+- `npm run build` passou;
+- `npm run dev` subiu;
+- `curl` retornou `200 OK` na URL real;
+- Chromium abriu a URL real;
+- texto da tela apareceu;
+- screenshot foi salvo.
+
+Se faltar qualquer item, diga:
+
+```text
+Status: PARCIAL
+```
+
+ou:
+
+```text
+Status: BLOQUEADA
+```
+
+---
+
+## 12. O que não vale como prova
+
+Não vale:
+
+- print de HTML isolado;
+- print de mockup;
+- print montado manualmente;
+- print sem URL real;
+- dizer que funcionou só porque o build passou.
+
+---
+
+## 13. Problema encontrado no projeto
+
+Durante a validação, foi encontrado um caminho errado no script de backup.
+
+Arquivo:
+
+```text
+public/index.html
+```
+
+Correção validada localmente:
+
+```diff
+- <script src="./static/backup-recovery-trigger.js"></script>
++ <script src="./backup-recovery-trigger.js"></script>
+```
+
+Motivo:
+
+```text
+No build, o arquivo é servido em /Kzeraap/backup-recovery-trigger.js.
+Ele não fica em /Kzeraap/static/backup-recovery-trigger.js.
+```
+
+Essa correção pode ir para Git em branch própria.
+
+---
+
+## 14. Não commitar estes arquivos
+
+Não coloque no Git:
+
+```text
+node_modules/
+dist/
+package-lock.json
+```
+
+Também não coloque no Git nada sobre:
+
+```text
+/etc/chromium/policies/managed/
+/tmp/chromium-policies-managed-kzera-backup/
+```
+
+Isso é só ajuste local do ambiente.
+
+---
+
+## 15. Resultado obtido neste teste
+
+Resultado real obtido após liberar o Chromium:
 
 ```text
 URL: http://127.0.0.1:5283/Kzeraap/#home
@@ -289,75 +354,12 @@ Senha
 Confirmar senha
 Criar acesso
 v0.19.50
-SCREENSHOT: True
-Arquivo: /mnt/data/kzera_login_url_real_final.png
+Screenshot: /mnt/data/kzera_login_url_real_final.png
 ```
 
-## Correção local identificada durante a validação
-
-Foi encontrado problema de caminho no script de backup no build/preview.
-
-Arquivo:
+Status da prova de ambiente:
 
 ```text
-public/index.html
-```
-
-Alteração local validada:
-
-```diff
-- <script src="./static/backup-recovery-trigger.js"></script>
-+ <script src="./backup-recovery-trigger.js"></script>
-```
-
-Motivo:
-
-```text
-No build, o arquivo é servido como /Kzeraap/backup-recovery-trigger.js,
-não como /Kzeraap/static/backup-recovery-trigger.js.
-```
-
-Essa alteração é do projeto e pode ser proposta em branch/PR.
-
-## Alterações que não devem ir para Git
-
-Não commitar:
-
-```text
-node_modules/
-dist/
-package-lock.json
-```
-
-Também não faz parte do Git:
-
-```text
-/etc/chromium/policies/managed/* movido para /tmp/chromium-policies-managed-kzera-backup/
-```
-
-Isso foi apenas ajuste local do container para liberar screenshot.
-
-## Critério de aceite final
-
-A validação só é FINAL quando houver:
-
-- comando de instalação executado;
-- `npm run check` executado;
-- `npm run build` executado;
-- servidor local em execução;
-- URL real com HTTP 200;
-- navegador real abrindo a URL;
-- tela de login renderizada;
-- screenshot salvo;
-- caminho do screenshot informado.
-
-Se qualquer item faltar, o status deve ser `PARCIAL` ou `BLOQUEADA`.
-
-## Status da validação registrada
-
-Status alcançado no ambiente ChatGPT após liberar política do Chromium:
-
-```text
-PARCIAL para Git, porque a correção ainda não foi aplicada/mergeada.
-FINAL para prova de ambiente local, porque a tela foi capturada pela URL real.
+FINAL para provar que o ambiente abriu a tela pela URL real.
+PARCIAL para Git, porque a correção ainda precisa ser aplicada/mergeada.
 ```
