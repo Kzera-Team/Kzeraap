@@ -42,6 +42,16 @@ jobs:
           echo "sha=${GITHUB_SHA}" >> dist/kzera-debug-manifest.txt
           echo "ref=${GITHUB_REF}" >> dist/kzera-debug-manifest.txt
           echo "artifact_name=dist-debug-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> dist/kzera-debug-manifest.txt
+          printf '{\n' > dist/latest-run.json
+          printf '  "repository": "jjjtestejoao-ui/Kzeraap",\n' >> dist/latest-run.json
+          printf '  "workflow": "Deploy ambiente teste",\n' >> dist/latest-run.json
+          printf '  "run_id": "%s",\n' "${GITHUB_RUN_ID}" >> dist/latest-run.json
+          printf '  "run_attempt": "%s",\n' "${GITHUB_RUN_ATTEMPT}" >> dist/latest-run.json
+          printf '  "sha": "%s",\n' "${GITHUB_SHA}" >> dist/latest-run.json
+          printf '  "ref": "%s",\n' "${GITHUB_REF}" >> dist/latest-run.json
+          printf '  "artifact_name": "dist-debug-%s-%s",\n' "${GITHUB_RUN_ID}" "${GITHUB_RUN_ATTEMPT}" >> dist/latest-run.json
+          printf '  "page_url": "https://jjjtestejoao-ui.github.io/Kzeraap/"\n' >> dist/latest-run.json
+          printf '}\n' >> dist/latest-run.json
 
       - name: Upload dist debug artifact
         id: upload_dist_debug
