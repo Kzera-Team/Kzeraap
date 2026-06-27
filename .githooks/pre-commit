@@ -1,0 +1,2 @@
+#!/bin/sh
+npm run check:no-html-in-ts
