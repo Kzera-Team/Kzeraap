@@ -123,7 +123,7 @@ export class PacoteConfirmacaoHistoricaRepository implements Repository<PacoteCo
     if (!record) return null;
     const payload = await this.crypto.unpackJson<PacoteConfirmacaoHistoricaPayloadProtegido>(record.payloadProtegido, this.context(record.id));
     try {
-      return mergeRecord(record, payload);
+      return mergeRecord(record, structuredClone(payload));
     } finally {
       releaseObject(payload);
     }
@@ -135,7 +135,7 @@ export class PacoteConfirmacaoHistoricaRepository implements Repository<PacoteCo
     return Promise.all(records.map(async record => {
       const payload = await this.crypto.unpackJson<PacoteConfirmacaoHistoricaPayloadProtegido>(record.payloadProtegido, this.context(record.id));
       try {
-        return mergeRecord(record, payload);
+        return mergeRecord(record, structuredClone(payload));
       } finally {
         releaseObject(payload);
       }

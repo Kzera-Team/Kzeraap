@@ -11,6 +11,7 @@ import { ConfiguracoesOperacionaisView } from '../../presentation/configuracoes/
 import type { createRepositoryComposition } from './createRepositoryComposition';
 import type { appClock } from './AppCompositionIds';
 import { nextBalancaId, nextCalibragemId, nextItemId, nextPerfilId } from './AppCompositionIds';
+import { ReprocessarPendenciasItemNomeUseCase } from '../../application/importacao/ReprocessarPendenciasItemNomeUseCase';
 import type { CodigoPerfilRuleService } from '../codigoPerfil/CodigoPerfilRuleService';
 import type { UxDomTracker } from '../../presentation/shared/uxTracking/UxDomTracker';
 
@@ -46,12 +47,18 @@ export function createFeatureAppComposition(dependencies: FeatureAppCompositionD
     repositories.importacaoRascunho
   );
 
+  const reprocessarPendenciasItem = new ReprocessarPendenciasItemNomeUseCase(
+    repositories.registrosImportacaoTransacoes,
+    () => clock.now().toISOString()
+  );
+
   const itemApp = createItemCatalogoUiApp(
     repositories.itens,
     repositories.balancas,
     clock,
     nextItemId,
-    repositories.importacaoRascunho
+    repositories.importacaoRascunho,
+    reprocessarPendenciasItem
   );
 
   const configuracoesApp = new ConfiguracoesOperacionaisView({
