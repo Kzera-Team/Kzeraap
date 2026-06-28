@@ -53,8 +53,29 @@ export class AuthScreenController {
     return false;
   }
 
+  private bindRecoveryReveal(root: HTMLElement): void {
+    const trigger = root.querySelector<HTMLElement>('[data-auth-recovery-trigger]');
+    const panel = root.querySelector<HTMLElement>('#backup-recovery-shell');
+    if (!trigger || !panel) return;
+
+    let taps = 0;
+    let lastTapAt = 0;
+
+    trigger.addEventListener('click', () => {
+      const now = Date.now();
+      taps = now - lastTapAt > 2000 ? 1 : taps + 1;
+      lastTapAt = now;
+
+      if (taps >= 10) {
+        panel.hidden = false;
+        taps = 0;
+      }
+    });
+  }
+
   private bindSetup(root: HTMLElement): void {
     bindAuthPasswordToggles(root);
+    this.bindRecoveryReveal(root);
     root.querySelector('[data-testid="setup-form"]')?.addEventListener('submit', async event => {
       event.preventDefault();
       this.params.clearError();
