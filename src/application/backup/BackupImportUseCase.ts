@@ -29,6 +29,25 @@ export interface BackupImportResult {
   importacao: number;
 }
 
+type LegacyBackupPayload = {
+  iv?: number[];
+  data?: number[];
+};
+
+function encryptedPayloadFrom(fileText: string): string {
+  const parsed = JSON.parse(fileText) as BackupEnvelopeV1 | LegacyBackupPayload;
+
+  if ('encryptedPayload' in parsed && parsed.schemaVersion === 1 && typeof parsed.encryptedPayload === 'string') {
+    return parsed.encryptedPayload;
+  }
+
+  if (Array.isArray(parsed.iv) && Array.isArray(parsed.data)) {
+    return fileText;
+  }
+
+  throw new Error('Arquivo de backup inválido.');
+}
+
 async function saveAll<T extends { id: string }>(repository: Repository<T>, records: T[] | undefined): Promise<number> {
   const list = records || [];
   for (const record of list) await repository.save(record);
@@ -42,13 +61,10 @@ export class BackupImportUseCase {
   ) {}
 
   async execute(fileText: string): Promise<BackupImportResult> {
-    const envelope = JSON.parse(fileText) as BackupEnvelopeV1;
-    if (envelope.schemaVersion !== 1 || !envelope.encryptedPayload) {
-      throw new Error('Arquivo de backup inválido.');
-    }
+    const encryptedPayload = encryptedPayloadFrom(fileText);
 
     const provider = new PayloadProvider(this.session);
-    const payload = await provider.unpackJson<BackupPayload>(envelope.encryptedPayload, 'backup:v1');
+    const payload = await provider.unpackJson<BackupPayload>(encryptedPayload, 'backup:v1');
     const data = payload.data;
 
     const perfis = await saveAll(this.repositories.perfis, data.perfis as Perfil[]);
