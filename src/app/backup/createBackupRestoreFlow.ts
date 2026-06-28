@@ -1,4 +1,3 @@
-import type { LoginUseCase } from '../../application/auth/LoginUseCase';
 import { BackupImportUseCase } from '../../application/backup/BackupImportUseCase';
 import type { Repository } from '../../application/ports/Repository';
 import type { Balanca } from '../../domain/operacao/Balanca';
@@ -7,6 +6,7 @@ import type { Perfil } from '../../domain/perfil/Perfil';
 import type { ContaFinanceira, MovimentoFinanceiro, PagamentoTransacao, TransacaoFinanceira } from '../../domain/financeiro/Financeiro';
 import type { LoteImportacaoFinanceira, LoteImportacaoTransacoes, RegistroImportacaoFinanceira, RegistroImportacaoTransacao } from '../../domain/importacao/ImportacaoTransacoesFinanceiro';
 import type { SessionContext } from '../../runtime/SessionContext';
+import type { RuntimeMetadataStore } from '../../runtime/RuntimeMetadata';
 import { BackupRestoreFlow } from './BackupRestoreFlow';
 
 export interface BackupRestoreFlowFactoryDependencies {
@@ -21,8 +21,8 @@ export interface BackupRestoreFlowFactoryDependencies {
   registrosImportacaoTransacoes: Repository<RegistroImportacaoTransacao>;
   lotesImportacaoFinanceira: Repository<LoteImportacaoFinanceira>;
   registrosImportacaoFinanceira: Repository<RegistroImportacaoFinanceira>;
-  legacyLogin: LoginUseCase;
   session: SessionContext;
+  runtimeStore: RuntimeMetadataStore;
 }
 
 export function createBackupRestoreFlow(dependencies: BackupRestoreFlowFactoryDependencies): BackupRestoreFlow {
@@ -40,7 +40,7 @@ export function createBackupRestoreFlow(dependencies: BackupRestoreFlowFactoryDe
       lotesImportacaoFinanceira: dependencies.lotesImportacaoFinanceira,
       registrosImportacaoFinanceira: dependencies.registrosImportacaoFinanceira
     }, dependencies.session),
-    legacyLogin: dependencies.legacyLogin,
-    session: dependencies.session
+    session: dependencies.session,
+    runtimeStore: dependencies.runtimeStore
   });
 }
