@@ -1,8 +1,12 @@
 <section class="auth-shell">
   <div class="auth-card">
-    <div class="auth-brand"><div class="auth-icon">V</div><div><h1>{{appName}}</h1></div></div>
+    <div class="auth-brand"><div class="auth-icon" data-auth-recovery-trigger>V</div><div><h1>{{appName}}</h1></div></div>
     {{errorHtml}}
     {{content}}
     <footer class="auth-version" data-testid="app-version">{{versionLabel}}</footer>
+  </div>
+  <div id="backup-recovery-shell" class="auth-recovery-panel" hidden>
+    <button id="backup-recovery-action" type="button">Recuperar backup</button>
+    <input id="backup-recovery-input" type="file" accept=".dat,.json,application/json,application/octet-stream,text/plain" aria-label="Recuperar backup" />
   </div>
 </section>
