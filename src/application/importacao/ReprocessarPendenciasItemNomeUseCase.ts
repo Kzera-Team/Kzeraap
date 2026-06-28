@@ -18,7 +18,7 @@ export class ReprocessarPendenciasItemNomeUseCase {
   async execute(nomeItem: string, itemId: string): Promise<ReprocessarPendenciasItemNomeResultado> {
     const nomeNormalizado = normalizarTextoBusca(nomeItem);
     const todos = await this.registros.list();
-    const pendentes = todos.filter(r => r.status === 'pendente_item' && r.dadosNormalizados);
+    const pendentes = todos.filter(r => r.status === 'pendente_item' && r.dadosNormalizados?.itens);
 
     let reprocessados = 0;
 
