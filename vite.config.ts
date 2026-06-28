@@ -8,10 +8,9 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(version)
   },
-  root: 'public',
-  publicDir: 'static',
+  publicDir: 'public',
   build: {
-    outDir: '../dist',
+    outDir: 'dist',
     emptyOutDir: true,
     sourcemap: false
   },
