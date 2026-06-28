@@ -45,7 +45,6 @@ export function createBackupComposition(dependencies: BackupCompositionDependenc
         registrosImportacaoFinanceira: await repositories.registrosImportacaoFinanceira.list()
       }
     }),
-    releaseResources: () => security.security.resourceScope.releaseAll(),
     requestRender: dependencies.requestRender
   });
 
