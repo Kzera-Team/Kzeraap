@@ -17,16 +17,18 @@ CSV. Se o banco não exportar em CSV, a operadora converte via IA antes de impor
 
 Cada linha do extrato bancário deve tentar identificar o dono da venda:
 
-1. Sistema lê a descrição da linha do extrato
+1. Sistema lê a linha do extrato
 2. Busca nome do cliente na descrição
-3. Encontra cliente na base → tenta vincular à transação correspondente
+3. Cruza data da entrada com data da transação
+4. Cruza valor da entrada com valor da transação
+5. Encontra cliente na base com data e valor compatíveis → tenta vincular
 
 ## Regra de vínculo automático
 
 | Situação | O que o sistema faz |
 |---|---|
-| Certeza (match claro de cliente + valor + contexto) | Vincula automaticamente |
-| Provável (match parcial) | Sugere — usuária confirma |
+| Certeza (nome + data + valor batem) | Vincula automaticamente |
+| Provável (nome bate, data ou valor divergem levemente) | Sugere — usuária confirma |
 | Sem match | Fica como **Valor pendente** |
 
 O sistema **nunca vincula por suposição**. Só age sozinho quando tem certeza.
