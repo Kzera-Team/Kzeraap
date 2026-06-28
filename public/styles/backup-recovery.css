@@ -1,11 +1,11 @@
-#backup-recovery-shell {
-  position: fixed;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  z-index: 1000;
+#backup-recovery-shell.auth-recovery-panel {
   width: calc(100% - 48px);
   max-width: 360px;
+  margin: 14px auto 0;
+}
+
+#backup-recovery-shell[hidden] {
+  display: none;
 }
 
 #backup-recovery-action,
@@ -21,19 +21,8 @@
   color: #c4b5fd;
   font-weight: 700;
   font-size: 15px;
-  pointer-events: none;
 }
 
 #backup-recovery-input {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  opacity: 0.01;
-  z-index: 1001;
-}
-
-@media (max-width: 700px) {
-  #backup-recovery-shell {
-    width: calc(100% - 48px);
-  }
+  display: none;
 }
