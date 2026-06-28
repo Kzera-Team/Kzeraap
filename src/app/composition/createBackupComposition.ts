@@ -61,8 +61,8 @@ export function createBackupComposition(dependencies: BackupCompositionDependenc
     registrosImportacaoTransacoes: repositories.registrosImportacaoTransacoes,
     lotesImportacaoFinanceira: repositories.lotesImportacaoFinanceira,
     registrosImportacaoFinanceira: repositories.registrosImportacaoFinanceira,
-    legacyLogin: security.login,
-    session: security.security.session
+    session: security.security.session,
+    runtimeStore: security.stateStore
   });
 
   const backupRestoreUi = new BackupRestoreUiFlow({
