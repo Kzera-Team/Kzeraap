@@ -47,6 +47,7 @@ export function renderAuthPasswordForm(
   }
 
   bindPasswordVisibilityToggle({ input, toggle });
+  bindRecoveryReveal(shell);
 
   form.addEventListener('submit', event => {
     event.preventDefault();
@@ -54,6 +55,26 @@ export function renderAuthPasswordForm(
   });
 
   root.replaceChildren(shell);
+}
+
+function bindRecoveryReveal(root: HTMLElement): void {
+  const trigger = root.querySelector<HTMLElement>('[data-auth-recovery-trigger]');
+  const panel = root.querySelector<HTMLElement>('#backup-recovery-shell');
+  if (!trigger || !panel) return;
+
+  let taps = 0;
+  let lastTapAt = 0;
+
+  trigger.addEventListener('click', () => {
+    const now = Date.now();
+    taps = now - lastTapAt > 2000 ? 1 : taps + 1;
+    lastTapAt = now;
+
+    if (taps >= 10) {
+      panel.hidden = false;
+      taps = 0;
+    }
+  });
 }
 
 function createAuthPasswordShell(): HTMLElement {
