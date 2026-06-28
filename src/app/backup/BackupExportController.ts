@@ -13,7 +13,6 @@ export interface BackupExportControllerDependencies {
   backupGate: BackupGateUseCase;
   backupExport: BackupExportUseCase;
   buildPayload(): Promise<BackupPayload>;
-  releaseResources(): void;
   requestRender(): void | Promise<void>;
 }
 
@@ -42,16 +41,14 @@ export class BackupExportController {
 
   async exportNow(): Promise<void> {
     await this.dependencies.backupExport.execute(await this.dependencies.buildPayload());
-    await this.saveStatus(this.dependencies.backupGate.complete(await this.loadStatus()));
+    await this.saveStatus(this.dependencies.backupGate.complete(await this.currentStatus()));
     this.backupMessage = 'Backup salvo neste aparelho.';
     await this.refreshDecision();
-    this.dependencies.releaseResources();
     await this.dependencies.requestRender();
   }
 
   async postponeNow(): Promise<void> {
-    const status = await this.loadStatus();
-    await this.saveStatus(this.dependencies.backupGate.postpone(status));
+    await this.saveStatus(this.dependencies.backupGate.postpone(await this.currentStatus()));
     this.backupMessage = 'Lembrete adiado para amanhã.';
     await this.refreshDecision();
     await this.dependencies.requestRender();
@@ -63,6 +60,10 @@ export class BackupExportController {
     this.backupTimer = window.setTimeout(() => {
       void this.refreshDecision().then(() => this.dependencies.requestRender());
     }, 1000 * 60 * 30);
+  }
+
+  private async currentStatus(): Promise<BackupStatus> {
+    return this.backupDecision?.status || await this.loadStatus();
   }
 
   private async loadStatus(): Promise<BackupStatus> {
