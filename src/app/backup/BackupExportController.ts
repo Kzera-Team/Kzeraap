@@ -42,15 +42,14 @@ export class BackupExportController {
 
   async exportNow(): Promise<void> {
     await this.dependencies.backupExport.execute(await this.dependencies.buildPayload());
-    await this.saveStatus(this.dependencies.backupGate.complete(await this.loadStatus()));
+    await this.saveStatus(this.dependencies.backupGate.complete(this.backupDecision!.status));
     this.backupMessage = 'Backup salvo neste aparelho.';
     await this.refreshDecision();
     await this.dependencies.requestRender();
   }
 
   async postponeNow(): Promise<void> {
-    const status = await this.loadStatus();
-    await this.saveStatus(this.dependencies.backupGate.postpone(status));
+    await this.saveStatus(this.dependencies.backupGate.postpone(this.backupDecision!.status));
     this.backupMessage = 'Lembrete adiado para amanhã.';
     await this.refreshDecision();
     await this.dependencies.requestRender();
