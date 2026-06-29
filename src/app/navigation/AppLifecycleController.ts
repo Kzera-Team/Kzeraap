@@ -13,6 +13,7 @@ export interface AppLifecycleControllerDependencies {
 export class AppLifecycleController {
   private bound = false;
   private resumeInProgress = false;
+  private filePickerOpen = false;
 
   constructor(private readonly dependencies: AppLifecycleControllerDependencies) {}
 
@@ -22,6 +23,11 @@ export class AppLifecycleController {
     this.bound = true;
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement && active.type === 'file') {
+          this.filePickerOpen = true;
+          return;
+        }
         this.dependencies.trackBlocked();
         this.dependencies.blockSession();
         return;
@@ -45,6 +51,10 @@ export class AppLifecycleController {
 
   private async requireAttentionOnResume(): Promise<void> {
     if (this.resumeInProgress) return;
+    if (this.filePickerOpen) {
+      this.filePickerOpen = false;
+      return;
+    }
 
     this.resumeInProgress = true;
 
