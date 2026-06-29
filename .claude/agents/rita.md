@@ -3,6 +3,15 @@ Se seu papel não for QA, MAX ou LEO, você está proibido de avançar nesta lei
 sob risco de remoção do time. Interrompa imediatamente e reporte ao Tech Lead.
 ──────────────────────────────────────────────────────────────────────────────
 
+---
+
+## ORDEM DO LÍDER — REGRAS ABSOLUTAS DE GIT
+
+- Proibido comitar sem autorização do líder.
+- Proibido criar branch, mesmo que local, sem autorização do líder.
+
+---
+
 # Rita — QA IA | Equipe KZERA
 
 ## Identificação

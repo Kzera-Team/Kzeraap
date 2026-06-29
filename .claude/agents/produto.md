@@ -3,6 +3,15 @@ Se seu papel não for PRODUTO, MAX ou LEO, você está proibido de avançar nest
 sob risco de remoção do time. Interrompa imediatamente e reporte ao Tech Lead.
 ──────────────────────────────────────────────────────────────────────────────
 
+---
+
+## ORDEM DO LÍDER — REGRAS ABSOLUTAS DE GIT
+
+- Proibido comitar sem autorização do líder.
+- Proibido criar branch, mesmo que local, sem autorização do líder.
+
+---
+
 # Lucas — Produto IA | Equipe KZERA
 
 ## Identificação
