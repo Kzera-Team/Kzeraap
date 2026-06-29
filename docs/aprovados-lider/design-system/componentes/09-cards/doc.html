@@ -1,0 +1,365 @@
+<meta charset="UTF-8">
+<title>KZERA · 09 — Cards</title>
+<meta name="description" content="Especificação completa do componente Card — anatomia, variantes, estados, tokens e como chega ao src/.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F4F0FC; color: #120B35;
+  padding: 28px 16px 80px; max-width: 640px; margin: 0 auto;
+}
+h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; text-wrap: balance; margin-bottom: 4px; }
+.eyebrow { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .14em; color: #7B4DFF; margin-bottom: 8px; }
+.intro { font-size: 13px; color: #6B5FA0; font-weight: 700; line-height: 1.6; margin-bottom: 32px; }
+.sec { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .14em; color: #7B4DFF; margin-bottom: 12px; margin-top: 36px; }
+
+.tbl { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.tbl-head { background: #EDE8F8; padding: 9px 16px; font-size: 10px; font-weight: 900; color: #5B2ECC; text-transform: uppercase; letter-spacing: .07em; display: grid; gap: 10px; align-items: center; }
+.tbl-row { display: grid; gap: 10px; align-items: start; padding: 13px 16px; border-bottom: 1px solid #F0EBF9; }
+.tbl-row:last-child { border-bottom: none; }
+.tbl-2 .tbl-head, .tbl-2 .tbl-row { grid-template-columns: 1fr 1fr; }
+.tbl-3 .tbl-head, .tbl-3 .tbl-row { grid-template-columns: 1.2fr 1fr 1fr; }
+
+.path { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; word-break: break-all; line-height: 1.5; }
+.q { font-size: 12px; font-weight: 800; color: #120B35; line-height: 1.45; }
+.q code { font-family: ui-monospace, monospace; font-size: 10.5px; background: #EDE8F8; padding: 1px 5px; border-radius: 4px; color: #5B2ECC; }
+.a { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; line-height: 1.45; word-break: break-word; }
+.v { font-size: 12px; font-weight: 700; color: #6B5FA0; line-height: 1.45; }
+
+.cb { background: #0F0A1E; border-radius: 14px; padding: 16px; overflow-x: auto; margin-bottom: 10px; }
+.cb pre { margin: 0; }
+.cb code { font-family: ui-monospace, "Cascadia Code", "SF Mono", monospace; font-size: 12px; line-height: 1.8; color: #D4C9F0; white-space: pre; }
+.ct { color: #C4A7FF; }
+.cv { color: #86EFAC; }
+.cc { color: #64748B; font-style: italic; }
+.cn { color: #93C5FD; }
+.cs { color: #FCA5A5; }
+
+.rules { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.rule-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #F0EBF9; }
+.rule-row:last-child { border-bottom: none; }
+.rule-n { width: 24px; height: 24px; border-radius: 9999px; background: #7B4DFF; color: #fff; font-size: 10px; font-weight: 900; display: grid; place-items: center; flex-shrink: 0; margin-top: 1px; }
+.rule-n.no { background: #DC2626; }
+.rule-n.warn { background: #D97706; }
+.rule-body { flex: 1; }
+.rule-title { font-size: 13px; font-weight: 900; color: #120B35; margin-bottom: 4px; line-height: 1.3; }
+.rule-desc { font-size: 12px; font-weight: 700; color: #6B5FA0; line-height: 1.5; }
+.rule-desc code { font-family: ui-monospace, monospace; font-size: 10.5px; background: #EDE8F8; padding: 1px 5px; border-radius: 4px; color: #5B2ECC; }
+
+.note { padding: 14px 16px; background: #EDE8F8; border-radius: 14px; font-size: 12px; font-weight: 700; color: #5B2ECC; line-height: 1.55; margin-bottom: 10px; }
+.note strong { color: #120B35; }
+.note code { font-family: ui-monospace, monospace; font-size: 10.5px; background: rgba(91,46,204,.12); padding: 1px 5px; border-radius: 4px; }
+.warn-box { padding: 14px 16px; background: #FEF3C7; border-radius: 14px; font-size: 12px; font-weight: 700; color: #92400E; line-height: 1.55; margin-bottom: 10px; }
+.warn-box strong { color: #120B35; }
+.warn-box code { font-family: ui-monospace, monospace; font-size: 10.5px; background: rgba(217,119,6,.12); padding: 1px 5px; border-radius: 4px; }
+
+.badge { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .07em; padding: 3px 8px; border-radius: 9999px; white-space: nowrap; display: inline-block; }
+.badge-done { background: #DCFCE7; color: #15803D; }
+.badge-prop { background: #EDE8F8; color: #5B2ECC; }
+
+.anatomy {
+  background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px;
+  padding: 24px; margin-bottom: 12px;
+}
+.anatomy-card {
+  border: 1.5px dashed #C4BBE0; border-radius: 12px;
+  padding: 16px; display: flex; flex-direction: column; gap: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.anatomy-region {
+  border: 1px dashed #DDD4F3; border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px; font-weight: 900; color: #9B8FC8;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.anatomy-region span { color: #7B4DFF; font-family: ui-monospace, monospace; font-size: 10px; }
+</style>
+
+<a href="../index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#9B8FC8;text-decoration:none;margin-bottom:20px;padding:5px 10px;border:1.5px solid #DDD4F3;border-radius:9999px;background:#fff;" onmouseover="this.style.background='#F0EBF9'" onmouseout="this.style.background='#fff'">← Componentes</a>
+
+<div class="eyebrow">09 — Cards</div>
+<h1>Card</h1>
+<div style="margin-bottom:16px;"><span class="badge badge-prop">Proposto</span></div>
+<p class="intro">Superfície elevada que agrupa informações relacionadas. Cobre cards estáticos, elevados, interativos e compactos. Componente único — nenhuma tela inventa sua própria superfície sem usar .kz-card.</p>
+
+<!-- ══════════════════════════
+     CAUSA SISTÊMICA
+══════════════════════════ -->
+<div class="sec">Causa sistêmica — por que este componente foi criado agora</div>
+
+<div class="note">
+  <strong>Causa do sistema (Lia):</strong> O <code>card.css</code> existia com apenas 3 regras genéricas (<code>.kzera-card</code>, <code>.card</code>) sem variantes, sem tipografia interna, sem estados. Cada tela inventava seu próprio raio, sombra e padding — o resultado eram cards com 12px, 16px e 20px de radius na mesma sessão.<br><br>
+  <strong>Causa do processo (Helena):</strong> Sem especificação de quando um card é clicável, devs criavam superfícies interativas sem feedback visual. A senhora cansada não sabia o que era botão e o que era apenas informação estática — ela tentava tocar em cards decorativos e nada acontecia.
+</div>
+
+<!-- ══════════════════════════
+     ANATOMIA
+══════════════════════════ -->
+<div class="sec">Anatomia do componente</div>
+
+<div class="anatomy">
+  <div class="anatomy-card">
+    <div class="anatomy-region">Header (opcional) <span>.kz-card-header</span></div>
+    <div class="anatomy-region">Body <span>.kz-card-body</span></div>
+    <div class="anatomy-region">Footer (opcional) <span>.kz-card-footer</span></div>
+  </div>
+</div>
+
+<div class="tbl tbl-2">
+  <div class="tbl-head"><span>Elemento</span><span>Classe</span></div>
+  <div class="tbl-row"><div class="q">Container</div><div class="a">.kz-card</div></div>
+  <div class="tbl-row"><div class="q">Header — título + badge/ação</div><div class="a">.kz-card-header</div></div>
+  <div class="tbl-row"><div class="q">Body — conteúdo principal</div><div class="a">.kz-card-body</div></div>
+  <div class="tbl-row"><div class="q">Footer — ação ou rodapé</div><div class="a">.kz-card-footer</div></div>
+  <div class="tbl-row"><div class="q">Título</div><div class="a">.kz-card-title</div></div>
+  <div class="tbl-row"><div class="q">Subtítulo / descrição</div><div class="a">.kz-card-subtitle</div></div>
+  <div class="tbl-row"><div class="q">Valor numérico destacado</div><div class="a">.kz-card-value</div></div>
+  <div class="tbl-row"><div class="q">Rótulo superior</div><div class="a">.kz-card-label</div></div>
+</div>
+
+<!-- ══════════════════════════
+     VARIANTES
+══════════════════════════ -->
+<div class="sec">Variantes</div>
+
+<div class="tbl tbl-3">
+  <div class="tbl-head"><span>Variante</span><span>Quando usar</span><span>Modificador</span></div>
+  <div class="tbl-row">
+    <div class="q">Padrão</div>
+    <div class="v">Exibição de informação estática. Não clicável.</div>
+    <div class="v">Apenas <code>.kz-card</code></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Elevado</div>
+    <div class="v">Card de destaque no topo da tela. Sumário, métrica principal.</div>
+    <div class="v"><code>.kz-card--elevated</code></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Interativo</div>
+    <div class="v">Card é navegável — leva a outra tela ou abre detalhe.</div>
+    <div class="v"><code>.kz-card--interactive</code> + tag <code>&lt;a&gt;</code></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Compacto</div>
+    <div class="v">Listas densas — itens de pedido, linha de produto.</div>
+    <div class="v"><code>.kz-card--compact</code></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Alerta / Destrutivo</div>
+    <div class="v">Estoque esgotado, item cancelado, erro crítico.</div>
+    <div class="v"><code>.kz-card--danger</code></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     ESPECIFICAÇÃO
+══════════════════════════ -->
+<div class="sec">Especificação visual obrigatória</div>
+
+<div class="tbl tbl-2">
+  <div class="tbl-head"><span>Propriedade</span><span>Valor / token</span></div>
+  <div class="tbl-row">
+    <div class="q">Border-radius (padrão)</div>
+    <div class="a">var(--radius-4)<br><span style="font-size:10px;color:#6B5FA0;">16px</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Border-radius (compacto)</div>
+    <div class="a">var(--radius-3)<br><span style="font-size:10px;color:#6B5FA0;">12px</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Border</div>
+    <div class="a">1px solid var(--kz-light-border)</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Background</div>
+    <div class="a">var(--kz-light-surface)<br><span style="font-size:10px;color:#6B5FA0;">#fff</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Padding (padrão)</div>
+    <div class="a">var(--space-4)<br><span style="font-size:10px;color:#6B5FA0;">16px em todos os lados</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Padding (compacto)</div>
+    <div class="a">var(--space-3)<br><span style="font-size:10px;color:#6B5FA0;">12px</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Gap interno</div>
+    <div class="a">var(--space-2)<br><span style="font-size:10px;color:#6B5FA0;">8px entre seções</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Sombra (elevado)</div>
+    <div class="a">var(--shadow-2)<br><span style="font-size:10px;color:#6B5FA0;">0 4px 12px rgba(18,11,53,.10)</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Hover background (interativo)</div>
+    <div class="a">#F7F3FF</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Active scale (interativo)</div>
+    <div class="a">scale(.99) + opacity .92</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Disabled</div>
+    <div class="a">opacity .45 + pointer-events none</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     TOKENS UTILIZADOS
+══════════════════════════ -->
+<div class="sec">Tokens utilizados</div>
+
+<div class="tbl tbl-2">
+  <div class="tbl-head"><span>Token</span><span>Onde é usado</span></div>
+  <div class="tbl-row"><div class="a">--kz-light-surface</div><div class="v">Background do card</div></div>
+  <div class="tbl-row"><div class="a">--kz-light-border</div><div class="v">Borda e divisor do footer</div></div>
+  <div class="tbl-row"><div class="a">--kz-light-text</div><div class="v">Título e valor numérico</div></div>
+  <div class="tbl-row"><div class="a">--kz-light-muted</div><div class="v">Subtítulo e label</div></div>
+  <div class="tbl-row"><div class="a">--kz-status-danger-*</div><div class="v">Variante .kz-card--danger</div></div>
+  <div class="tbl-row"><div class="a">--radius-3</div><div class="v">Border-radius compacto (12px)</div></div>
+  <div class="tbl-row"><div class="a">--radius-4</div><div class="v">Border-radius padrão (16px)</div></div>
+  <div class="tbl-row"><div class="a">--shadow-2</div><div class="v">Elevação do card elevated</div></div>
+  <div class="tbl-row"><div class="a">--space-1</div><div class="v">margin-top do footer (4px)</div></div>
+  <div class="tbl-row"><div class="a">--space-2</div><div class="v">Gap entre seções (8px)</div></div>
+  <div class="tbl-row"><div class="a">--space-3</div><div class="v">Padding compacto (12px)</div></div>
+  <div class="tbl-row"><div class="a">--space-4</div><div class="v">Padding padrão (16px)</div></div>
+  <div class="tbl-row"><div class="a">--t-xs</div><div class="v">.kz-card-label (10px)</div></div>
+  <div class="tbl-row"><div class="a">--t-sm</div><div class="v">.kz-card-subtitle (12px)</div></div>
+  <div class="tbl-row"><div class="a">--t-base</div><div class="v">.kz-card-title (14px)</div></div>
+  <div class="tbl-row"><div class="a">--t-lg</div><div class="v">.kz-card-value (18px)</div></div>
+  <div class="tbl-row"><div class="a">--duration-normal</div><div class="v">Transição hover (0.12s)</div></div>
+</div>
+
+<!-- ══════════════════════════
+     COMO CHEGA AO SRC
+══════════════════════════ -->
+<div class="sec">Como chega ao src/</div>
+
+<div class="note">
+  <strong>Regra:</strong> <code>card.css</code> já existe em <code>src/</code> e já está importado em <code>index.css</code>. Substituir o conteúdo atual pelo <code>componente.css</code> deste doc — o stub de 3 linhas não tem variantes.
+</div>
+
+<div class="cb"><pre><code><span class="cc">/* PASSO 1 — substituir card.css existente */</span>
+<span class="cv">src/presentation/shared/styles/card.css</span>
+<span class="cc">↑ substituir pelo conteúdo de componente.css deste doc</span>
+
+<span class="cc">/* PASSO 2 — index.css (card.css já importado, não alterar) */</span>
+<span class="ct">@import</span> <span class="cv">'./tokens.css'</span>;
+<span class="ct">@import</span> <span class="cv">'./card.css'</span>;   <span class="cc">← já existe</span>
+<span class="ct">@import</span> <span class="cv">'./badge.css'</span>;
+<span class="cc">...</span>
+
+<span class="cc">/* PASSO 3 — card estático */</span>
+<span class="cs">&lt;div</span> <span class="ct">class</span>=<span class="cv">"kz-card"</span><span class="cs">&gt;</span>
+  <span class="cs">&lt;div</span> <span class="ct">class</span>=<span class="cv">"kz-card-header"</span><span class="cs">&gt;</span>
+    <span class="cs">&lt;div</span> <span class="ct">class</span>=<span class="cv">"kz-card-title"</span><span class="cs">&gt;</span>Título<span class="cs">&lt;/div&gt;</span>
+  <span class="cs">&lt;/div&gt;</span>
+  <span class="cs">&lt;div</span> <span class="ct">class</span>=<span class="cv">"kz-card-body"</span><span class="cs">&gt;</span>
+    <span class="cs">&lt;div</span> <span class="ct">class</span>=<span class="cv">"kz-card-subtitle"</span><span class="cs">&gt;</span>Descrição<span class="cs">&lt;/div&gt;</span>
+  <span class="cs">&lt;/div&gt;</span>
+<span class="cs">&lt;/div&gt;</span>
+
+<span class="cc">/* PASSO 4 — card interativo: usar &lt;a&gt;, não &lt;div&gt; */</span>
+<span class="cs">&lt;a</span> <span class="ct">href</span>=<span class="cv">"/detalhe/42"</span> <span class="ct">class</span>=<span class="cv">"kz-card kz-card--interactive"</span><span class="cs">&gt;</span>
+  ...
+<span class="cs">&lt;/a&gt;</span></code></pre></div>
+
+<!-- ══════════════════════════
+     REGRAS UX — HELENA
+══════════════════════════ -->
+<div class="sec">Regras UX — Helena</div>
+
+<div class="rules">
+
+  <div class="rule-row">
+    <div class="rule-n no">✗</div>
+    <div class="rule-body">
+      <div class="rule-title">Nunca usar &lt;div&gt; clicável sem ser .kz-card--interactive</div>
+      <div class="rule-desc">Card com <code>onclick</code> em <code>&lt;div&gt;</code> não é navegável por teclado, não tem semântica de link, não tem cursor correto. A senhora cansada não sabe que pode tocar. Sempre <code>&lt;a&gt;</code> + <code>.kz-card--interactive</code>.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n no">✗</div>
+    <div class="rule-body">
+      <div class="rule-title">Nunca empilhar dois cards interativos sem espaço entre eles</div>
+      <div class="rule-desc">Gap mínimo entre cards em lista: <code>--space-2</code> (8px). Sem gap, a senhora cansada toca o card errado — especialmente em listas de pedidos ou produtos com dedo dolorido.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n warn">!</div>
+    <div class="rule-body">
+      <div class="rule-title">Card de alerta (.kz-card--danger) nunca é clicável por padrão</div>
+      <div class="rule-desc">Alerta é informação crítica — não navegação. Se precisar de ação dentro do alerta, use botão explícito dentro do card. Não tornar o card inteiro interativo.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">✓</div>
+    <div class="rule-body">
+      <div class="rule-title">Card interativo deve ter feedback visual claro ao toque</div>
+      <div class="rule-desc">O <code>.kz-card--interactive:active</code> já aplica <code>scale(.99)</code> e <code>opacity .92</code>. Não remover esse comportamento por motivos estéticos — é o único sinal que a senhora cansada recebe de que tocou no lugar certo.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">✓</div>
+    <div class="rule-body">
+      <div class="rule-title">Hierarquia dentro do card: label → título → subtítulo → valor</div>
+      <div class="rule-desc">Essa ordem garante que a leitura seja natural. O label (<code>10px uppercase</code>) contextualiza. O título (<code>14px 900</code>) identifica. O subtítulo (<code>12px</code>) detalha. O valor (<code>18px 900</code>) destaca o dado principal.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════
+     CHECKLIST SENHORA CANSADA
+══════════════════════════ -->
+<div class="sec">Checklist — senhora cansada</div>
+
+<div class="rules">
+  <div class="rule-row">
+    <div class="rule-n">1</div>
+    <div class="rule-body">
+      <div class="rule-title">Ela sabe o que é clicável?</div>
+      <div class="rule-desc">Card interativo usa <code>&lt;a&gt;</code> com cursor pointer e background diferente no hover. Card estático não tem interação. Nunca misturar.</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n">2</div>
+    <div class="rule-body">
+      <div class="rule-title">Ela consegue distinguir o card do fundo?</div>
+      <div class="rule-desc">Background <code>--kz-light-surface</code> (#fff) sobre <code>--kz-light-bg</code> (#F4F0FC) + borda 1px <code>--kz-light-border</code>. Contraste suficiente para olhos cansados.</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n">3</div>
+    <div class="rule-body">
+      <div class="rule-title">O conteúdo tem hierarquia visual clara?</div>
+      <div class="rule-desc">Título mais pesado que subtítulo. Valor em destaque. A senhora cansada não deveria precisar ler todo o card para encontrar a informação principal.</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n">4</div>
+    <div class="rule-body">
+      <div class="rule-title">Ela recebe confirmação ao tocar?</div>
+      <div class="rule-desc">O <code>:active</code> com scale + opacity é obrigatório em cards interativos. Dedo dolorido não tem certeza se tocou — o feedback visual confirma.</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n">5</div>
+    <div class="rule-body">
+      <div class="rule-title">O card de alerta está visualmente diferente dos outros?</div>
+      <div class="rule-desc">Fundo vermelho claro + borda vermelha de <code>.kz-card--danger</code> sinaliza problema sem depender só da cor. Texto dentro do card deve explicar o problema.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     PREVIEW
+══════════════════════════ -->
+<div class="sec">Preview interativo</div>
+<div style="background:#fff;border:1.5px solid #DDD4F3;border-radius:16px;overflow:hidden;">
+  <iframe src="componente.html" style="width:100%;height:700px;border:none;display:block;" title="Preview — Cards"></iframe>
+</div>

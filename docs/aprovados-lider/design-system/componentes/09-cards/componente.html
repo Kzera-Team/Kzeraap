@@ -1,0 +1,184 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Cards</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F4F0FC;
+  padding: 20px 16px 40px;
+}
+
+/* tokens inline para preview */
+:root {
+  --kz-light-bg: #F4F0FC;
+  --kz-light-surface: #fff;
+  --kz-light-text: #120B35;
+  --kz-light-muted: #6B5FA0;
+  --kz-light-accent: #7B4DFF;
+  --kz-light-border: #DDD4F3;
+  --kz-light-border-active: #C4BBE0;
+  --kz-light-hover: #F7F3FF;
+  --kz-status-success-bg: #DCFCE7;
+  --kz-status-success-text: #15803D;
+  --kz-status-danger-bg: #FEE2E2;
+  --kz-status-danger-text: #DC2626;
+  --kz-status-warning-bg: #FEF3C7;
+  --kz-status-warning-text: #D97706;
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-4: 16px;
+  --radius-full: 9999px;
+  --shadow-1: 0 1px 4px rgba(18,11,53,.07);
+  --shadow-2: 0 4px 12px rgba(18,11,53,.10);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --t-xs: 10px;
+  --t-sm: 12px;
+  --t-base: 14px;
+  --t-md: 16px;
+  --t-lg: 18px;
+  --duration-normal: .12s;
+}
+
+.section-label {
+  font-size: 10px; font-weight: 900; text-transform: uppercase;
+  letter-spacing: .14em; color: #7B4DFF;
+  margin: 24px 0 10px;
+}
+.section-label:first-child { margin-top: 0; }
+
+/* card system */
+.kz-card {
+  background: var(--kz-light-surface);
+  border: 1px solid var(--kz-light-border);
+  border-radius: var(--radius-4);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: 10px;
+}
+.kz-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.kz-card-body { display: flex; flex-direction: column; gap: var(--space-2); }
+.kz-card-footer {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--kz-light-border);
+}
+.kz-card--elevated { border: none; box-shadow: var(--shadow-2); }
+.kz-card--interactive {
+  cursor: pointer; text-decoration: none; color: inherit;
+  transition: background var(--duration-normal), border-color var(--duration-normal);
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+}
+.kz-card--interactive:hover { background: var(--kz-light-hover); border-color: var(--kz-light-border-active); }
+.kz-card--interactive:active { transform: scale(.99); opacity: .92; }
+.kz-card--compact {
+  padding: var(--space-3);
+  gap: var(--space-1);
+  border-radius: var(--radius-3);
+}
+.kz-card--danger { border-color: var(--kz-status-danger-text); background: var(--kz-status-danger-bg); }
+.kz-card-title { font-size: var(--t-base); font-weight: 900; color: var(--kz-light-text); line-height: 1.3; }
+.kz-card-subtitle { font-size: var(--t-sm); font-weight: 700; color: var(--kz-light-muted); line-height: 1.4; }
+.kz-card-value { font-size: var(--t-lg); font-weight: 900; color: var(--kz-light-text); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.kz-card-label { font-size: var(--t-xs); font-weight: 900; text-transform: uppercase; letter-spacing: .1em; color: var(--kz-light-muted); }
+
+/* badge preview */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 9px; border-radius: var(--radius-full);
+  font-size: 10px; font-weight: 900;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.badge-success { background: var(--kz-status-success-bg); color: var(--kz-status-success-text); }
+.badge-warning { background: var(--kz-status-warning-bg); color: var(--kz-status-warning-text); }
+.badge-danger  { background: var(--kz-status-danger-bg);  color: var(--kz-status-danger-text); }
+</style>
+
+<!-- 1. Card padrão -->
+<div class="section-label">Padrão</div>
+<div class="kz-card">
+  <div class="kz-card-header">
+    <div>
+      <div class="kz-card-label">Produto</div>
+      <div class="kz-card-title">Arroz Integral 5kg</div>
+    </div>
+    <span class="badge badge-success">Em estoque</span>
+  </div>
+  <div class="kz-card-body">
+    <div class="kz-card-subtitle">Fornecedor: Casa do Grão · Cód. 00412</div>
+  </div>
+  <div class="kz-card-footer">
+    <div class="kz-card-value">R$ 28,90</div>
+  </div>
+</div>
+
+<!-- 2. Card elevado -->
+<div class="section-label">Elevado (shadow-2)</div>
+<div class="kz-card kz-card--elevated">
+  <div class="kz-card-header">
+    <div>
+      <div class="kz-card-label">Resumo</div>
+      <div class="kz-card-title">Caixa do dia</div>
+    </div>
+  </div>
+  <div class="kz-card-body">
+    <div class="kz-card-value">R$ 1.240,00</div>
+    <div class="kz-card-subtitle">12 vendas realizadas</div>
+  </div>
+</div>
+
+<!-- 3. Card interativo -->
+<div class="section-label">Interativo (clicável)</div>
+<a href="#" class="kz-card kz-card--interactive" style="flex-direction:column;">
+  <div class="kz-card-header">
+    <div>
+      <div class="kz-card-label">Pedido</div>
+      <div class="kz-card-title">Pedido #0047 — Mesa 3</div>
+    </div>
+    <span class="badge badge-warning">Pendente</span>
+  </div>
+  <div class="kz-card-body">
+    <div class="kz-card-subtitle">Há 8 minutos · 3 itens</div>
+  </div>
+</a>
+
+<!-- 4. Card compacto -->
+<div class="section-label">Compacto</div>
+<div class="kz-card kz-card--compact">
+  <div class="kz-card-header">
+    <div class="kz-card-title">Café Expresso</div>
+    <div class="kz-card-value" style="font-size:14px;">R$ 5,00</div>
+  </div>
+  <div class="kz-card-subtitle">2 unidades · Cod. 081</div>
+</div>
+<div class="kz-card kz-card--compact">
+  <div class="kz-card-header">
+    <div class="kz-card-title">Croissant Amanteigado</div>
+    <div class="kz-card-value" style="font-size:14px;">R$ 9,50</div>
+  </div>
+  <div class="kz-card-subtitle">1 unidade · Cod. 114</div>
+</div>
+
+<!-- 5. Card de alerta -->
+<div class="section-label">Alerta / Destrutivo</div>
+<div class="kz-card kz-card--danger">
+  <div class="kz-card-header">
+    <div class="kz-card-title">Estoque esgotado</div>
+    <span class="badge badge-danger">Crítico</span>
+  </div>
+  <div class="kz-card-body">
+    <div class="kz-card-subtitle">Farinha de Trigo 1kg — 0 unidades restantes.</div>
+  </div>
+</div>

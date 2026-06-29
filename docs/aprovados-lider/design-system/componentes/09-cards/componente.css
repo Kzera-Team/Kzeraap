@@ -1,18 +1,20 @@
 /* ══════════════════════════════════════════
-   09 — Cards · card.css
-   Fonte canônica: docs/aprovados-lider/design-system/componentes/09-cards/componente.css
+   09 — Cards · componente.css canônico
+   Copiar para src/presentation/shared/styles/card.css
 ══════════════════════════════════════════ */
 
+/* ── Base ── */
 .kz-card {
   background: var(--kz-light-surface);
   border: 1px solid var(--kz-light-border);
-  border-radius: var(--radius-4);
-  padding: var(--space-4);
+  border-radius: var(--radius-4);       /* 16px */
+  padding: var(--space-4);              /* 16px */
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-2);                  /* 8px */
 }
 
+/* ── Seções internas ── */
 .kz-card-header {
   display: flex;
   align-items: flex-start;
@@ -30,16 +32,18 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-1);
+  margin-top: var(--space-1);           /* 4px — separação leve */
   padding-top: var(--space-2);
   border-top: 1px solid var(--kz-light-border);
 }
 
+/* ── Variante: Elevado ── */
 .kz-card--elevated {
   border: none;
   box-shadow: var(--shadow-2);
 }
 
+/* ── Variante: Interativo (clicável) ── */
 .kz-card--interactive {
   cursor: pointer;
   text-decoration: none;
@@ -58,39 +62,43 @@
   opacity: .92;
 }
 
+/* ── Variante: Compacto ── */
 .kz-card--compact {
-  padding: var(--space-3);
-  gap: var(--space-1);
-  border-radius: var(--radius-3);
+  padding: var(--space-3);              /* 12px */
+  gap: var(--space-1);                  /* 4px */
+  border-radius: var(--radius-3);       /* 12px */
 }
 
+/* ── Variante: Destrutivo / alerta ── */
 .kz-card--danger {
   border-color: var(--kz-status-danger-text);
   background: var(--kz-status-danger-bg);
 }
 
+/* ── Estado: disabled ── */
 .kz-card--disabled,
 .kz-card[aria-disabled="true"] {
   opacity: .45;
   pointer-events: none;
 }
 
+/* ── Tipografia interna canônica ── */
 .kz-card-title {
-  font-size: var(--t-base);
+  font-size: var(--t-base);             /* 14px */
   font-weight: 900;
   color: var(--kz-light-text);
   line-height: 1.3;
 }
 
 .kz-card-subtitle {
-  font-size: var(--t-sm);
+  font-size: var(--t-sm);              /* 12px */
   font-weight: 700;
   color: var(--kz-light-muted);
   line-height: 1.4;
 }
 
 .kz-card-value {
-  font-size: var(--t-lg);
+  font-size: var(--t-lg);              /* 18px */
   font-weight: 900;
   color: var(--kz-light-text);
   font-variant-numeric: tabular-nums;
@@ -98,7 +106,7 @@
 }
 
 .kz-card-label {
-  font-size: var(--t-xs);
+  font-size: var(--t-xs);             /* 10px */
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: .1em;
