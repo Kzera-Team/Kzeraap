@@ -24,6 +24,9 @@ export interface ButtonTextProps {
    * Identificador da ação para o roteador de eventos.
    * O JS da tela ouve cliques em [data-action] e despacha para o handler correto.
    * Exemplo: action: 'confirmar-pedido' → handler confirmarPedido()
+   *
+   * ATENÇÃO: sem action o botão renderiza sem data-action e nunca dispara nenhum handler.
+   * Omitir só em casos onde o evento é tratado por outra via (ex: attrs com onclick).
    */
   action?: string
   /** Atributos HTML extras: id, tabindex, aria-controls etc. */

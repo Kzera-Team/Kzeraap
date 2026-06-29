@@ -29,6 +29,10 @@ export function KzeraButton({
 }: KzeraButtonProps) {
   const isIconOnly = icon && !label
 
+  if (isIconOnly && !props['aria-label']) {
+    console.warn('[KzeraButton] Botão ícone sem aria-label — inacessível para leitores de tela.')
+  }
+
   const classes = [
     'kzera-btn',
     `kzera-btn--${variant}`,
@@ -45,6 +49,7 @@ export function KzeraButton({
     <button
       className={classes}
       disabled={disabled || loading}
+      aria-disabled={(disabled || loading) ? true : undefined}
       aria-busy={loading || undefined}
       {...props}
     >

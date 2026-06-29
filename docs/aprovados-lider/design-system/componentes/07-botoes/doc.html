@@ -79,7 +79,7 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
 .kzera-btn--icon { width: 48px; min-width: 48px; padding: 0; }
 .kzera-btn--icon.kzera-btn--sm { width: 40px; min-width: 40px; height: 40px; }
 .kzera-btn--auto { width: auto; }
-.kzera-btn-group { display: flex; gap: 10px; }
+.kzera-btn-group { display: flex; gap: 12px; }
 .kzera-btn-group .kzera-btn { flex: 1; }
 @media (hover: hover) {
   .kzera-btn--primary:not(:disabled):hover { opacity: .88; }
@@ -280,6 +280,22 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
     <div class="rule-icon">8</div>
     <div class="rule-text">Focus: <span>:focus-visible</span> (não <span>:focus</span>) — anel aparece só via teclado, não no clique. WCAG AA obrigatório para PWA web.</div>
   </div>
+  <div class="rule-row">
+    <div class="rule-icon">9</div>
+    <div class="rule-text">Em grupo de 2 botões (<span>kzera-btn-group</span>): ação secundária/cancelar sempre à esquerda, ação primária/confirmar sempre à direita. Nunca inverter.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">10</div>
+    <div class="rule-text">Ghost (40px) é proibido como única ação de saída de uma tela ou fluxo — 40px viola o mínimo de toque de 44px em contexto crítico. Ghost deve sempre ser acompanhado de Primary ou Secondary.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">11</div>
+    <div class="rule-text">Duas ações de peso equivalente: usar <span>Secondary + Primary</span> em kzera-btn-group. Nunca dois primários na mesma tela.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">12</div>
+    <div class="rule-text">Botão primário de tela deve estar na base da área de conteúdo — acessível com o polegar. Nunca como ação isolada no topo da tela.</div>
+  </div>
 </div>
 
 <div class="sec">Arquivos do componente</div>
@@ -295,5 +311,13 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
   <div class="file-row">
     <span class="file-name">componente.tsx</span>
     <span class="file-desc">KzeraButton + KzeraButtonGroup — React/TS, pronto para usar</span>
+  </div>
+  <div class="file-row">
+    <span class="file-name">ButtonText.ts</span>
+    <span class="file-desc">Variante Vanilla JS com event delegation via data-action</span>
+  </div>
+  <div class="file-row">
+    <span class="file-name">ButtonText.html</span>
+    <span class="file-desc">Preview interativo e snippets copiáveis para ButtonText.ts</span>
   </div>
 </div>

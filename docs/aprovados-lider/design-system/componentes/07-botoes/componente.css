@@ -67,7 +67,7 @@
 .kzera-btn--danger {
   background: #DC2626;
   color: #fff;
-  box-shadow: 0 4px 16px rgba(220,38,38,.22);
+  box-shadow: var(--shadow-danger, 0 4px 16px rgba(220,38,38,.22));
   height: 56px;
 }
 
