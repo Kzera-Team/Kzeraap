@@ -8,7 +8,6 @@ import {
 } from '../../domain/perfil/PerfilImportacao';
 import type { ImportacaoPerfisArquivoUseCase } from './ImportacaoPerfisArquivoUseCase';
 import type { ConfirmarImportacaoPerfisResultado, ConfirmarImportacaoPerfisUseCase } from './ConfirmarImportacaoPerfisUseCase';
-import { releaseObject } from '../../runtime/RuntimeCleanup';
 
 export interface FluxoImportacaoPerfisState {
   parse?: PerfilImportacaoParseResult;
@@ -71,12 +70,9 @@ export class FluxoImportacaoPerfisUseCase {
   }
 
   async confirmar(): Promise<ConfirmarImportacaoPerfisResultado> {
-    try {
-      return await this.confirmarImportacao.execute(this.state.preview);
-    } finally {
-      releaseObject(this.state.preview);
-      this.state = { preview: [] };
-    }
+    const resultado = await this.confirmarImportacao.execute(this.state.preview);
+    this.state = { preview: [] };
+    return resultado;
   }
 
   restaurar(registros: PerfilImportacaoPreviewRegistro[]): void {
@@ -84,7 +80,6 @@ export class FluxoImportacaoPerfisUseCase {
   }
 
   limpar(): void {
-    releaseObject(this.state.preview);
     this.state = { preview: [] };
   }
 
