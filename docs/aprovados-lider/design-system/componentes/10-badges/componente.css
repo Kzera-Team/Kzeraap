@@ -1,15 +1,16 @@
 /* ══════════════════════════════════════════
-   10 — Badges · badge.css
-   Fonte do design system — docs/aprovados-lider/design-system/componentes/10-badges/componente.css
+   10 — Badges · componente.css
+   Fonte do design system — copiar para src/presentation/shared/styles/badge.css
 ══════════════════════════════════════════ */
 
+/* ── Base ── */
 .kz-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   border-radius: var(--radius-full);
   padding: 3px 9px;
-  font-size: var(--t-xs);
+  font-size: var(--t-xs);           /* 10px */
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: .06em;
@@ -17,6 +18,7 @@
   white-space: nowrap;
 }
 
+/* ── Variantes de status ── */
 .kz-badge--success {
   background: var(--kz-status-success-bg);
   color: var(--kz-status-success-text);
@@ -42,6 +44,7 @@
   color: var(--kz-status-neutral-text);
 }
 
+/* ── Variante: numérico (contador circular) ── */
 .kz-badge--count {
   padding: 0;
   width: 18px;
