@@ -12,7 +12,6 @@ import type { createRepositoryComposition } from './createRepositoryComposition'
 import type { appClock } from './AppCompositionIds';
 import { nextBalancaId, nextCalibragemId, nextItemId, nextPerfilId } from './AppCompositionIds';
 import { ReprocessarPendenciasItemNomeUseCase } from '../../application/importacao/ReprocessarPendenciasItemNomeUseCase';
-import { ReprocessarPendenciasPerfilUseCase } from '../../application/importacao/ReprocessarPendenciasPerfilUseCase';
 import type { CodigoPerfilRuleService } from '../codigoPerfil/CodigoPerfilRuleService';
 import type { UxDomTracker } from '../../presentation/shared/uxTracking/UxDomTracker';
 
@@ -40,18 +39,12 @@ export function createFeatureAppComposition(dependencies: FeatureAppCompositionD
     repositories.transacoesFinanceiras
   );
 
-  const reprocessarPendenciasPerfil = new ReprocessarPendenciasPerfilUseCase(
-    repositories.registrosImportacaoTransacoes,
-    () => clock.now().toISOString()
-  );
-
   const perfilApp = createPerfilUiApp(
     repositories.perfis,
     clock,
     nextPerfilId,
     () => codigoPerfilRules.getCachedRule(),
-    repositories.importacaoRascunho,
-    reprocessarPendenciasPerfil
+    repositories.importacaoRascunho
   );
 
   const reprocessarPendenciasItem = new ReprocessarPendenciasItemNomeUseCase(
