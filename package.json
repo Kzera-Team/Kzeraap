@@ -21,6 +21,10 @@
     "node": ">=20"
   },
   "devDependencies": {
+    "@preact/preset-vite": "^2.10.5",
     "vite": "5.4.11"
+  },
+  "dependencies": {
+    "preact": "^10.29.3"
   }
 }
