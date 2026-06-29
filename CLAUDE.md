@@ -5,7 +5,11 @@
 Quando a pergunta do líder admite resposta direta (sim, não, ou termo equivalente), responder apenas com isso.
 Nunca criar textão sem que o líder tenha pedido.
 
-## Branches — Regras obrigatórias
+## Commits e Branches — Regras obrigatórias
+
+Proibido comitar sem autorização do líder.
+
+Proibido criar branch, mesmo que local, sem autorização do líder.
 
 Somente o líder pode criar branches ou autorizar sua criação.
 
