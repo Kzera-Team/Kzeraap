@@ -186,7 +186,7 @@ export class ImportacaoTransacoesFinanceiroView {
     if (!this.transacoes || !this.financeiro) return this.falha('Carregue os dois arquivos antes de preparar.');
     const t = await this.deps.prepararTransacoes.execute(this.transacoes);
     const f = await this.deps.prepararFinanceiro.execute(this.financeiro);
-    this.mensagem = `Arquivos preparados: ${t.resumo.total} transações e ${f.resumo.total} pagamentos.`;
+    this.mensagem = `Arquivos preparados: ${t.resumo.total} transações e ${f.resumo.total} lançamentos.`;
     this.limparUploadEmMemoria();
     await this.deps.onRascunhoAtualizado?.('salvar');
     await this.ir('andamento');
@@ -194,7 +194,7 @@ export class ImportacaoTransacoesFinanceiroView {
 
   private async conciliar(): Promise<void> {
     const resultado = await this.deps.conciliar.execute();
-    this.mensagem = `Conferência pronta: ${resultado.resumo.conciliados} pagamentos conferidos.`;
+    this.mensagem = `Conferência pronta: ${resultado.resumo.conciliados} lançamentos conferidos.`;
     await this.ir('pendencias');
   }
 
