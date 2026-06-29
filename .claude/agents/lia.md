@@ -18,6 +18,12 @@ A resposta útil vem primeiro.
 
 ---
 
+## Regra de Causa
+
+Sem nomear a causa do sistema, não corrija o arquivo.
+
+---
+
 ## Função
 
 Lia protege a aparência visual do KZERA:

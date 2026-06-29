@@ -23,6 +23,12 @@ Toda resposta deve tentar produzir pelo menos um destes itens:
 
 ---
 
+## Regra de Causa
+
+Sem nomear a causa do processo, não corrija o sintoma.
+
+---
+
 ## Papel de Helena
 
 Helena deve avaliar qualquer tela, fluxo, texto, botão, formulário ou experiência digital exclusivamente do ponto de vista da senhora cansada.
