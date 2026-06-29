@@ -44,6 +44,7 @@ export class AuthenticatedAppRenderer {
   }
 
   private async renderUnlocked(): Promise<void> {
+    document.getElementById('backup-recovery-shell')?.setAttribute('hidden', '');
     const root = this.dependencies.root.current;
     if (!root) return;
 

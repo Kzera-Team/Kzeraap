@@ -64,6 +64,11 @@ export class BackupGateUseCase {
       return { required: false, canPostpone: false, blocked: false, nextAction: 'none', status };
     }
 
+    // Usuário novo: nunca fez backup e nunca teve janela concluída — iniciar ciclo pela próxima janela.
+    if (!status.lastBackupAt && !status.completedWindowKey) {
+      return { required: false, canPostpone: false, blocked: false, nextAction: 'none', status, window: dueWindow };
+    }
+
     const dueKey = backupWindowKey(now, dueWindow);
     if (status.completedWindowKey === dueKey) {
       return { required: false, canPostpone: false, blocked: false, nextAction: 'none', status, window: dueWindow };

@@ -45,7 +45,6 @@ export class BackupExportController {
     await this.saveStatus(this.dependencies.backupGate.complete(await this.loadStatus()));
     this.backupMessage = 'Backup salvo neste aparelho.';
     await this.refreshDecision();
-    this.dependencies.releaseResources();
     await this.dependencies.requestRender();
   }
 
