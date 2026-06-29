@@ -46,6 +46,18 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
   flex-direction: column;
   gap: 10px;
 }
+.phone-bottom {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 6px;
+}
+.home-indicator {
+  width: 108px; height: 4px;
+  background: rgba(255,255,255,.28);
+  border-radius: 9999px;
+}
 .screen-label {
   font-size: 9px; font-weight: 900; text-transform: uppercase;
   letter-spacing: .1em; color: #9B8FC8; text-align: center;
@@ -162,6 +174,7 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
         <span class="kz-btn__text">Excluir pedido</span>
       </button>
     </div>
+    <div class="phone-bottom"><div class="home-indicator"></div></div>
   </div>
 </div>
 
@@ -198,6 +211,7 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
       </button>
       <div class="screen-label">Disabled — secundário</div>
     </div>
+    <div class="phone-bottom"><div class="home-indicator"></div></div>
   </div>
 </div>
 
@@ -238,6 +252,7 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
       </div>
       <div class="screen-label">secundário + primário — gap 12px, flex: 1 cada</div>
     </div>
+    <div class="phone-bottom"><div class="home-indicator"></div></div>
   </div>
 </div>
 
