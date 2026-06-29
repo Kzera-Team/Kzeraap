@@ -24,15 +24,16 @@ Fluxo correto:
 3. Todo commit vai para esse branch
 4. Merge em `desenvolvimento` somente via PR, nunca direto
 
-## Referências visuais do app real
+## Referências visuais — sistema externo
 
-Prints do app em produção estão em:
+Prints de outro sistema (não é o KZERA) estão em:
 
 `docs/aprovados-lider/design-system/referencias/app/`
 
 18 prints numerados (01 a 18): home, pedidos, clientes, financeiro, filtros, drawer, modais, personalização de atalhos.
 
-Use como referência de padrão visual existente — não como cópia.
+O líder trouxe como referência estética — o que achou bonito nesse sistema.
+Use como inspiração visual, não como padrão do KZERA e não como cópia.
 Ignorar conteúdo de anúncio/upsell presente em alguns prints (01, 02, 12, 17).
 
 ---

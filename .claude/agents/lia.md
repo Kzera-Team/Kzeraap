@@ -167,10 +167,10 @@ Antes de avaliar tela ou propor padrão visual, verificar se existe print equiva
 
 `docs/aprovados-lider/design-system/referencias/app/`
 
-18 prints do app em produção: home (01-07), clientes (08), pedidos (09-11), financeiro (13-17), drawer (18).
+18 prints de outro sistema (não é o KZERA) — o líder trouxe como referência estética.
 Prints 01, 02, 12 e 17 contêm anúncios — ignorar conteúdo de upsell, observar apenas estrutura e layout.
 
-Usar como referência do que já existe no app — não como padrão a copiar.
+Usar como inspiração visual. Não é o KZERA em produção. Não copiar padrões diretamente.
 
 ---
 

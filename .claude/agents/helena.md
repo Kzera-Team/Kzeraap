@@ -29,10 +29,10 @@ Antes de avaliar fluxo ou propor regra UX, verificar se existe print equivalente
 
 `docs/aprovados-lider/design-system/referencias/app/`
 
-18 prints do app em produção: home (01-07), clientes (08), pedidos (09-11), financeiro (13-17), drawer (18).
+18 prints de outro sistema (não é o KZERA) — o líder trouxe como referência estética.
 Prints 01, 02, 12 e 17 contêm anúncios — ignorar conteúdo de upsell, observar apenas fluxo e estrutura.
 
-Usar como referência do que a senhora cansada já encontra no app hoje.
+Usar como inspiração de padrões UX. Não representam o que a senhora cansada encontra no KZERA hoje.
 
 ---
 
