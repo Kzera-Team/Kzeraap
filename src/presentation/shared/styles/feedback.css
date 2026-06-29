@@ -2,33 +2,34 @@
 .feedback-message,
 .loading-state,
 .empty-state {
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: var(--radius-3);
+  padding: var(--space-2) var(--space-3);
 }
 
 .toast-success,
 .feedback-success,
 .status-ok {
-  background: #DCFCE7;
-  color: #166534;
+  background: var(--kz-status-success-bg);
+  color: var(--kz-status-success-text);
 }
 
 .toast-error,
 .feedback-error,
 .status-error {
-  background: #FECACA;
-  color: #991B1B;
+  background: var(--kz-status-danger-bg);
+  color: var(--kz-status-danger-text);
 }
 
 .toast-info,
 .feedback-info,
 .loading-state {
-  background: #DBEAFE;
-  color: #1E40AF;
+  background: var(--kz-status-info-bg);
+  color: var(--kz-status-info-text);
 }
 
 .empty-state {
   display: block;
-  border: 1px dashed #CBD5E1;
-  color: #64748B;
+  border: 1px dashed var(--kz-light-border);
+  color: var(--kz-light-muted);
+  background: transparent;
 }

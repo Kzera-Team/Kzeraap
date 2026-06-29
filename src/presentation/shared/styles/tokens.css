@@ -1,0 +1,83 @@
+/* KZERA · Tokens — fonte única da verdade
+   Importar antes de qualquer outro CSS do sistema.
+   Nunca declarar --kz-light-*, --vv-*, --space-*, --radius-*,
+   --shadow-* ou --t-* fora deste arquivo. */
+
+:root {
+  /* ── Tema Light Purple (padrão — todos os módulos) ─────────────── */
+  --kz-light-bg:          #F4F0FC;
+  --kz-light-surface:     #FFFFFF;
+  --kz-light-text:        #120B35;
+  --kz-light-muted:       #6B5FA0; /* AA 4.6:1 — proibido abaixo de 14px */
+  --kz-light-accent:      #7B4DFF; /* decorativo — proibido como cor de texto */
+  --kz-light-accent-deep: #5B2ECC; /* AA 6.4:1 — links inline */
+  --kz-light-border:      #DDD4F3;
+
+  /* ── Status semânticos (ambos os temas) ─────────────────────────── */
+  --kz-status-success-bg:   #DCFCE7;
+  --kz-status-success-text: #166534; /* AA 4.7:1 ✓ */
+  --kz-status-danger-bg:    #FECACA;
+  --kz-status-danger-text:  #991B1B; /* AA 4.5:1 ✓ */
+  --kz-status-warning-bg:   #FEF3C7;
+  --kz-status-warning-text: #92400E; /* AA 4.6:1 ✓ */
+  --kz-status-info-bg:      #DBEAFE;
+  --kz-status-info-text:    #1E40AF; /* AA 4.6:1 ✓ */
+  --kz-status-neutral-bg:   #E5E7EB;
+  --kz-status-neutral-text: #374151; /* AA 7.4:1 ✓ */
+
+  /* ── Espaçamento — grade de 4px ─────────────────────────────────── */
+  /* --space-7, --space-9 e --space-11 não existem — grade intencional */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;  /* base — padding lateral de toda tela */
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;  /* altura de botão e input padrão */
+
+  /* ── Border radius — 7 valores, sem exceções ─────────────────────── */
+  --radius-1:    4px;      /* badge de texto, tag inline, label */
+  --radius-2:    8px;      /* input, checkbox, dropdown, tooltip */
+  --radius-3:    12px;     /* item de lista, card de transação */
+  --radius-4:    16px;     /* card de seção, card de métrica ★ */
+  --radius-5:    20px;     /* card de opção em sheet, atalho */
+  --radius-6:    28px;     /* modal, topo de bottom sheet */
+  --radius-full: 9999px;   /* botões, FAB, avatar, badge numérico */
+
+  /* ── Sombras ─────────────────────────────────────────────────────── */
+  --shadow-0:      none;
+  --shadow-1:      0 1px 4px rgba(18,11,53,.07);
+  --shadow-2:      0 4px 12px rgba(18,11,53,.10);
+  --shadow-3:      0 8px 32px rgba(18,11,53,.16);
+  --shadow-accent: 0 4px 16px rgba(123,77,255,.30); /* botão primário, FAB */
+  --shadow-danger: 0 4px 16px rgba(220,38,38,.22);  /* botão danger */
+
+  /* ── Tipografia — escala rem ──────────────────────────────────────── */
+  --t-xs:   0.75rem;   /* 12px — rótulo decorativo apenas */
+  --t-sm:   0.8125rem; /* 13px — rótulo decorativo apenas */
+  --t-base: 0.875rem;  /* 14px — texto funcional mínimo */
+  --t-md:   1rem;      /* 16px — input (previne zoom iOS) */
+  --t-lg:   1.125rem;  /* 18px */
+  --t-xl:   1.25rem;   /* 20px */
+  --t-2xl:  1.5rem;    /* 24px */
+  --t-3xl:  1.75rem;   /* 28px */
+}
+
+/* ── Tema Dark — aplicar .theme-dark na raiz ou via prefers-color-scheme ── */
+.theme-dark {
+  --vv-bg:       #06060a;
+  --vv-surface:  rgba(17,24,39,.78);
+  --vv-text:     #F8FAFC;
+  --vv-muted:    #A9B0C2;
+  --vv-purple:   #7B4DFF;
+  --vv-purple-2: #3A1078;
+  --vv-line:     rgba(148,163,184,.18);
+
+  /* Sombras reduzidas no dark */
+  --shadow-1:      0 1px 4px rgba(18,11,53,.035);
+  --shadow-2:      0 4px 12px rgba(18,11,53,.05);
+  --shadow-3:      0 8px 32px rgba(18,11,53,.08);
+  --shadow-accent: 0 4px 16px rgba(123,77,255,.15);
+}
