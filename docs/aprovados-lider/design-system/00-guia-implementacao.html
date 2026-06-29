@@ -315,6 +315,108 @@ src/presentation/shared/styles/
 </div>
 
 <!-- ══════════════════════════
+     FLUXO OBRIGATÓRIO
+══════════════════════════ -->
+<div class="sec">Fluxo obrigatório — doc → tokens.css → src/</div>
+
+<div class="note">
+  <strong>Regra de Causa:</strong> Sem nomear a causa do sistema e a causa do processo, não se começa nenhuma correção ou criação. O fluxo abaixo é a porta de entrada obrigatória.
+</div>
+
+<div class="cb"><pre><code>PROBLEMA IDENTIFICADO / NOVO COMPONENTE NECESSÁRIO
+         ↓
+<span class="cv">1. NOMEAR A CAUSA</span>
+   O que no sistema permitiu que este problema existisse?
+   O que no processo permitiu que este componente não existisse?
+   (Se não conseguir nomear → investigar antes de continuar)
+         ↓
+<span class="cv">2. VERIFICAR DOC</span>
+   docs/aprovados-lider/design-system/componentes/XX-nome/doc.html
+   (Se não existe → criar o doc primeiro)
+         ↓
+<span class="cv">3. VERIFICAR TOKENS</span>
+   src/presentation/shared/styles/tokens.css
+   (Se o token necessário não existe → adicionar em tokens.css primeiro)
+         ↓
+<span class="cv">4. IMPLEMENTAR EM SRC/</span>
+   src/presentation/shared/styles/[arquivo].css
+   ou src/presentation/[módulo]/styles/[componente].css
+         ↓
+<span class="cv">5. ATUALIZAR INDEX.CSS</span>
+   Se o arquivo CSS for compartilhado → importar em index.css
+         ↓
+<span class="cv">6. CONFERIR CHECKLIST</span> (seção abaixo)</code></pre></div>
+
+<!-- ══════════════════════════
+     CHECKLIST POR COMPONENTE
+══════════════════════════ -->
+<div class="sec">Checklist obrigatório — antes de criar ou corrigir qualquer componente</div>
+
+<div class="note">
+  <strong>Regra de Causa (Helena):</strong> Sem nomear a causa do processo, não corrija o sintoma. Sem responder cada item abaixo, não se começa.
+</div>
+
+<div class="rules">
+
+  <div class="rule-row">
+    <div class="rule-n">1</div>
+    <div class="rule-body">
+      <div class="rule-title">A causa sistêmica foi nomeada?</div>
+      <div class="rule-desc">Escrever em uma frase: o que no sistema ou processo permitiu que este problema existisse. Se não conseguir nomear, investigar antes de avançar.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">2</div>
+    <div class="rule-body">
+      <div class="rule-title">O doc do componente existe?</div>
+      <div class="rule-desc"><code>docs/aprovados-lider/design-system/componentes/XX-nome/doc.html</code> — se não existe, criar o doc primeiro. A implementação segue o doc, nunca o contrário.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">3</div>
+    <div class="rule-body">
+      <div class="rule-title">Os tokens que o componente usa estão em tokens.css?</div>
+      <div class="rule-desc">Listar cada <code>--variável</code> que o CSS vai referenciar. Se alguma não existe → adicionar em <code>tokens.css</code> primeiro, com nomenclatura correta.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">4</div>
+    <div class="rule-body">
+      <div class="rule-title">O toque mínimo foi verificado?</div>
+      <div class="rule-desc">Padrão KZERA: 48px. Ações críticas: 56px. Apple HIG mínimo: 44px. Nenhum elemento interativo abaixo disso.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">5</div>
+    <div class="rule-body">
+      <div class="rule-title">A senhora cansada passa sem confusão?</div>
+      <div class="rule-desc">Ação principal é única e visível? Ela consegue desfazer erro? O estado vazio está claro? Ela não precisa pensar para agir?</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">6</div>
+    <div class="rule-body">
+      <div class="rule-title">O CSS usa apenas var(), zero valores hardcoded?</div>
+      <div class="rule-desc">Nenhum <code>#</code> de cor, nenhum <code>px</code> isolado que não venha de token. Se existir um sequer → corrigir antes de considerar pronto.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">7</div>
+    <div class="rule-body">
+      <div class="rule-title">O doc inclui "Como chega ao src/"?</div>
+      <div class="rule-desc">Seção com caminho exato do arquivo em <code>src/</code>, o que importar em <code>index.css</code>, e quais classes usar no HTML. Sem isso, o doc não é implementável.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════
      REGRA DE OURO
 ══════════════════════════ -->
 <div class="sec">Regras de ouro — nunca violar</div>
