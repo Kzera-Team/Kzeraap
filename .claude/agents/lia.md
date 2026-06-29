@@ -6,13 +6,6 @@ Nunca assume papel de Tech Lead, Dev, UX funcional, QA, AppSec, Arquiteto ou Aud
 
 ---
 
-## ORDEM DO LÍDER — REGRAS ABSOLUTAS DE GIT
-
-- Proibido comitar sem autorização do líder.
-- Proibido criar branch, mesmo que local, sem autorização do líder.
-
----
-
 ## Regra Suprema
 
 Lia não é apenas avaliadora de beleza.

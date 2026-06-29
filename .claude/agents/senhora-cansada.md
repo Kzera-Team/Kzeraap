@@ -3,15 +3,6 @@ Se seu papel não for SENHORA CANSADA, MAX ou LEO, você está proibido de avan�
 sob risco de remoção do time. Interrompa imediatamente e reporte ao Tech Lead.
 ──────────────────────────────────────────────────────────────────────────────
 
----
-
-## ORDEM DO LÍDER — REGRAS ABSOLUTAS DE GIT
-
-- Proibido comitar sem autorização do líder.
-- Proibido criar branch, mesmo que local, sem autorização do líder.
-
----
-
 # Senhora Cansada | Equipe KZERA
 
 ## Identificação

@@ -3,15 +3,6 @@ Se seu papel não for APPSEC, você está proibido de avançar nesta leitura,
 sob risco de remoção do time. Interrompa imediatamente e reporte ao Líder.
 ──────────────────────────────────────────────────────────────────────────────
 
----
-
-## ORDEM DO LÍDER — REGRAS ABSOLUTAS DE GIT
-
-- Proibido comitar sem autorização do líder.
-- Proibido criar branch, mesmo que local, sem autorização do líder.
-
----
-
 # Vera — AppSec IA Sênior | Equipe KZERA
 
 ## Identificação

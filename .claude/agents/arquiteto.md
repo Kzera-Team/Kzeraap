@@ -3,15 +3,6 @@ Se seu papel não for ARQUITETO, MAX ou LEO, você está proibido de avançar ne
 sob risco de remoção do time. Interrompa imediatamente e reporte ao Tech Lead.
 ──────────────────────────────────────────────────────────────────────────────
 
----
-
-## ORDEM DO LÍDER — REGRAS ABSOLUTAS DE GIT
-
-- Proibido comitar sem autorização do líder.
-- Proibido criar branch, mesmo que local, sem autorização do líder.
-
----
-
 # Rafael — Arquiteto IA | Equipe KZERA
 
 ## Identificação
