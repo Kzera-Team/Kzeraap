@@ -1,0 +1,175 @@
+<meta charset="UTF-8">
+<title>KZERA · 02 — Tipografia</title>
+<meta name="description" content="Decisão aprovada: escala tipográfica do KZERA — fonte, pesos e tokens.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F4F0FC; color: #120B35;
+  padding: 28px 16px 64px; max-width: 640px; margin: 0 auto;
+}
+h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6px; }
+.intro { font-size: 13px; color: #6B5FA0; font-weight: 700; line-height: 1.55; margin-bottom: 36px; }
+.sec { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; color: #7B4DFF; margin-bottom: 10px; margin-top: 32px; }
+
+.rule-box {
+  background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px;
+  padding: 16px 18px; margin-bottom: 10px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.rule-label { font-size: 12px; font-weight: 900; color: #120B35; }
+.rule-value { font-family: ui-monospace, monospace; font-size: 12px; font-weight: 900; color: #7B4DFF; text-align: right; }
+.rule-sub { font-size: 11px; font-weight: 700; color: #6B5FA0; margin-top: 2px; }
+
+.scale-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.scale-header { background: #EDE8F8; padding: 10px 16px; font-size: 10px; font-weight: 900; color: #5B2ECC; text-transform: uppercase; letter-spacing: .07em; display: grid; grid-template-columns: 90px 48px 56px 1fr; gap: 8px; }
+.scale-row { display: grid; grid-template-columns: 90px 48px 56px 1fr; align-items: center; padding: 10px 16px; border-bottom: 1px solid #F0EBF9; gap: 8px; }
+.scale-row:last-child { border-bottom: none; }
+.scale-row.base { background: #F7F3FF; }
+.scale-token { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; }
+.scale-px { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 800; color: #6B5FA0; }
+.scale-rem { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 800; color: #9B8FC8; }
+.scale-demo { color: #120B35; line-height: 1; }
+
+.weight-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.weight-row { display: grid; grid-template-columns: 56px 1fr auto; align-items: center; padding: 11px 16px; border-bottom: 1px solid #F0EBF9; gap: 12px; }
+.weight-row:last-child { border-bottom: none; }
+.weight-num { font-family: ui-monospace, monospace; font-size: 13px; font-weight: 900; color: #6B5FA0; }
+.weight-sample { font-size: 15px; color: #120B35; }
+.weight-badge { font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 5px; white-space: nowrap; text-transform: uppercase; }
+.badge-ok   { background: #DCFCE7; color: #15803D; }
+.badge-warn { background: #FEE2E2; color: #B91C1C; }
+
+.rule-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; }
+.rule-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #F0EBF9; }
+.rule-row:last-child { border-bottom: none; }
+.rule-icon { width: 20px; height: 20px; border-radius: 6px; background: #7B4DFF; color: #fff; font-size: 10px; font-weight: 900; display: grid; place-items: center; flex-shrink: 0; margin-top: 1px; }
+.rule-text { font-size: 12px; font-weight: 800; color: #120B35; line-height: 1.45; }
+.rule-text span { font-family: ui-monospace, monospace; font-size: 11px; background: #EDE8F8; padding: 1px 5px; border-radius: 4px; color: #5B2ECC; }
+</style>
+
+<h1>02 — Tipografia</h1>
+<p class="intro">Fonte do sistema, pesos permitidos e escala de tamanhos com tokens. Valores em px são a fonte de verdade — web converte para rem, nativo usa px diretamente.</p>
+
+<div class="sec">Fonte e unidades</div>
+<div class="rule-box">
+  <div><div class="rule-label">Família</div><div class="rule-sub">San Francisco no iOS (sistema)</div></div>
+  <div class="rule-value">-apple-system</div>
+</div>
+<div class="rule-box">
+  <div><div class="rule-label">Unidade — web</div><div class="rule-sub">Escala com acessibilidade iOS</div></div>
+  <div class="rule-value">rem</div>
+</div>
+<div class="rule-box">
+  <div><div class="rule-label">Unidade — nativo (futuro)</div><div class="rule-sub">Fonte de verdade de todos os tokens</div></div>
+  <div class="rule-value">px</div>
+</div>
+<div class="rule-box">
+  <div><div class="rule-label">Input mínimo</div><div class="rule-sub">Previne zoom automático no iOS</div></div>
+  <div class="rule-value">1rem (16px)</div>
+</div>
+
+<div class="sec">Pesos permitidos</div>
+<div class="weight-table">
+  <div class="weight-row">
+    <span class="weight-num">700</span>
+    <span class="weight-sample" style="font-weight:700">Texto do sistema</span>
+    <span class="weight-badge badge-ok">Permitido</span>
+  </div>
+  <div class="weight-row">
+    <span class="weight-num">800</span>
+    <span class="weight-sample" style="font-weight:800">Texto do sistema</span>
+    <span class="weight-badge badge-ok">Permitido</span>
+  </div>
+  <div class="weight-row">
+    <span class="weight-num">900</span>
+    <span class="weight-sample" style="font-weight:900">Texto do sistema</span>
+    <span class="weight-badge badge-ok">Permitido</span>
+  </div>
+  <div class="weight-row" style="opacity:.45">
+    <span class="weight-num">750</span>
+    <span class="weight-sample" style="font-weight:700">Texto do sistema</span>
+    <span class="weight-badge badge-warn">Proibido</span>
+  </div>
+  <div class="weight-row" style="opacity:.45">
+    <span class="weight-num">850</span>
+    <span class="weight-sample" style="font-weight:800">Texto do sistema</span>
+    <span class="weight-badge badge-warn">Proibido</span>
+  </div>
+  <div class="weight-row" style="opacity:.45">
+    <span class="weight-num">950</span>
+    <span class="weight-sample" style="font-weight:900">Texto do sistema</span>
+    <span class="weight-badge badge-warn">Proibido</span>
+  </div>
+</div>
+<p style="font-size:11px;color:#6B5FA0;font-weight:700;line-height:1.5;margin-bottom:4px;">Pesos fracionados (750, 850, 950) exigem Inter variable font. Como o app não carrega Inter, eles arredondam silenciosamente — proibidos até Inter ser implementado.</p>
+
+<div class="sec">Escala de tamanhos — tokens</div>
+<div class="scale-table">
+  <div class="scale-header">
+    <span>Token</span><span>px</span><span>rem</span><span>Uso</span>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--t-xs</span>
+    <span class="scale-px">10px</span>
+    <span class="scale-rem">0.625rem</span>
+    <span class="scale-demo" style="font-size:10px;font-weight:700;">EYEBROW · NAV</span>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--t-sm</span>
+    <span class="scale-px">12px</span>
+    <span class="scale-rem">0.75rem</span>
+    <span class="scale-demo" style="font-size:12px;font-weight:700;">Badge · meta · hint</span>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--t-base</span>
+    <span class="scale-px">14px</span>
+    <span class="scale-rem">0.875rem</span>
+    <span class="scale-demo" style="font-size:14px;font-weight:700;">Corpo · tabs · botão</span>
+  </div>
+  <div class="scale-row base">
+    <span class="scale-token" style="color:#5B2ECC;">--t-md</span>
+    <span class="scale-px" style="color:#5B2ECC;">16px</span>
+    <span class="scale-rem" style="color:#7B4DFF;">1rem ★</span>
+    <span class="scale-demo" style="font-size:16px;font-weight:700;">Inputs · nome em card</span>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--t-lg</span>
+    <span class="scale-px">18px</span>
+    <span class="scale-rem">1.125rem</span>
+    <span class="scale-demo" style="font-size:18px;font-weight:800;">Subtítulo de seção</span>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--t-xl</span>
+    <span class="scale-px">22px</span>
+    <span class="scale-rem">1.375rem</span>
+    <span class="scale-demo" style="font-size:22px;font-weight:900;">Título de módulo</span>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--t-2xl</span>
+    <span class="scale-px">28px</span>
+    <span class="scale-rem">1.75rem</span>
+    <span class="scale-demo" style="font-size:28px;font-weight:900;">Header de tela</span>
+  </div>
+</div>
+<p style="font-size:11px;color:#6B5FA0;font-weight:700;line-height:1.5;margin-bottom:4px;">★ --t-md (1rem / 16px) é o mínimo absoluto para inputs — abaixo disso o iOS dá zoom automático na tela.</p>
+
+<div class="sec">Regras de uso</div>
+<div class="rule-table">
+  <div class="rule-row">
+    <div class="rule-icon">1</div>
+    <div class="rule-text">Inputs e campos de formulário: mínimo <span>--t-md (1rem)</span>. Nunca abaixo.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">2</div>
+    <div class="rule-text">Tamanhos 15px, 20px e 25px foram eliminados. Substituir por <span>14px</span>, <span>18px</span> ou <span>22px</span>.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">3</div>
+    <div class="rule-text">Web: escrever sempre em <span>rem</span>. Nativo: usar os valores em <span>px</span> diretamente.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">4</div>
+    <div class="rule-text">Pesos fora de 700/800/900 são proibidos até Inter variable font ser carregado.</div>
+  </div>
+</div>

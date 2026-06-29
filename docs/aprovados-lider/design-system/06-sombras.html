@@ -1,0 +1,168 @@
+<meta charset="UTF-8">
+<title>KZERA · 06 — Sombras</title>
+<meta name="description" content="Proposta: escala de sombras do KZERA — 4 níveis de elevação e sombra de destaque para botão/FAB.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F4F0FC; color: #120B35;
+  padding: 28px 16px 64px; max-width: 640px; margin: 0 auto;
+}
+h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6px; }
+.intro { font-size: 13px; color: #6B5FA0; font-weight: 700; line-height: 1.55; margin-bottom: 36px; }
+.sec { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; color: #7B4DFF; margin-bottom: 10px; margin-top: 32px; }
+
+.scale-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.scale-header { background: #EDE8F8; padding: 10px 16px; font-size: 10px; font-weight: 900; color: #5B2ECC; text-transform: uppercase; letter-spacing: .07em; display: grid; grid-template-columns: 108px 1fr 80px; gap: 8px; align-items: center; }
+.scale-row { display: grid; grid-template-columns: 108px 1fr 80px; align-items: center; padding: 14px 16px; border-bottom: 1px solid #F0EBF9; gap: 8px; }
+.scale-row:last-child { border-bottom: none; }
+.scale-token { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; }
+.scale-value { font-family: ui-monospace, monospace; font-size: 10px; font-weight: 800; color: #9B8FC8; word-break: break-all; line-height: 1.5; }
+.scale-demo-wrap { display: flex; align-items: center; justify-content: center; }
+.demo-card {
+  width: 52px; height: 40px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.semantic-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.semantic-header { background: #EDE8F8; padding: 10px 16px; font-size: 10px; font-weight: 900; color: #5B2ECC; text-transform: uppercase; letter-spacing: .07em; display: grid; grid-template-columns: 108px 1fr; gap: 8px; }
+.semantic-row { display: grid; grid-template-columns: 108px 1fr; align-items: start; padding: 10px 16px; border-bottom: 1px solid #F0EBF9; gap: 8px; }
+.semantic-row:last-child { border-bottom: none; }
+.semantic-token { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; padding-top: 2px; }
+.semantic-uses { display: flex; flex-wrap: wrap; gap: 5px; }
+.semantic-chip { font-size: 10px; font-weight: 800; background: #F0EBF9; color: #5B2ECC; padding: 3px 8px; border-radius: 5px; }
+
+.rules-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.rule-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #F0EBF9; }
+.rule-row:last-child { border-bottom: none; }
+.rule-icon { width: 20px; height: 20px; border-radius: 6px; background: #7B4DFF; color: #fff; font-size: 10px; font-weight: 900; display: grid; place-items: center; flex-shrink: 0; margin-top: 1px; }
+.rule-text { font-size: 12px; font-weight: 800; color: #120B35; line-height: 1.45; }
+.rule-text span { font-family: ui-monospace, monospace; font-size: 11px; background: #EDE8F8; padding: 1px 5px; border-radius: 4px; color: #5B2ECC; }
+
+.note { margin-top: 20px; padding: 14px 16px; background: #EDE8F8; border-radius: 14px; font-size: 12px; font-weight: 700; color: #5B2ECC; line-height: 1.55; }
+.note strong { color: #120B35; }
+</style>
+
+<h1>06 — Sombras</h1>
+<p class="intro">4 níveis de elevação + 1 sombra de destaque. A cor base das sombras usa <code style="font-size:11px;background:#EDE8F8;padding:1px 5px;border-radius:4px;color:#5B2ECC;">#120B35</code> — o roxo-escuro do sistema — em vez de preto puro, mantendo coerência com a paleta.</p>
+
+<div class="sec">Escala de elevação</div>
+<div class="scale-table">
+  <div class="scale-header"><span>Token</span><span>Valor</span><span>Demo</span></div>
+
+  <div class="scale-row">
+    <span class="scale-token">--shadow-0</span>
+    <span class="scale-value">none</span>
+    <div class="scale-demo-wrap">
+      <div class="demo-card" style="box-shadow:none;border:1.5px solid #DDD4F3;"></div>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-token">--shadow-1</span>
+    <span class="scale-value">0 1px 4px rgba(18,11,53,.07)</span>
+    <div class="scale-demo-wrap">
+      <div class="demo-card" style="box-shadow:0 1px 4px rgba(18,11,53,.07);"></div>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-token">--shadow-2</span>
+    <span class="scale-value">0 4px 12px rgba(18,11,53,.10)</span>
+    <div class="scale-demo-wrap">
+      <div class="demo-card" style="box-shadow:0 4px 12px rgba(18,11,53,.10);"></div>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-token">--shadow-3</span>
+    <span class="scale-value">0 8px 32px rgba(18,11,53,.16)</span>
+    <div class="scale-demo-wrap">
+      <div class="demo-card" style="box-shadow:0 8px 32px rgba(18,11,53,.16);"></div>
+    </div>
+  </div>
+
+  <div class="scale-row" style="background:#F7F3FF;">
+    <span class="scale-token" style="color:#5B2ECC;">--shadow-accent</span>
+    <span class="scale-value" style="color:#7B4DFF;">0 4px 16px rgba(123,77,255,.30)</span>
+    <div class="scale-demo-wrap">
+      <div class="demo-card" style="box-shadow:0 4px 16px rgba(123,77,255,.30);background:#7B4DFF;border-radius:9999px;width:52px;height:28px;"></div>
+    </div>
+  </div>
+</div>
+<p style="font-size:11px;color:#6B5FA0;font-weight:700;line-height:1.5;margin-bottom:4px;">--shadow-accent é exclusivo para botão primário e FAB — glow roxo que reforça a identidade do acento.</p>
+
+<div class="sec">Mapeamento semântico — o que usar onde</div>
+<div class="semantic-table">
+  <div class="semantic-header"><span>Token</span><span>Componentes</span></div>
+
+  <div class="semantic-row">
+    <span class="semantic-token">--shadow-0</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Item de lista</span>
+      <span class="semantic-chip">Row de tabela</span>
+      <span class="semantic-chip">Fundo de tela</span>
+    </div>
+  </div>
+
+  <div class="semantic-row">
+    <span class="semantic-token">--shadow-1</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Card de pedido</span>
+      <span class="semantic-chip">Card de cliente</span>
+      <span class="semantic-chip">Card de transação</span>
+      <span class="semantic-chip">Input focado</span>
+    </div>
+  </div>
+
+  <div class="semantic-row">
+    <span class="semantic-token">--shadow-2</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Card de métrica</span>
+      <span class="semantic-chip">Card de seção destacado</span>
+      <span class="semantic-chip">Dropdown / overflow menu</span>
+    </div>
+  </div>
+
+  <div class="semantic-row">
+    <span class="semantic-token">--shadow-3</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Bottom sheet</span>
+      <span class="semantic-chip">Modal de confirmação</span>
+      <span class="semantic-chip">Drawer lateral</span>
+    </div>
+  </div>
+
+  <div class="semantic-row" style="background:#F7F3FF;">
+    <span class="semantic-token" style="color:#5B2ECC;">--shadow-accent</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip" style="background:#DDD4F3;color:#120B35;">Botão primário</span>
+      <span class="semantic-chip" style="background:#DDD4F3;color:#120B35;">FAB (+)</span>
+    </div>
+  </div>
+</div>
+
+<div class="sec">Regras de uso</div>
+<div class="rules-table">
+  <div class="rule-row">
+    <div class="rule-icon">1</div>
+    <div class="rule-text">Nenhum componente usa <code style="font-family:monospace;font-size:11px;background:#EDE8F8;padding:1px 4px;border-radius:3px;color:#5B2ECC;">box-shadow</code> com cor fixa. Sempre via token.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">2</div>
+    <div class="rule-text"><span>--shadow-accent</span> apenas em botão primário e FAB. Nunca em cards ou elementos passivos.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">3</div>
+    <div class="rule-text">No tema Dark (<span>--vv-*</span>): reduzir opacidade de todas as sombras em 50% — fundo escuro absorve mais a sombra.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">4</div>
+    <div class="rule-text">Cards dentro de bottom sheet usam <span>--shadow-0</span> — a sombra já está no sheet, não nos itens internos.</div>
+  </div>
+</div>
+
+<div class="note">
+  <strong>Por que #120B35 e não preto?</strong> Sombras com a cor base do sistema (<code style="background:#DDD4F3;padding:1px 5px;border-radius:4px;">#120B35</code>) têm um tom levemente roxo que integra com a paleta. Sombra preta pura em fundo purple-tinted cria um contraste artificial.
+</div>
