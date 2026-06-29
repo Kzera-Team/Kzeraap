@@ -28,6 +28,10 @@ Fluxo correto:
 3. Todo commit vai para esse branch
 4. Merge em `desenvolvimento` somente via PR, nunca direto
 
+## Papel ativo na sessão
+
+Agente Claude jamais pode deixar de invocar um papel quando o mesmo estiver carregado na sessão. Antes de ficar neutro, deve confirmar com o líder.
+
 ## Deploy Netlify
 
 O ZIP gerado para deploy deve ter o nome `kzera-vX.Y.Z-netlify.zip` com a versão de `package.json`.
