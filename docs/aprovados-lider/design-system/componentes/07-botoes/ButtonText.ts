@@ -44,10 +44,10 @@ export function buttonText({
   attrs = '',
 }: ButtonTextProps): string {
   const classes = [
-    'kzera-btn',
-    `kzera-btn--${variant}`,
-    auto ? 'kzera-btn--auto' : '',
-    loading ? 'kzera-btn--loading' : '',
+    'kz-btn',
+    `kz-btn--${variant}`,
+    auto ? 'kz-btn--auto' : '',
+    loading ? 'kz-btn--loading' : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -60,7 +60,7 @@ export function buttonText({
   return (
     `<button class="${classes}" type="button"${disabledAttr}${ariaBusy}${actionAttr}${extraAttrs}>` +
     (icon ? icon : '') +
-    `<span class="kzera-btn__text">${label}</span>` +
+    `<span class="kz-btn__text">${label}</span>` +
     `</button>`
   )
 }
@@ -108,13 +108,13 @@ export function buttonText({
 //   async function confirmarPedido() {
 //     const btn = document.querySelector<HTMLButtonElement>('[data-action="confirmar-pedido"]')
 //     if (!btn) return
-//     btn.classList.add('kzera-btn--loading')
+//     btn.classList.add('kz-btn--loading')
 //     btn.setAttribute('aria-busy', 'true')
 //     btn.disabled = true
 //     try {
 //       await api.confirmar()
 //     } finally {
-//       btn.classList.remove('kzera-btn--loading')
+//       btn.classList.remove('kz-btn--loading')
 //       btn.removeAttribute('aria-busy')
 //       btn.disabled = false
 //     }

@@ -183,6 +183,10 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; text-wrap: balan
     <div class="a">var(--space-3)<br><span style="font-size:10px;color:#6B5FA0;">12px</span></div>
   </div>
   <div class="tbl-row">
+    <div class="q">Min-height (compacto)</div>
+    <div class="a">44px<br><span style="font-size:10px;color:#6B5FA0;">mínimo de toque — 04-espacamento</span></div>
+  </div>
+  <div class="tbl-row">
     <div class="q">Gap interno</div>
     <div class="a">var(--space-2)<br><span style="font-size:10px;color:#6B5FA0;">8px entre seções</span></div>
   </div>
@@ -236,7 +240,7 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; text-wrap: balan
 <div class="sec">Como chega ao src/</div>
 
 <div class="note">
-  <strong>Regra:</strong> <code>card.css</code> já existe em <code>src/</code> e já está importado em <code>index.css</code>. Substituir o conteúdo atual pelo <code>componente.css</code> deste doc — o stub de 3 linhas não tem variantes.
+  <strong>Regra:</strong> <code>card.css</code> já está em <code>src/presentation/shared/styles/card.css</code>, completo e importado em <code>index.css</code>. Nenhuma ação necessária — componente pronto.
 </div>
 
 <div class="cb"><pre><code><span class="cc">/* PASSO 1 — substituir card.css existente */</span>
@@ -284,6 +288,14 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; text-wrap: balan
     <div class="rule-body">
       <div class="rule-title">Nunca empilhar dois cards interativos sem espaço entre eles</div>
       <div class="rule-desc">Gap mínimo entre cards em lista: <code>--space-2</code> (8px). Sem gap, a senhora cansada toca o card errado — especialmente em listas de pedidos ou produtos com dedo dolorido.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n warn">!</div>
+    <div class="rule-body">
+      <div class="rule-title">Gap entre cards é responsabilidade do container, não do card</div>
+      <div class="rule-desc"><code>.kz-card</code> não tem <code>margin</code> própria. Quem define o espaçamento entre cards é o container pai — use <code>display: flex; flex-direction: column; gap: var(--space-2)</code> ou <code>gap: var(--space-3)</code>. Nunca adicionar <code>margin-bottom</code> diretamente no <code>.kz-card</code>.</div>
     </div>
   </div>
 

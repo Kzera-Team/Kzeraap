@@ -67,6 +67,7 @@
   padding: var(--space-3);              /* 12px */
   gap: var(--space-1);                  /* 4px */
   border-radius: var(--radius-3);       /* 12px */
+  min-height: 44px;                     /* mínimo de toque — 04-espacamento */
 }
 
 /* ── Variante: Destrutivo / alerta ── */

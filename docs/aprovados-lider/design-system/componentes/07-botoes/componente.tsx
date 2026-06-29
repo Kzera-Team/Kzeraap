@@ -5,7 +5,7 @@ import { ButtonHTMLAttributes, ReactNode } from 'react'
 
 interface KzeraButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
-  /** 'sm' = 40px — usar em botões ícone dentro de sheets/headers */
+  /** 'sm' = 44px — usar em botões ícone dentro de sheets/headers */
   size?: 'default' | 'sm'
   loading?: boolean
   /** Largura fit-content em vez de 100% */
@@ -34,12 +34,12 @@ export function KzeraButton({
   }
 
   const classes = [
-    'kzera-btn',
-    `kzera-btn--${variant}`,
-    isIconOnly && 'kzera-btn--icon',
-    isIconOnly && size === 'sm' && 'kzera-btn--sm',
-    (auto || isIconOnly) && 'kzera-btn--auto',
-    loading && 'kzera-btn--loading',
+    'kz-btn',
+    `kz-btn--${variant}`,
+    isIconOnly && 'kz-btn--icon',
+    isIconOnly && size === 'sm' && 'kz-btn--sm',
+    (auto || isIconOnly) && 'kz-btn--auto',
+    loading && 'kz-btn--loading',
     className,
   ]
     .filter(Boolean)
@@ -54,7 +54,7 @@ export function KzeraButton({
       {...props}
     >
       {icon}
-      {label && <span className="kzera-btn__text">{label}</span>}
+      {label && <span className="kz-btn__text">{label}</span>}
     </button>
   )
 }
@@ -68,7 +68,7 @@ interface KzeraButtonGroupProps {
 
 export function KzeraButtonGroup({ children, className }: KzeraButtonGroupProps) {
   return (
-    <div className={['kzera-btn-group', className].filter(Boolean).join(' ')}>
+    <div className={['kz-btn-group', className].filter(Boolean).join(' ')}>
       {children}
     </div>
   )
@@ -97,7 +97,7 @@ export function KzeraButtonGroup({ children, className }: KzeraButtonGroupProps)
 // Botão ícone primário (48×48)
 // <KzeraButton icon={<PlusIcon />} aria-label="Adicionar" />
 //
-// Botão ícone ghost pequeno (40×40) — fechar sheet
+// Botão ícone ghost pequeno (44×44) — fechar sheet
 // <KzeraButton variant="ghost" size="sm" icon={<XIcon />} aria-label="Fechar" />
 //
 // Grupo
