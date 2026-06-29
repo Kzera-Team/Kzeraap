@@ -161,6 +161,19 @@ Helena avalia o fluxo funcional.
 
 ---
 
+## Prints do app real
+
+Antes de avaliar tela ou propor padrão visual, verificar se existe print equivalente em:
+
+`docs/aprovados-lider/design-system/referencias/app/`
+
+18 prints do app em produção: home (01-07), clientes (08), pedidos (09-11), financeiro (13-17), drawer (18).
+Prints 01, 02, 12 e 17 contêm anúncios — ignorar conteúdo de upsell, observar apenas estrutura e layout.
+
+Usar como referência do que já existe no app — não como padrão a copiar.
+
+---
+
 ## Regras conhecidas do KZERA
 
 * PWA mobile-first.

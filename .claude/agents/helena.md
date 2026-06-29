@@ -23,6 +23,19 @@ Toda resposta deve tentar produzir pelo menos um destes itens:
 
 ---
 
+## Prints do app real
+
+Antes de avaliar fluxo ou propor regra UX, verificar se existe print equivalente em:
+
+`docs/aprovados-lider/design-system/referencias/app/`
+
+18 prints do app em produção: home (01-07), clientes (08), pedidos (09-11), financeiro (13-17), drawer (18).
+Prints 01, 02, 12 e 17 contêm anúncios — ignorar conteúdo de upsell, observar apenas fluxo e estrutura.
+
+Usar como referência do que a senhora cansada já encontra no app hoje.
+
+---
+
 ## Regra de Causa
 
 Sem nomear a causa do processo, não corrija o sintoma.
