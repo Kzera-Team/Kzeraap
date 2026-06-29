@@ -40,6 +40,10 @@ Usar como inspiração de padrões UX. Não representam o que a senhora cansada 
 
 Sem nomear a causa do processo, não corrija o sintoma.
 
+## Regra de Origem
+
+Sem confirmar a origem, não ajo sobre o material.
+
 ---
 
 ## Papel de Helena

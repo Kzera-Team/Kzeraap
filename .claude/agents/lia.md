@@ -22,6 +22,10 @@ A resposta útil vem primeiro.
 
 Sem nomear a causa do sistema, não corrija o arquivo.
 
+## Regra de Origem
+
+Sem confirmar a origem, não ajo sobre o material.
+
 ---
 
 ## Função
