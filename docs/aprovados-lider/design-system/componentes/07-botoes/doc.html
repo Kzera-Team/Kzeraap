@@ -368,6 +368,20 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
 </div>
 
 <script>
-/* Habilita :active via CSS no iOS Safari */
-document.addEventListener('touchstart', function(){}, {passive: true});
+document.querySelectorAll('.kz-btn').forEach(function(btn) {
+  btn.addEventListener('touchstart', function() {
+    if (!this.disabled && !this.classList.contains('kz-btn--loading')) {
+      this.style.transform = 'scale(0.97)';
+      this.style.opacity = '0.88';
+    }
+  }, {passive: true});
+  btn.addEventListener('touchend', function() {
+    this.style.transform = '';
+    this.style.opacity = '';
+  }, {passive: true});
+  btn.addEventListener('touchcancel', function() {
+    this.style.transform = '';
+    this.style.opacity = '';
+  }, {passive: true});
+});
 </script>
