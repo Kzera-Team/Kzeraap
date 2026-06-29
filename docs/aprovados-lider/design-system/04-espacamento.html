@@ -1,0 +1,238 @@
+<meta charset="UTF-8">
+<title>KZERA · 04 — Espaçamento</title>
+<meta name="description" content="Decisão aprovada: escala de espaçamento do KZERA — grade de 4px, mapeamento semântico e safe area iOS.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F4F0FC; color: #120B35;
+  padding: 28px 16px 64px; max-width: 640px; margin: 0 auto;
+}
+h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6px; }
+.intro { font-size: 13px; color: #6B5FA0; font-weight: 700; line-height: 1.55; margin-bottom: 36px; }
+.sec { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; color: #7B4DFF; margin-bottom: 10px; margin-top: 32px; }
+
+.scale-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.scale-header { background: #EDE8F8; padding: 10px 16px; font-size: 10px; font-weight: 900; color: #5B2ECC; text-transform: uppercase; letter-spacing: .07em; display: grid; grid-template-columns: 96px 48px 1fr; gap: 8px; }
+.scale-row { display: grid; grid-template-columns: 96px 48px 1fr; align-items: center; padding: 10px 16px; border-bottom: 1px solid #F0EBF9; gap: 8px; }
+.scale-row:last-child { border-bottom: none; }
+.scale-row.base { background: #F7F3FF; }
+.scale-token { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; }
+.scale-px { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 800; color: #6B5FA0; }
+.scale-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.scale-bar { height: 8px; border-radius: 4px; background: #7B4DFF; opacity: .65; flex-shrink: 0; }
+
+.semantic-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.semantic-header { background: #EDE8F8; padding: 10px 16px; font-size: 10px; font-weight: 900; color: #5B2ECC; text-transform: uppercase; letter-spacing: .07em; display: grid; grid-template-columns: 96px 1fr; gap: 8px; }
+.semantic-row { display: grid; grid-template-columns: 96px 1fr; align-items: start; padding: 10px 16px; border-bottom: 1px solid #F0EBF9; gap: 8px; }
+.semantic-row:last-child { border-bottom: none; }
+.semantic-token { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; padding-top: 1px; }
+.semantic-uses { display: flex; flex-wrap: wrap; gap: 5px; }
+.semantic-chip { font-size: 10px; font-weight: 800; background: #F0EBF9; color: #5B2ECC; padding: 3px 8px; border-radius: 5px; }
+
+.touch-table { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.touch-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid #F0EBF9; }
+.touch-row:last-child { border-bottom: none; }
+.touch-rect { border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 9px; font-weight: 900; }
+.touch-info { flex: 1; }
+.touch-name { font-size: 13px; font-weight: 900; color: #120B35; }
+.touch-desc { font-size: 11px; font-weight: 700; color: #6B5FA0; margin-top: 2px; line-height: 1.4; }
+.touch-tag { font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 5px; white-space: nowrap; text-transform: uppercase; }
+.tag-rule { background: #EDE8F8; color: #5B2ECC; }
+.tag-std  { background: #DCFCE7; color: #15803D; }
+.tag-crit { background: #FEF3C7; color: #92400E; }
+
+.safe-box { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px; }
+.safe-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.safe-label { font-size: 12px; font-weight: 900; color: #120B35; }
+.safe-sub { font-size: 11px; font-weight: 700; color: #6B5FA0; margin-top: 2px; }
+.safe-code { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; text-align: right; }
+
+.note { margin-top: 20px; padding: 14px 16px; background: #EDE8F8; border-radius: 14px; font-size: 12px; font-weight: 700; color: #5B2ECC; line-height: 1.55; }
+.note strong { color: #120B35; }
+</style>
+
+<h1>04 — Espaçamento</h1>
+<p class="intro">Grade de 4px com 9 passos. Todo espaçamento do sistema — desde a borda da tela até o gap entre ícone e texto dentro de um botão — usa essa escala. Mais a regra de toque mínimo (44px) e safe area do iPhone.</p>
+
+<div class="sec">Escala — grade de 4px</div>
+<div class="scale-table">
+  <div class="scale-header"><span>Token</span><span>Valor</span><span>Barra visual</span></div>
+  <div class="scale-row">
+    <span class="scale-token">--space-1</span>
+    <span class="scale-px">4px</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:4px;"></div></div>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--space-2</span>
+    <span class="scale-px">8px</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:8px;"></div></div>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--space-3</span>
+    <span class="scale-px">12px</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:12px;"></div></div>
+  </div>
+  <div class="scale-row base">
+    <span class="scale-token" style="color:#5B2ECC;">--space-4</span>
+    <span class="scale-px" style="color:#5B2ECC;">16px ★</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:16px;opacity:1;background:#5B2ECC;"></div></div>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--space-5</span>
+    <span class="scale-px">20px</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:20px;"></div></div>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--space-6</span>
+    <span class="scale-px">24px</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:24px;"></div></div>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--space-8</span>
+    <span class="scale-px">32px</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:32px;"></div></div>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--space-10</span>
+    <span class="scale-px">40px</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:40px;"></div></div>
+  </div>
+  <div class="scale-row">
+    <span class="scale-token">--space-12</span>
+    <span class="scale-px">48px</span>
+    <div class="scale-bar-wrap"><div class="scale-bar" style="width:48px;"></div></div>
+  </div>
+</div>
+<p style="font-size:11px;color:#6B5FA0;font-weight:700;line-height:1.5;margin-bottom:4px;">★ --space-4 (16px) é a unidade base — padding lateral de toda tela e padding interno de card.</p>
+
+<div class="sec">Mapeamento semântico — o que usar onde</div>
+<div class="semantic-table">
+  <div class="semantic-header"><span>Token</span><span>Onde usar</span></div>
+  <div class="semantic-row">
+    <span class="semantic-token">--space-1 · 4px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Gap ícone↔ícone</span>
+      <span class="semantic-chip">Dot de status</span>
+      <span class="semantic-chip">Espaço entre badge e borda</span>
+    </div>
+  </div>
+  <div class="semantic-row">
+    <span class="semantic-token">--space-2 · 8px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Ícone ↔ texto em botão</span>
+      <span class="semantic-chip">Gap interno de badge</span>
+      <span class="semantic-chip">Gap entre chips</span>
+      <span class="semantic-chip">Espaço lupa ↔ borda input</span>
+    </div>
+  </div>
+  <div class="semantic-row">
+    <span class="semantic-token">--space-3 · 12px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Padding vertical de item de lista</span>
+      <span class="semantic-chip">Gap entre itens de lista</span>
+      <span class="semantic-chip">Padding interno de tab</span>
+    </div>
+  </div>
+  <div class="semantic-row" style="background:#F7F3FF;">
+    <span class="semantic-token" style="color:#5B2ECC;">--space-4 · 16px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip" style="background:#DDD4F3;color:#120B35;">Padding lateral de TODA tela</span>
+      <span class="semantic-chip" style="background:#DDD4F3;color:#120B35;">Padding interno de card</span>
+      <span class="semantic-chip">Padding horizontal de botão</span>
+    </div>
+  </div>
+  <div class="semantic-row">
+    <span class="semantic-token">--space-5 · 20px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Gap entre cards de uma seção</span>
+      <span class="semantic-chip">Padding vertical de modal</span>
+    </div>
+  </div>
+  <div class="semantic-row">
+    <span class="semantic-token">--space-6 · 24px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Gap entre seções de tela</span>
+      <span class="semantic-chip">Padding top de header</span>
+    </div>
+  </div>
+  <div class="semantic-row">
+    <span class="semantic-token">--space-8 · 32px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Separação entre blocos maiores</span>
+      <span class="semantic-chip">Margem top de tela</span>
+    </div>
+  </div>
+  <div class="semantic-row">
+    <span class="semantic-token">--space-10 · 40px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Espaço antes de ação flutuante</span>
+      <span class="semantic-chip">Padding bottom de scroll</span>
+    </div>
+  </div>
+  <div class="semantic-row">
+    <span class="semantic-token">--space-12 · 48px</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Altura de botão padrão</span>
+      <span class="semantic-chip">Altura de input</span>
+      <span class="semantic-chip">Altura de item de nav</span>
+    </div>
+  </div>
+</div>
+
+<div class="sec">Toque mínimo — regra iOS</div>
+<div class="touch-table">
+  <div class="touch-row">
+    <div class="touch-rect" style="width:44px;height:44px;border:2px dashed #DC2626;color:#DC2626;">44</div>
+    <div class="touch-info">
+      <div class="touch-name">Mínimo absoluto — 44px</div>
+      <div class="touch-desc">Apple HIG. Qualquer elemento tocável deve ter área ≥ 44×44px. Abaixo disso a senhora cansada erra.</div>
+    </div>
+    <span class="touch-tag tag-rule">Regra iOS</span>
+  </div>
+  <div class="touch-row">
+    <div class="touch-rect" style="width:48px;height:48px;border:2px solid #7B4DFF;color:#7B4DFF;">48</div>
+    <div class="touch-info">
+      <div class="touch-name">Padrão KZERA — 48px</div>
+      <div class="touch-desc">Botões, inputs, tabs e itens de lista. Usar --space-12.</div>
+    </div>
+    <span class="touch-tag tag-std">Padrão</span>
+  </div>
+  <div class="touch-row">
+    <div class="touch-rect" style="width:56px;height:56px;border:2px solid #D97706;color:#D97706;">56</div>
+    <div class="touch-info">
+      <div class="touch-name">Acessível — 56px</div>
+      <div class="touch-desc">Ações críticas: confirmar, excluir, salvar. Onde o erro tem custo alto.</div>
+    </div>
+    <span class="touch-tag tag-crit">Ações críticas</span>
+  </div>
+</div>
+
+<div class="sec">Safe area — iPhone</div>
+<div class="safe-box">
+  <div class="safe-row">
+    <div>
+      <div class="safe-label">Bottom — indicador de home</div>
+      <div class="safe-sub">Área reservada pelo iOS. Conteúdo não pode entrar aqui.</div>
+    </div>
+    <div class="safe-code">env(safe-area-inset-bottom)</div>
+  </div>
+  <div class="safe-row">
+    <div>
+      <div class="safe-label">Padding bottom mínimo de tela</div>
+      <div class="safe-sub">Botão na base da tela deve ter esse padding.</div>
+    </div>
+    <div class="safe-code">calc(--space-4 + env(safe-area-inset-bottom))</div>
+  </div>
+  <div class="safe-row">
+    <div>
+      <div class="safe-label">Top — notch / ilha dinâmica</div>
+      <div class="safe-sub">Gerenciado automaticamente pelo viewport.</div>
+    </div>
+    <div class="safe-code">env(safe-area-inset-top)</div>
+  </div>
+</div>
+
+<div class="note">
+  <strong>Regra de ouro:</strong> padding lateral de tela = sempre <code style="background:#DDD4F3;padding:1px 5px;border-radius:4px;">--space-4 (16px)</code>. Nunca 14px, nunca 18px. Garante que todo conteúdo respira igual em qualquer tela do app.
+</div>

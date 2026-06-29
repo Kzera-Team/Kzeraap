@@ -1,0 +1,277 @@
+<meta charset="UTF-8">
+<title>KZERA · ButtonText — Botão com texto</title>
+<meta name="description" content="ButtonText: botão com texto do sistema KZERA — variantes, estados, HTML copiável e JS.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F4F0FC; color: #120B35;
+  padding: 28px 16px 80px; max-width: 640px; margin: 0 auto;
+}
+h1 { font-size: 22px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 4px; }
+.eyebrow { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; color: #7B4DFF; margin-bottom: 8px; }
+.intro { font-size: 13px; color: #6B5FA0; font-weight: 700; line-height: 1.55; margin-bottom: 32px; }
+.sec { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; color: #7B4DFF; margin-bottom: 12px; margin-top: 32px; }
+
+/* Phone frame */
+.phone-wrap { display: flex; justify-content: center; margin-bottom: 16px; }
+.phone {
+  width: 288px;
+  background: radial-gradient(circle at 50% 0%, #241044 0%, #16072F 48%, #0D061D 100%);
+  border-radius: 36px; border: 5px solid #2E2B44;
+  box-shadow: 0 0 0 1px #3D3860, 0 20px 48px rgba(0,0,0,.55);
+  overflow: hidden;
+}
+.phone-notch { width: 88px; height: 20px; background: #1A1020; border-radius: 0 0 14px 14px; margin: 0 auto; }
+.phone-screen {
+  margin: 8px 8px 0;
+  background: linear-gradient(180deg, #FBF9FF 0%, #F7F3FF 100%);
+  border-radius: 20px 20px 0 0;
+  border: 1px solid #DDD4F3; border-bottom: none;
+  padding: 16px 14px 28px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.screen-label { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; color: #9B8FC8; text-align: center; }
+
+/* Buttons — renderização ao vivo no preview */
+.kzera-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 0 16px; height: 48px; border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px; font-weight: 800;
+  border: none; cursor: pointer; white-space: nowrap;
+  width: 100%; position: relative;
+  transition: opacity .12s, transform .08s;
+  -webkit-tap-highlight-color: transparent;
+}
+.kzera-btn:active { transform: scale(0.97); opacity: .88; }
+.kzera-btn--primary   { background: #7B4DFF; color: #fff; box-shadow: 0 4px 16px rgba(123,77,255,.30); }
+.kzera-btn--secondary { background: transparent; color: #7B4DFF; border: 1.5px solid #7B4DFF; }
+.kzera-btn--ghost     { background: transparent; color: #7B4DFF; border: none; height: 40px; width: auto; }
+.kzera-btn--danger    { background: #DC2626; color: #fff; box-shadow: 0 4px 16px rgba(220,38,38,.22); height: 56px; }
+.kzera-btn:disabled   { opacity: .4; pointer-events: none; }
+.kzera-btn--loading   { pointer-events: none; }
+.kzera-btn--loading .kzera-btn__text { opacity: 0; }
+.kzera-btn--loading::after {
+  content: ''; position: absolute; width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,.30); border-top-color: #fff;
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+.kzera-btn--secondary.kzera-btn--loading::after {
+  border-color: rgba(123,77,255,.20); border-top-color: #7B4DFF;
+}
+@media (hover: hover) {
+  .kzera-btn--primary:not(:disabled):hover   { opacity: .88; }
+  .kzera-btn--secondary:not(:disabled):hover,
+  .kzera-btn--ghost:not(:disabled):hover     { background: rgba(123,77,255,.06); }
+  .kzera-btn--danger:not(:disabled):hover    { opacity: .88; }
+}
+.kzera-btn:focus-visible { outline: 2px solid #7B4DFF; outline-offset: 3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Variant label */
+.vlabel {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 900; color: #120B35;
+  margin-bottom: 8px; margin-top: 20px;
+}
+.vlabel:first-of-type { margin-top: 0; }
+.vdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: #7B4DFF; }
+.vdot.grey   { background: #C4BBE0; }
+.vdot.red    { background: #DC2626; }
+.vdot.ghost  { background: transparent; border: 1.5px solid #9B8FC8; }
+
+/* Code blocks */
+.cb {
+  background: #0F0A1E; border-radius: 12px;
+  padding: 16px; overflow-x: auto; margin-bottom: 8px;
+}
+.cb pre { margin: 0; }
+.cb code {
+  font-family: ui-monospace, "Cascadia Code", "SF Mono", monospace;
+  font-size: 12px; line-height: 1.75; color: #D4C9F0;
+}
+.ht { color: #C4A7FF; }
+.ha { color: #93C5FD; }
+.hv { color: #86EFAC; }
+.hc { color: #64748B; font-style: italic; }
+
+/* Note */
+.note {
+  background: #EDE8F8; border-radius: 10px;
+  padding: 12px 14px; font-size: 12px; font-weight: 700;
+  color: #5B2ECC; line-height: 1.55; margin-bottom: 12px;
+}
+.note strong { color: #120B35; }
+.note code {
+  font-family: ui-monospace, monospace; font-size: 11px;
+  background: rgba(91,46,204,.12); padding: 1px 5px; border-radius: 4px;
+}
+</style>
+
+<a href="doc.html" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#9B8FC8;text-decoration:none;margin-bottom:20px;padding:5px 10px;border:1.5px solid #DDD4F3;border-radius:9999px;background:#fff;" onmouseover="this.style.background='#F0EBF9'" onmouseout="this.style.background='#fff'">← 07 Botões</a>
+
+<div class="eyebrow">07 — Botões</div>
+<h1>ButtonText</h1>
+<p class="intro">Botão com texto visível — a forma mais comum de botão. Suporta ícone à esquerda, 4 variantes, loading e disabled.</p>
+
+<!-- ── PREVIEW ────────────────────────────────────── -->
+<div class="sec">Preview — todas as variantes</div>
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="screen-label">Primary — ação principal</div>
+      <button class="kzera-btn kzera-btn--primary" type="button">
+        <span class="kzera-btn__text">Confirmar pedido</span>
+      </button>
+
+      <div class="screen-label" style="margin-top:4px">Secondary</div>
+      <button class="kzera-btn kzera-btn--secondary" type="button">
+        <span class="kzera-btn__text">Cancelar</span>
+      </button>
+
+      <div class="screen-label" style="margin-top:4px">Ghost — ação terciária</div>
+      <div style="display:flex;justify-content:center">
+        <button class="kzera-btn kzera-btn--ghost" type="button">
+          <span class="kzera-btn__text">Ignorar por agora</span>
+        </button>
+      </div>
+
+      <div class="screen-label" style="margin-top:4px">Danger — ação irreversível</div>
+      <button class="kzera-btn kzera-btn--danger" type="button">
+        <span class="kzera-btn__text">Excluir pedido</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── HTML POR VARIANTE ──────────────────────────── -->
+<div class="sec">HTML — copie e cole</div>
+
+<div class="vlabel"><span class="vdot"></span>Primary</div>
+<div class="cb"><pre><code><span class="ht">&lt;button</span> <span class="ha">class</span>=<span class="hv">"kzera-btn kzera-btn--primary"</span>
+        <span class="ha">type</span>=<span class="hv">"button"</span>
+        <span class="ha">data-action</span>=<span class="hv">"confirmar-pedido"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="hv">"kzera-btn__text"</span><span class="ht">&gt;</span>Confirmar pedido<span class="ht">&lt;/span&gt;</span>
+<span class="ht">&lt;/button&gt;</span></code></pre></div>
+
+<div class="vlabel"><span class="vdot ghost"></span>Secondary</div>
+<div class="cb"><pre><code><span class="ht">&lt;button</span> <span class="ha">class</span>=<span class="hv">"kzera-btn kzera-btn--secondary"</span>
+        <span class="ha">type</span>=<span class="hv">"button"</span>
+        <span class="ha">data-action</span>=<span class="hv">"cancelar"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="hv">"kzera-btn__text"</span><span class="ht">&gt;</span>Cancelar<span class="ht">&lt;/span&gt;</span>
+<span class="ht">&lt;/button&gt;</span></code></pre></div>
+
+<div class="vlabel"><span class="vdot grey"></span>Ghost <small style="font-size:11px;font-weight:700;color:#9B8FC8">— adicionar <code style="font-size:10px;background:#EDE8F8;padding:1px 5px;border-radius:4px;color:#5B2ECC">kzera-btn--auto</code> para largura automática</small></div>
+<div class="cb"><pre><code><span class="ht">&lt;button</span> <span class="ha">class</span>=<span class="hv">"kzera-btn kzera-btn--ghost kzera-btn--auto"</span>
+        <span class="ha">type</span>=<span class="hv">"button"</span>
+        <span class="ha">data-action</span>=<span class="hv">"ignorar"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="hv">"kzera-btn__text"</span><span class="ht">&gt;</span>Ignorar por agora<span class="ht">&lt;/span&gt;</span>
+<span class="ht">&lt;/button&gt;</span></code></pre></div>
+
+<div class="vlabel"><span class="vdot red"></span>Danger</div>
+<div class="cb"><pre><code><span class="ht">&lt;button</span> <span class="ha">class</span>=<span class="hv">"kzera-btn kzera-btn--danger"</span>
+        <span class="ha">type</span>=<span class="hv">"button"</span>
+        <span class="ha">data-action</span>=<span class="hv">"excluir-pedido"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="hv">"kzera-btn__text"</span><span class="ht">&gt;</span>Excluir pedido<span class="ht">&lt;/span&gt;</span>
+<span class="ht">&lt;/button&gt;</span></code></pre></div>
+
+<!-- ── ESTADOS ─────────────────────────────────────── -->
+<div class="sec">Estados</div>
+
+<div class="vlabel"><span class="vdot"></span>Com ícone à esquerda</div>
+<div class="phone-wrap" style="margin-bottom:8px">
+  <div class="phone">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <button class="kzera-btn kzera-btn--primary" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="kzera-btn__text">Novo pedido</span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="cb"><pre><code><span class="ht">&lt;button</span> <span class="ha">class</span>=<span class="hv">"kzera-btn kzera-btn--primary"</span>
+        <span class="ha">type</span>=<span class="hv">"button"</span>
+        <span class="ha">data-action</span>=<span class="hv">"novo-pedido"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;svg</span> <span class="ha">width</span>=<span class="hv">"18"</span> <span class="ha">height</span>=<span class="hv">"18"</span> <span class="ha">viewBox</span>=<span class="hv">"0 0 24 24"</span>
+       <span class="ha">fill</span>=<span class="hv">"none"</span> <span class="ha">stroke</span>=<span class="hv">"currentColor"</span> <span class="ha">stroke-width</span>=<span class="hv">"2.5"</span>
+       <span class="ha">stroke-linecap</span>=<span class="hv">"round"</span> <span class="ha">stroke-linejoin</span>=<span class="hv">"round"</span>
+       <span class="ha">aria-hidden</span>=<span class="hv">"true"</span><span class="ht">&gt;</span>
+    <span class="ht">&lt;line</span> <span class="ha">x1</span>=<span class="hv">"12"</span> <span class="ha">y1</span>=<span class="hv">"5"</span> <span class="ha">x2</span>=<span class="hv">"12"</span> <span class="ha">y2</span>=<span class="hv">"19"</span><span class="ht">/&gt;</span>
+    <span class="ht">&lt;line</span> <span class="ha">x1</span>=<span class="hv">"5"</span> <span class="ha">y1</span>=<span class="hv">"12"</span> <span class="ha">x2</span>=<span class="hv">"19"</span> <span class="ha">y2</span>=<span class="hv">"12"</span><span class="ht">/&gt;</span>
+  <span class="ht">&lt;/svg&gt;</span>
+  <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="hv">"kzera-btn__text"</span><span class="ht">&gt;</span>Novo pedido<span class="ht">&lt;/span&gt;</span>
+<span class="ht">&lt;/button&gt;</span></code></pre></div>
+<div class="note">SVG sempre com <code>aria-hidden="true"</code> — o texto do botão já descreve a ação para leitores de tela.</div>
+
+<div class="vlabel"><span class="vdot"></span>Loading</div>
+<div class="phone-wrap" style="margin-bottom:8px">
+  <div class="phone">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <button class="kzera-btn kzera-btn--primary kzera-btn--loading" type="button" aria-busy="true">
+        <span class="kzera-btn__text">Salvando...</span>
+      </button>
+      <div class="screen-label">primary</div>
+      <button class="kzera-btn kzera-btn--secondary kzera-btn--loading" type="button" aria-busy="true">
+        <span class="kzera-btn__text">Carregando...</span>
+      </button>
+      <div class="screen-label">secondary</div>
+    </div>
+  </div>
+</div>
+<div class="cb"><pre><code><span class="hc">/* Adicione kzera-btn--loading e aria-busy via JS (ver seção abaixo) */</span>
+<span class="ht">&lt;button</span> <span class="ha">class</span>=<span class="hv">"kzera-btn kzera-btn--primary kzera-btn--loading"</span>
+        <span class="ha">type</span>=<span class="hv">"button"</span>
+        <span class="ha">aria-busy</span>=<span class="hv">"true"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="hv">"kzera-btn__text"</span><span class="ht">&gt;</span>Salvando...<span class="ht">&lt;/span&gt;</span>
+<span class="ht">&lt;/button&gt;</span></code></pre></div>
+<div class="note"><strong>O texto fica transparente</strong> mas permanece no DOM — mantém a largura do botão estável. O spinner aparece no centro. <code>aria-busy="true"</code> avisa leitores de tela que a operação está em andamento.</div>
+
+<div class="vlabel"><span class="vdot grey"></span>Disabled</div>
+<div class="cb"><pre><code><span class="ht">&lt;button</span> <span class="ha">class</span>=<span class="hv">"kzera-btn kzera-btn--primary"</span>
+        <span class="ha">type</span>=<span class="hv">"button"</span>
+        <span class="ha">disabled</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="hv">"kzera-btn__text"</span><span class="ht">&gt;</span>Confirmar<span class="ht">&lt;/span&gt;</span>
+<span class="ht">&lt;/button&gt;</span></code></pre></div>
+
+<!-- ── JS ─────────────────────────────────────────── -->
+<div class="sec">Como ligar o clique</div>
+<div class="note">Use <strong>event delegation</strong> — um único listener ouve todos os cliques e despacha pelo <code>data-action</code>. Não adicione um listener separado por botão.</div>
+<div class="cb"><pre><code><span class="hc">// No arquivo da tela — ex: PedidosScreen.ts</span>
+
+document.addEventListener(<span class="hv">'click'</span>, (e) =&gt; {
+  const btn = (e.target as Element)
+    .closest&lt;HTMLButtonElement&gt;(<span class="hv">'[data-action]'</span>)
+  if (!btn || btn.disabled) return
+
+  switch (btn.dataset.action) {
+    case <span class="hv">'confirmar-pedido'</span>: confirmarPedido(); break
+    case <span class="hv">'cancelar'</span>:         fecharModal();     break
+    case <span class="hv">'excluir-pedido'</span>:   excluirPedido();   break
+  }
+})</code></pre></div>
+
+<div class="sec">Como ativar e desativar loading</div>
+<div class="cb"><pre><code>async function confirmarPedido() {
+  const btn = document.querySelector&lt;HTMLButtonElement&gt;(
+    <span class="hv">'[data-action="confirmar-pedido"]'</span>
+  )
+  if (!btn) return
+
+  <span class="hc">// ativa loading</span>
+  btn.classList.add(<span class="hv">'kzera-btn--loading'</span>)
+  btn.setAttribute(<span class="hv">'aria-busy'</span>, <span class="hv">'true'</span>)
+  btn.disabled = true
+
+  try {
+    await api.confirmar()
+  } finally {
+    <span class="hc">// desativa loading</span>
+    btn.classList.remove(<span class="hv">'kzera-btn--loading'</span>)
+    btn.removeAttribute(<span class="hv">'aria-busy'</span>)
+    btn.disabled = false
+  }
+}</code></pre></div>
