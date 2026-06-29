@@ -79,7 +79,7 @@ function mergeRecord(record: PacoteConfirmacaoHistoricaRecord, payload: PacoteCo
     lucroTotal: fromLegacyNumber(resumo.lucroTotal),
     valorPagoTotal: fromLegacyNumber(resumo.valorPagoTotal),
     valorPendenteTotal: fromLegacyNumber(resumo.valorPendenteTotal),
-    payloadProtegido: payload,
+    payloadProtegido: structuredClone(payload),
     createdAt: record.createdAt,
     updatedAt: record.updatedAt
   };

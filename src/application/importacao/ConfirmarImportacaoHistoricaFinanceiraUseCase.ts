@@ -555,7 +555,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
 
   private planoDoPacote(pacote: PacoteConfirmacaoHistorica): ConfirmacaoPlano {
     const payload = pacote.payloadProtegido;
-    const planejadas = payload?.planejadas.map(item => ({
+    const planejadas = payload?.planejadas?.map(item => ({
       staging: item.stagingSnapshot,
       financeiros: item.financeirosSnapshot,
       assinatura: item.assinatura
@@ -721,7 +721,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
     }
     this.exigirRemocaoSegura();
     const pacote = await this.validarPacoteCongelado(input.previaId);
-    if (!pacote.payloadProtegido?.planejadas.length) return this.resultadoDoPlano(this.planoDoPacote(pacote), 'confirmar');
+    if (!pacote.payloadProtegido?.planejadas?.length) return this.resultadoDoPlano(this.planoDoPacote(pacote), 'confirmar');
     await this.reconsultarStagingAtualAntesDeConfirmar(pacote);
 
     const now = this.clock.now().toISOString();
