@@ -10,6 +10,12 @@ export const DEVELOPMENT_PASSWORD_POLICY: PasswordPolicy = {
   productionMinLengthTodo: 14
 };
 
+// Política bloqueante de produção: mínimo 14 caracteres conforme SECURITY.md.
+export const PRODUCTION_PASSWORD_POLICY: PasswordPolicy = {
+  minLength: 14,
+  productionMinLengthTodo: 14
+};
+
 export function validateMasterPassword(password: string, policy = DEVELOPMENT_PASSWORD_POLICY): string[] {
   const errors: string[] = [];
 
