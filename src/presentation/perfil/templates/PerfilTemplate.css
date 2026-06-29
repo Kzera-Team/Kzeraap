@@ -80,7 +80,7 @@
 .perfil-ux .search-icon {
   position: absolute;
   left: 15px;
-  top: 50%;
+  top: 25px;
   transform: translateY(-50%);
   font-size: 17px;
   pointer-events: none;
