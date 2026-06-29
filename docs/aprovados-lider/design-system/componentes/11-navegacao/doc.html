@@ -1,0 +1,357 @@
+<meta charset="UTF-8">
+<title>KZERA · 11 — Navegação</title>
+<meta name="description" content="Especificação do sistema de navegação KZERA: drawer lateral, screen header, back button.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F4F0FC; color: #120B35;
+  padding: 28px 16px 80px; max-width: 640px; margin: 0 auto;
+}
+h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; text-wrap: balance; margin-bottom: 4px; }
+.eyebrow { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .14em; color: #7B4DFF; margin-bottom: 8px; }
+.intro { font-size: 13px; color: #6B5FA0; font-weight: 700; line-height: 1.6; margin-bottom: 32px; }
+.sec { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .14em; color: #7B4DFF; margin-bottom: 12px; margin-top: 36px; }
+
+.tbl { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.tbl-head { background: #EDE8F8; padding: 9px 16px; font-size: 10px; font-weight: 900; color: #5B2ECC; text-transform: uppercase; letter-spacing: .07em; display: grid; gap: 10px; align-items: center; }
+.tbl-row { display: grid; gap: 10px; align-items: center; padding: 12px 16px; border-bottom: 1px solid #F0EBF9; }
+.tbl-row:last-child { border-bottom: none; }
+.tbl-2 .tbl-head, .tbl-2 .tbl-row { grid-template-columns: 1fr 1fr; }
+.tbl-3 .tbl-head, .tbl-3 .tbl-row { grid-template-columns: 1.2fr 1fr 1fr; }
+
+.q { font-size: 12px; font-weight: 800; color: #120B35; line-height: 1.45; }
+.q code { font-family: ui-monospace, monospace; font-size: 10.5px; background: #EDE8F8; padding: 1px 5px; border-radius: 4px; color: #5B2ECC; }
+.a { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 900; color: #7B4DFF; line-height: 1.45; }
+.v { font-size: 12px; font-weight: 700; color: #6B5FA0; line-height: 1.45; }
+
+.rules { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.rule-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #F0EBF9; }
+.rule-row:last-child { border-bottom: none; }
+.rule-n { width: 24px; height: 24px; border-radius: 9999px; background: #7B4DFF; color: #fff; font-size: 10px; font-weight: 900; display: grid; place-items: center; flex-shrink: 0; margin-top: 1px; }
+.rule-n.no   { background: #DC2626; }
+.rule-n.warn { background: #D97706; }
+.rule-body { flex: 1; }
+.rule-title { font-size: 13px; font-weight: 900; color: #120B35; margin-bottom: 4px; line-height: 1.3; }
+.rule-desc  { font-size: 12px; font-weight: 700; color: #6B5FA0; line-height: 1.5; }
+.rule-desc code { font-family: ui-monospace, monospace; font-size: 10.5px; background: #EDE8F8; padding: 1px 5px; border-radius: 4px; color: #5B2ECC; }
+
+.note { padding: 14px 16px; background: #EDE8F8; border-radius: 14px; font-size: 12px; font-weight: 700; color: #5B2ECC; line-height: 1.55; margin-bottom: 10px; }
+.note strong { color: #120B35; }
+.note code { font-family: ui-monospace, monospace; font-size: 10.5px; background: rgba(91,46,204,.12); padding: 1px 5px; border-radius: 4px; }
+
+.section-divider {
+  border: none;
+  border-top: 2px solid #EDE8F8;
+  margin: 32px 0 0;
+}
+
+.checklist { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.check-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #F0EBF9; }
+.check-row:last-child { border-bottom: none; }
+.check-icon { width: 20px; height: 20px; border-radius: 6px; background: #DCFCE7; color: #166534; font-size: 11px; font-weight: 900; display: grid; place-items: center; flex-shrink: 0; margin-top: 1px; }
+.check-text { font-size: 12px; font-weight: 700; color: #120B35; line-height: 1.45; }
+</style>
+
+<a href="../index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#9B8FC8;text-decoration:none;margin-bottom:20px;padding:5px 10px;border:1.5px solid #DDD4F3;border-radius:9999px;background:#fff;" onmouseover="this.style.background='#F0EBF9'" onmouseout="this.style.background='#fff'">← Componentes</a>
+
+<div class="eyebrow">11 — Navegação</div>
+<h1>Navegação</h1>
+<p class="intro">Sistema de navegação do KZERA. Três elementos: <strong>Menu Button</strong> (abre o drawer), <strong>Drawer</strong> (painel lateral de seções), <strong>Screen Header</strong> (cabeçalho por tela) com variante <strong>Back Button</strong> para telas filhas. Componente único — nenhuma tela cria seu próprio cabeçalho ou botão de voltar fora do <code style="font-size:11px;background:#EDE8F8;padding:1px 5px;border-radius:4px;color:#5B2ECC;">.kz-screen-header</code>.</p>
+
+<!-- CAUSA SISTÊMICA -->
+<div class="sec">Causa sistêmica — por que este componente foi criado agora</div>
+
+<div class="note">
+  <strong>Causa do sistema (Lia):</strong> O sistema de navegação estava fragmentado em três implementações sem prefixo <code>.kz-</code> e sem tokens: <code>drawer.css</code> (hardcoded rgba), <code>PerfilTemplate.css</code> (hardcoded) e <code>kzera-home-topbar</code> (inline). Cada tela criava variações visuais independentes do mesmo elemento — cabeçalhos com tamanhos, espaçamentos e sombras diferentes entre seções.<br><br>
+  <strong>Causa do processo (Helena):</strong> Sem back button padronizado, telas filhas (detalhes, edição, confirmação) eram implementadas sem retorno visual claro. A senhora cansada perdia a noção de onde estava na hierarquia do app e tentava usar o botão físico do celular (nem sempre disponível no iOS PWA) para voltar.
+</div>
+
+<!-- ANATOMIA -->
+<div class="sec">Anatomia — três elementos</div>
+
+<div class="tbl">
+  <div class="tbl-head" style="grid-template-columns:1fr 2fr;">
+    <span>Elemento</span><span>Função</span>
+  </div>
+  <div class="tbl-row" style="grid-template-columns:1fr 2fr;">
+    <div class="q"><code>.kz-nav-menu-btn</code></div>
+    <div class="v">Botão hambúrguer fixo (topo esquerdo). Sempre visível em telas raiz. Abre o drawer.</div>
+  </div>
+  <div class="tbl-row" style="grid-template-columns:1fr 2fr;">
+    <div class="q"><code>.kz-nav-drawer</code></div>
+    <div class="v">Painel lateral deslizante. Lista seções do app + versão no rodapé. Escurece o conteúdo atrás.</div>
+  </div>
+  <div class="tbl-row" style="grid-template-columns:1fr 2fr;">
+    <div class="q"><code>.kz-screen-header</code></div>
+    <div class="v">Cabeçalho sticky de tela. Contém menu button (ou back button) + título + ação opcional.</div>
+  </div>
+  <div class="tbl-row" style="grid-template-columns:1fr 2fr;">
+    <div class="q"><code>.kz-btn-back</code></div>
+    <div class="v">Botão voltar para telas filhas. Substitui o menu button dentro de <code>.kz-screen-header</code>.</div>
+  </div>
+</div>
+
+<!-- ESPECIFICAÇÃO — Menu Button -->
+<hr class="section-divider">
+<div class="sec">Especificação — Menu Button</div>
+
+<div class="tbl tbl-2">
+  <div class="tbl-head"><span>Propriedade</span><span>Valor / token</span></div>
+  <div class="tbl-row">
+    <div class="q">Posição</div>
+    <div class="a">fixed · top var(--space-4) · left var(--space-4)<br><span style="font-size:10px;color:#6B5FA0;">16px do topo e da esquerda</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Tamanho</div>
+    <div class="a">48 × 48px<br><span style="font-size:10px;color:#6B5FA0;">touch target mínimo para reumatismo</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Border-radius</div>
+    <div class="a">var(--radius-4)<br><span style="font-size:10px;color:#6B5FA0;">16px</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Background</div>
+    <div class="a">rgba(18,11,53,.82)<br><span style="font-size:10px;color:#6B5FA0;">dark overlay — contrasta com qualquer fundo</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Sombra</div>
+    <div class="a">var(--shadow-3)<br><span style="font-size:10px;color:#6B5FA0;">0 8px 32px rgba(18,11,53,.16)</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Z-index</div>
+    <div class="a">60</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Ícone</div>
+    <div class="a">SVG hambúrguer · 18 × 14px<br><span style="font-size:10px;color:#6B5FA0;">3 linhas, stroke 2.2px, stroke-linecap round</span></div>
+  </div>
+</div>
+
+<!-- ESPECIFICAÇÃO — Drawer -->
+<hr class="section-divider">
+<div class="sec">Especificação — Drawer</div>
+
+<div class="tbl tbl-2">
+  <div class="tbl-head"><span>Propriedade</span><span>Valor / token</span></div>
+  <div class="tbl-row">
+    <div class="q">Largura</div>
+    <div class="a">min(84vw, 320px)</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Altura</div>
+    <div class="a">100dvh</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Background</div>
+    <div class="a">rgba(18,11,53,.98)<br><span style="font-size:10px;color:#6B5FA0;">dark — intencionalmente fora do tema light</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Padding</div>
+    <div class="a">var(--space-6)<br><span style="font-size:10px;color:#6B5FA0;">24px em todos os lados</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Transição de abertura</div>
+    <div class="a">translateX(-105%) → translateX(0)<br><span style="font-size:10px;color:#6B5FA0;">transform .2s ease</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Z-index</div>
+    <div class="a">80 (drawer) / 70 (backdrop)</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Item de nav — padding</div>
+    <div class="a">var(--space-3) var(--space-4)<br><span style="font-size:10px;color:#6B5FA0;">12px vertical, 16px horizontal</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Item de nav — radius</div>
+    <div class="a">var(--radius-3)<br><span style="font-size:10px;color:#6B5FA0;">12px</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Item ativo</div>
+    <div class="a">background rgba(255,255,255,.15)</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Versão (rodapé)</div>
+    <div class="a">var(--t-xs) · weight 700 · color rgba(255,255,255,.44)</div>
+  </div>
+</div>
+
+<!-- ESPECIFICAÇÃO — Screen Header -->
+<hr class="section-divider">
+<div class="sec">Especificação — Screen Header</div>
+
+<div class="tbl tbl-2">
+  <div class="tbl-head"><span>Propriedade</span><span>Valor / token</span></div>
+  <div class="tbl-row">
+    <div class="q">Position</div>
+    <div class="a">sticky · top 0 · z-index 10</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Altura mínima</div>
+    <div class="a">56px</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Padding</div>
+    <div class="a">var(--space-3) var(--space-4)<br><span style="font-size:10px;color:#6B5FA0;">12px vertical, 16px horizontal</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Background</div>
+    <div class="a">var(--kz-light-bg)<br><span style="font-size:10px;color:#6B5FA0;">#F4F0FC</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Border-bottom</div>
+    <div class="a">1px solid var(--kz-light-border)<br><span style="font-size:10px;color:#6B5FA0;">#DDD4F3</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Título — font-size</div>
+    <div class="a">var(--t-xl)<br><span style="font-size:10px;color:#6B5FA0;">1.25rem / 20px</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Título — peso</div>
+    <div class="a">900</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Título — color</div>
+    <div class="a">var(--kz-light-text)<br><span style="font-size:10px;color:#6B5FA0;">#120B35</span></div>
+  </div>
+</div>
+
+<!-- ESPECIFICAÇÃO — Back Button -->
+<hr class="section-divider">
+<div class="sec">Especificação — Back Button</div>
+
+<div class="tbl tbl-2">
+  <div class="tbl-head"><span>Propriedade</span><span>Valor / token</span></div>
+  <div class="tbl-row">
+    <div class="q">Tamanho</div>
+    <div class="a">44 × 44px<br><span style="font-size:10px;color:#6B5FA0;">touch mínimo · menor que menu-btn pois é ação secundária</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Border-radius</div>
+    <div class="a">var(--radius-3)<br><span style="font-size:10px;color:#6B5FA0;">12px</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Border</div>
+    <div class="a">1px solid var(--kz-light-border)</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Background</div>
+    <div class="a">var(--kz-light-surface)<br><span style="font-size:10px;color:#6B5FA0;">#fff</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Sombra</div>
+    <div class="a">var(--shadow-1)</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Ícone</div>
+    <div class="a">SVG chevron esquerdo · 10 × 16px<br><span style="font-size:10px;color:#6B5FA0;">stroke 2.5px · stroke-linecap round</span></div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Estado :active</div>
+    <div class="a">scale(.95) · opacity .85</div>
+  </div>
+</div>
+
+<!-- REGRAS UX — HELENA -->
+<hr class="section-divider">
+<div class="sec">Regras UX — Helena</div>
+
+<div class="rules">
+  <div class="rule-row">
+    <div class="rule-n no">✗</div>
+    <div class="rule-body">
+      <div class="rule-title">Menu button nunca some em tela raiz</div>
+      <div class="rule-desc">Telas de primeiro nível (Perfis, Itens, Configurações) sempre mostram o menu button. Removê-lo deixa a senhora cansada presa — ela não sabe como trocar de seção.</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n no">✗</div>
+    <div class="rule-body">
+      <div class="rule-title">Tela filha nunca mostra menu button — só back button</div>
+      <div class="rule-desc">Em telas de detalhe ou edição, o menu button deve sumir e o back button deve aparecer. Dois botões de navegação no mesmo header confundem: qual volta? qual abre o menu?</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n no">✗</div>
+    <div class="rule-body">
+      <div class="rule-title">Drawer nunca fecha ao navegar por clique fora sem backdrop visível</div>
+      <div class="rule-desc">O backdrop escurece o conteúdo e serve de botão de fechar. Sem ele, a senhora cansada não sabe que pode tocar fora para fechar o menu — e fica presa no drawer.</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n warn">!</div>
+    <div class="rule-body">
+      <div class="rule-title">Título do header: máximo 20 caracteres visíveis</div>
+      <div class="rule-desc">O título tem <code>text-overflow: ellipsis</code>. Mas nomes longos já cortados criam dúvida: "Importação de Transações Fi…" — ela leu o suficiente? Preferir títulos curtos e claros na definição de cada tela.</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n">✓</div>
+    <div class="rule-body">
+      <div class="rule-title">Item ativo no drawer: sempre destacado visualmente</div>
+      <div class="rule-desc">A classe <code>.is-active</code> indica onde a senhora cansada está. Sem esse destaque, ela pode clicar na seção que já está aberta — gerando uma reação de "por que não mudou?"</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n">✓</div>
+    <div class="rule-body">
+      <div class="rule-title">Versão do app sempre no rodapé do drawer</div>
+      <div class="rule-desc">Regra do design system KZERA: versão aparece no menu, login e cadastro de senha. Drawer é o ponto principal — o rodapé com <code>.kz-nav-version</code> é obrigatório.</div>
+    </div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-n">✓</div>
+    <div class="rule-body">
+      <div class="rule-title">100dvh (não 100vh) para evitar barra de endereço iOS</div>
+      <div class="rule-desc">No iOS Safari, <code>100vh</code> inclui a barra de endereço — o drawer fica cortado na base. <code>100dvh</code> usa a viewport dinâmica e mostra o rodapé corretamente no iPhone.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST SENHORA CANSADA -->
+<div class="sec">Checklist — Senhora Cansada</div>
+
+<div class="checklist">
+  <div class="check-row">
+    <div class="check-icon">✓</div>
+    <div class="check-text">Menu button tem 48×48px (toque seguro com dedo artrítico)?</div>
+  </div>
+  <div class="check-row">
+    <div class="check-icon">✓</div>
+    <div class="check-text">Back button tem 44×44px e contraste claro (não é só texto "Voltar")?</div>
+  </div>
+  <div class="check-row">
+    <div class="check-icon">✓</div>
+    <div class="check-text">Drawer abre e fecha com toque no backdrop (não exige botão de fechar obrigatoriamente)?</div>
+  </div>
+  <div class="check-row">
+    <div class="check-icon">✓</div>
+    <div class="check-text">Item de nav ativo está visualmente diferente dos outros no drawer?</div>
+  </div>
+  <div class="check-row">
+    <div class="check-icon">✓</div>
+    <div class="check-text">Versão do app aparece no rodapé do drawer?</div>
+  </div>
+  <div class="check-row">
+    <div class="check-icon">✓</div>
+    <div class="check-text">Tela filha mostra back button — não menu button — no header?</div>
+  </div>
+  <div class="check-row">
+    <div class="check-icon">✓</div>
+    <div class="check-text">Drawer usa 100dvh (não 100vh) para evitar corte no iOS?</div>
+  </div>
+</div>
+
+<!-- COMO CHEGA AO SRC -->
+<div class="sec">Como chega ao src/</div>
+
+<div class="note">
+  <strong>Regra:</strong> copiar <code>componente.css</code> para <code>src/presentation/shared/styles/nav.css</code> e adicionar <code>@import './nav.css'</code> em <code>index.css</code> (após <code>input.css</code>, antes de <code>feedback.css</code>).<br><br>
+  <strong>Migração:</strong> as classes <code>.kzera-drawer*</code> e <code>.kzera-menu-button</code> em <code>public/styles/drawer.css</code> devem ser substituídas pelas classes <code>.kz-nav-*</code> conforme cada view for atualizada. Não adicionar nada em <code>public/styles/drawer.css</code>.
+</div>
+
+<!-- PREVIEW -->
+<div class="sec">Preview interativo</div>
+<div style="background:#1A1532;border-radius:16px;overflow:hidden;">
+  <iframe src="componente.html" style="width:100%;height:520px;border:none;display:block;" title="Preview — Navegação"></iframe>
+</div>
