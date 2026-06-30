@@ -183,9 +183,6 @@ async function run() {
     await jsClick(page, '[data-action="novo-item"]');
     await page.waitForSelector('#item-nome', { timeout: 6000 });
     await page.locator('#item-nome').fill(item.nome);
-    const valorInputs = await page.locator('input[type="number"]').all();
-    if (valorInputs.length >= 1) await valorInputs[0].fill(item.valor);
-    if (valorInputs.length >= 2) await valorInputs[1].fill(item.custo);
     await jsClick(page, '[data-testid="item-form"] button[type="submit"]');
     await page.waitForSelector('[data-action="novo-item"]', { timeout: 10000 });
     await page.waitForTimeout(300);
@@ -193,7 +190,7 @@ async function run() {
   log('Itens criados');
 
   // Navegar para importação
-  await jsClick(page, '[data-nav="importacao"]');
+  await jsClick(page, '[data-nav="importacao-transacoes"]');
   await page.waitForTimeout(1000);
 
   const modal = page.locator('[role="dialog"][aria-modal="true"]');
@@ -206,6 +203,7 @@ async function run() {
 
   // Upload CSV vendas
   const fileInput1 = page.locator('[data-file-upload-transacoes]');
+  await fileInput1.waitFor({ state: 'attached', timeout: 15000 });
   await fileInput1.setInputFiles([{ name: 'vendas_qa_v3.csv', mimeType: 'text/csv', buffer: CSV_V3 }]);
   await page.waitForTimeout(1000);
 
