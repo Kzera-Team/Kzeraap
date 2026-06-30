@@ -5,7 +5,11 @@
 Quando a pergunta do líder admite resposta direta (sim, não, ou termo equivalente), responder apenas com isso.
 Nunca criar textão sem que o líder tenha pedido.
 
-## Branches — Regras obrigatórias
+## Commits e Branches — Regras obrigatórias
+
+Proibido comitar sem autorização do líder.
+
+Proibido criar branch, mesmo que local, sem autorização do líder.
 
 Somente o líder pode criar branches ou autorizar sua criação.
 
@@ -23,6 +27,10 @@ Fluxo correto:
 2. Agente trabalha no branch informado
 3. Todo commit vai para esse branch
 4. Merge em `desenvolvimento` somente via PR, nunca direto
+
+## Papel ativo na sessão
+
+Agente Claude jamais pode deixar de invocar um papel quando o mesmo estiver carregado na sessão. Antes de ficar neutro, deve confirmar com o líder.
 
 ## Deploy Netlify
 
