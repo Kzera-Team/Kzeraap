@@ -7,8 +7,6 @@ import type { ConfirmarImportacaoHistoricaFinanceiraUseCase, ConfirmarImportacao
 import { releaseObject } from '../../runtime/RuntimeCleanup';
 import rowTransacaoTemplate from './templates/importacao-transacoes-financeiro-pendencias-row-transacao.html?raw';
 import rowFinanceiroTemplate from './templates/importacao-transacoes-financeiro-pendencias-row-financeiro.html?raw';
-import headTransacoesTemplate from './templates/importacao-transacoes-financeiro-pendencias-head-transacoes.html?raw';
-import headFinanceirosTemplate from './templates/importacao-transacoes-financeiro-pendencias-head-financeiros.html?raw';
 
 export interface ImportacaoTransacoesFinanceiroDeps {
   prepararTransacoes: PrepararImportacaoTransacoesUseCase;
@@ -165,7 +163,10 @@ export class ImportacaoTransacoesFinanceiroView {
     this.texto('[data-pendencias-financeiro]', String(staging.resumoTransacoes.pendentesFinanceiro));
     this.texto('[data-pendencias-valor]', String(staging.resumoFinanceiro.pendentes));
     this.texto('[data-pendencias-duplicidade]', String(staging.resumoTransacoes.pendentesPerfil + staging.resumoTransacoes.pendentesItem));
-    this.html('[data-lista-registros-pendentes]', this.renderizarRegistrosPendentes(staging));
+    this.html('[data-lista-transacoes-pendentes]', this.renderizarRows(staging.registrosTransacoes, rowTransacaoTemplate, r => r.numeroOriginal));
+    this.visivel('[data-secao-transacoes-pendentes]', staging.registrosTransacoes.length > 0);
+    this.html('[data-lista-financeiros-pendentes]', this.renderizarRows(staging.registrosFinanceiros, rowFinanceiroTemplate, r => r.numeroTransacaoReferenciado));
+    this.visivel('[data-secao-financeiros-pendentes]', staging.registrosFinanceiros.length > 0);
   }
 
   private escHtml(val: string | number | undefined): string {
@@ -180,40 +181,23 @@ export class ImportacaoTransacoesFinanceiroView {
     );
   }
 
-  private renderizarRegistrosPendentes(staging: StagingImportacaoResumo): string {
-    const partes: string[] = [];
-
-    if (staging.registrosTransacoes.length > 0) {
-      partes.push(headTransacoesTemplate);
-      for (const r of staging.registrosTransacoes) {
-        const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
-        partes.push(this.preencherTemplate(rowTransacaoTemplate, {
-          id: this.escHtml(r.id),
-          titulo: `Linha ${this.escHtml(r.linha)}${r.numeroOriginal ? ` · #${this.escHtml(r.numeroOriginal)}` : ''}`,
-          meta: `Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}`,
-          status: this.escHtml(r.status),
-          badgeClass: r.status === 'validado' ? 'ok' : 'warn',
-          disabled: bloqueado ? 'disabled' : '',
-        }));
-      }
-    }
-
-    if (staging.registrosFinanceiros.length > 0) {
-      partes.push(headFinanceirosTemplate);
-      for (const r of staging.registrosFinanceiros) {
-        const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
-        partes.push(this.preencherTemplate(rowFinanceiroTemplate, {
-          id: this.escHtml(r.id),
-          titulo: `Linha ${this.escHtml(r.linha)}${r.numeroTransacaoReferenciado ? ` · ref #${this.escHtml(r.numeroTransacaoReferenciado)}` : ''}`,
-          meta: `Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}`,
-          status: this.escHtml(r.status),
-          badgeClass: r.status === 'validado' ? 'ok' : 'warn',
-          disabled: bloqueado ? 'disabled' : '',
-        }));
-      }
-    }
-
-    return partes.join('\n');
+  private renderizarRows<T extends { id: string; linha: number; status: string; pendencias: unknown[] }>(
+    registros: T[],
+    template: string,
+    obterRef: (r: T) => string | undefined
+  ): string {
+    return registros.map(r => {
+      const ref = obterRef(r);
+      const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
+      return this.preencherTemplate(template, {
+        id: this.escHtml(r.id),
+        titulo: `Linha ${this.escHtml(r.linha)}${ref ? ` · #${this.escHtml(ref)}` : ''}`,
+        meta: `Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}`,
+        status: this.escHtml(r.status),
+        badgeClass: r.status === 'validado' ? 'ok' : 'warn',
+        disabled: bloqueado ? 'disabled' : '',
+      });
+    }).join('\n');
   }
 
   private preencherPrevia(): void {
@@ -452,6 +436,11 @@ export class ImportacaoTransacoesFinanceiroView {
   private texto(selector: string, valor: string): void {
     const alvo = this.el(selector);
     if (alvo) alvo.textContent = valor;
+  }
+
+  private visivel(selector: string, valor: boolean): void {
+    const alvo = this.el<HTMLElement>(selector);
+    if (alvo) alvo.hidden = !valor;
   }
 
   private desabilitar(selector: string, valor: boolean): void {
