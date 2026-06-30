@@ -1,0 +1,51 @@
+name: Push Guard
+
+on:
+  push:
+    branches:
+      - desenvolvimento
+      - 'claude/**'
+  pull_request:
+    branches:
+      - desenvolvimento
+
+jobs:
+  validate:
+    name: Validate push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Run project checks
+        run: npm run check
+
+      - name: Build static Netlify package
+        run: npm exec vite -- build --base=./
+
+      - name: Reject absolute Kzeraap asset paths
+        run: |
+          if grep -R "/Kzeraap/assets" dist/index.html; then
+            echo "ERRO: build contém caminho absoluto /Kzeraap/assets. Use build com --base=./"
+            exit 1
+          fi
+
+      - name: Validate Netlify static layout
+        run: |
+          test -f dist/index.html
+          test -d dist/assets
