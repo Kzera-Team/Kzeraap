@@ -14,7 +14,7 @@ const prepFin = read('src/application/importacao/PrepararImportacaoFinanceiraUse
 const view = read('src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts');
 const app = read('src/app/createKzeraAuthenticatedApp.ts');
 const backup = read('src/application/backup/BackupExportUseCase.ts');
-const docs = read('docs/importacao/STAGING_TRANSACOES_FINANCEIRO_1.15.1.md');
+const docs = read('docs/aprovado-lider/desenvolvimento/transacoes-financeiras/importacao/regras/STAGING_TRANSACOES_FINANCEIRO_1.15.1.md');
 const pkg = JSON.parse(read('package.json'));
 
 assert.strictEqual(pkg.version, '0.19.27', 'package deve estar na versão 1.15.1');

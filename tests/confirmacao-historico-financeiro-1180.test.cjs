@@ -7,7 +7,7 @@ const useCase = read('src/application/importacao/ConfirmarImportacaoHistoricaFin
 const view = read('src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts');
 const app = read('src/app/createKzeraAuthenticatedApp.ts');
 const resumo = read('src/application/financeiro/ResumoFinanceiroUseCase.ts');
-const doc = read('docs/importacao/CONFIRMACAO_HISTORICO_FINANCEIRO_1.19.3.md');
+const doc = read('docs/aprovado-lider/desenvolvimento/transacoes-financeiras/importacao/regras/CONFIRMACAO_HISTORICO_FINANCEIRO_1.19.3.md');
 assert.strictEqual(pkg.version, '1.19.5');
 assert(version.includes("APP_VERSION = '1.19.5'"));
 assert(useCase.includes('ConfirmarImportacaoHistoricaFinanceiraUseCase'));
