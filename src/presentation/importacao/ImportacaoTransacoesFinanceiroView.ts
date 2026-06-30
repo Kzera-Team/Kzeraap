@@ -7,6 +7,8 @@ import type { ConfirmarImportacaoHistoricaFinanceiraUseCase, ConfirmarImportacao
 import { releaseObject } from '../../runtime/RuntimeCleanup';
 import rowTransacaoTemplate from './templates/importacao-transacoes-financeiro-pendencias-row-transacao.html?raw';
 import rowFinanceiroTemplate from './templates/importacao-transacoes-financeiro-pendencias-row-financeiro.html?raw';
+import headTransacoesTemplate from './templates/importacao-transacoes-financeiro-pendencias-head-transacoes.html?raw';
+import headFinanceirosTemplate from './templates/importacao-transacoes-financeiro-pendencias-head-financeiros.html?raw';
 
 export interface ImportacaoTransacoesFinanceiroDeps {
   prepararTransacoes: PrepararImportacaoTransacoesUseCase;
@@ -182,7 +184,7 @@ export class ImportacaoTransacoesFinanceiroView {
     const partes: string[] = [];
 
     if (staging.registrosTransacoes.length > 0) {
-      partes.push('<div class="ifhead">Transações em staging</div>');
+      partes.push(headTransacoesTemplate);
       for (const r of staging.registrosTransacoes) {
         const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
         partes.push(this.preencherTemplate(rowTransacaoTemplate, {
@@ -197,7 +199,7 @@ export class ImportacaoTransacoesFinanceiroView {
     }
 
     if (staging.registrosFinanceiros.length > 0) {
-      partes.push('<div class="ifhead">Movimentos financeiros em staging</div>');
+      partes.push(headFinanceirosTemplate);
       for (const r of staging.registrosFinanceiros) {
         const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
         partes.push(this.preencherTemplate(rowFinanceiroTemplate, {
