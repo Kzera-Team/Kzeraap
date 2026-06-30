@@ -6,7 +6,7 @@ const version = read('src/app/appVersion.ts');
 const useCase = read('src/application/importacao/ResolverPendenciaImportacaoUseCase.ts');
 const view = read('src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts');
 const repo = read('src/infrastructure/repositories/ImportacaoStagingRepository.ts');
-const doc = read('docs/importacao/RESOLUCAO_PENDENCIAS_IMPORTACAO_1.17.2.md');
+const doc = read('docs/aprovado-lider/desenvolvimento/transacoes-financeiras/importacao/regras/RESOLUCAO_PENDENCIAS_IMPORTACAO_1.17.2.md');
 assert(pkg.version === '1.19.5', 'package deve estar em 1.19.3');
 assert(version.includes("APP_VERSION = '1.19.5'"), 'APP_VERSION deve estar em 1.19.3');
 assert(useCase.includes('vincular_financeiro'), 'Deve permitir vínculo financeiro guiado.');

@@ -8,7 +8,7 @@ const view = read('src/presentation/importacao/ImportacaoTransacoesFinanceiroVie
 const resumo = read('src/application/financeiro/ResumoFinanceiroUseCase.ts');
 const repo = read('src/infrastructure/repositories/ImportacaoStagingRepository.ts');
 const domain = read('src/domain/importacao/ImportacaoTransacoesFinanceiro.ts');
-const doc = read('docs/importacao/CONFIRMACAO_HISTORICO_FINANCEIRO_1.19.3.md');
+const doc = read('docs/aprovado-lider/desenvolvimento/transacoes-financeiras/importacao/regras/CONFIRMACAO_HISTORICO_FINANCEIRO_1.19.3.md');
 assert.strictEqual(pkg.version, '1.19.5');
 assert(version.includes("APP_VERSION = '1.19.5'"));
 assert(useCase.includes("modo: 'previsualizar' | 'confirmar' | 'desfazer_lote'"), 'confirmação precisa permitir desfazer lote');

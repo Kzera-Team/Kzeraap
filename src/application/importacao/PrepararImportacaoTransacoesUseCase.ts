@@ -57,7 +57,6 @@ export class PrepararImportacaoTransacoesUseCase {
       try {
         normalizados = normalizarTransacaoImportada(row, itens);
         if (!normalizados.numero) pendencias.push({ tipo: 'coluna_obrigatoria', campo: 'Número', mensagem: 'Número da transacao é obrigatório na importação.' });
-        if (!normalizados.clienteNome) pendencias.push({ tipo: 'coluna_obrigatoria', campo: 'Perfil', mensagem: 'Nome do comprador é obrigatório na importação.' });
         if (normalizados.total <= 0) pendencias.push({ tipo: 'valor_invalido', campo: 'Total', mensagem: 'Total da transacao precisa ser maior que zero.' });
         const perfil = normalizados.clienteNome ? encontrarPerfilPorNome(normalizados.clienteNome, perfis) : undefined;
         if (normalizados.clienteNome && !perfil) pendencias.push({ tipo: 'cliente_nao_encontrado', campo: 'Perfil', valor: normalizados.clienteNome, mensagem: `Perfil não encontrado para comprador: ${normalizados.clienteNome}` });
