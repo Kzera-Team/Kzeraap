@@ -45,7 +45,7 @@ Evidencias:
 - transacoes em staging: tiposPendencia incluindo item_nao_encontrado para todos os 5 registros
 - conciliacao nao executada pois pendencias de item bloqueiam o avanco
 
-Status: Bloqueado
+Status: Bloqueado por massa inadequada
 
 ## CT-CON-03 - Pendente sem transacao
 

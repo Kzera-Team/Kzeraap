@@ -1,6 +1,6 @@
 # Rodada QA 01 - Importacao de Transacoes
 
-Status geral: Aprovado com ressalva
+Status geral: Aguardando evidencia
 
 ## Identificacao
 
@@ -33,6 +33,8 @@ Status geral: Aprovado com ressalva
 - Aguardando evidencia: 14
 - Aprovados com ressalva: 0
 
+Nota: os 14 casos restantes exigem massa de teste com perfis e itens pre-cadastrados no banco, que a massa atual nao tem. Bloqueados por massa inadequada ate proxima rodada.
+
 ## Casos da rodada
 
 | Caso | Nome | Status | Evidencia | Observacao |
@@ -64,11 +66,12 @@ Status geral: Aprovado com ressalva
 
 ## Decisao Rose
 
-Status: Aguardando evidencia
+Status: Nao aprovado
 
 Rose nao aprova intencao. Rose aprova evidencia.
 
-Ressalvas desta rodada:
-- CT-CON-02 bloqueado: massa de teste nao inclui item cadastrado, impossibilitando chegar na etapa de conciliacao para validar financeiro_nao_encontrado
-- 14 casos ainda sem evidencia: dependem de fluxos nao cobertos nesta rodada (confirmacao, aprovacao em massa, previa, divergencias)
-- Prints gerados em headless com viewport 390x844 (mobile)
+Bloqueadores desta rodada:
+- massa atual nao tem perfis nem itens pre-cadastrados: impossivel testar conciliacao, divergencias, aprovacao, previa e confirmacao
+- CT-CON-02 e demais casos de conciliacao bloqueados por massa inadequada
+- proxima rodada requer banco pre-semeado com perfis e itens, ou fluxo de resolucao de pendencias coberto antes da conciliacao
+- Rose vai criar bateria complementar para mockups e contadores; incorporar quando disponivel
