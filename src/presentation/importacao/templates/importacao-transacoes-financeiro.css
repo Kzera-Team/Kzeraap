@@ -368,3 +368,186 @@
   background: #C4BAE4;
   margin: 0 auto 20px;
 }
+
+/* ── Tela de pendências — classes isoladas (prefixo pend-) ── */
+
+.pend-screen {
+  padding: 20px 16px 60px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color: var(--ift-text);
+}
+
+.pend-section {
+  margin-bottom: 28px;
+}
+
+.pend-section-head {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--ift-muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 10px;
+}
+
+.pend-card {
+  background: var(--ift-white);
+  border: 1px solid var(--ift-border);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(30, 14, 70, .06);
+  color: var(--ift-text);
+}
+
+.pend-pill {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--ift-danger-bg);
+  border: 1px solid var(--ift-danger-border);
+  color: var(--ift-danger);
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.pend-hero-title {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -.3px;
+  line-height: 1.15;
+  margin: 0 0 8px;
+  color: var(--ift-text);
+}
+
+.pend-hero-desc {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ift-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pend-issue {
+  background: var(--ift-white);
+  border: 1px solid var(--ift-border);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(30, 14, 70, .06);
+  margin-bottom: 12px;
+  color: var(--ift-text);
+}
+
+.pend-issue-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.pend-issue-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--ift-text);
+}
+
+.pend-issue-desc {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ift-muted);
+  line-height: 1.4;
+  margin-top: 3px;
+}
+
+.pend-issue-count {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ift-danger);
+  white-space: nowrap;
+}
+
+.pend-btn-primary {
+  width: 100%;
+  height: 54px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--ift-purple), var(--ift-purple-dark));
+  color: var(--ift-white);
+  font-size: 16px;
+  font-weight: 800;
+  font-family: inherit;
+  box-shadow: 0 8px 24px rgba(91, 46, 204, .35);
+  cursor: pointer;
+  display: block;
+}
+
+.pend-btn-ghost {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--ift-border);
+  background: var(--ift-white);
+  color: var(--ift-purple);
+  font-size: 14px;
+  font-weight: 800;
+  font-family: inherit;
+  margin-top: 8px;
+  cursor: pointer;
+  display: block;
+}
+
+.pend-hint {
+  font-size: 11px;
+  font-weight: 700;
+  color: #B0A8D0;
+  margin-top: 8px;
+}
+
+.pend-row-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: #F0EDF8;
+  border: 1px solid var(--ift-border);
+  color: var(--ift-muted);
+}
+
+.pend-row-badge.ok {
+  color: var(--ift-green);
+  background: var(--ift-green-bg);
+  border-color: var(--ift-green-border);
+}
+
+.pend-row-badge.warn {
+  color: var(--ift-warn);
+  background: var(--ift-warn-bg);
+  border-color: var(--ift-warn-border);
+}
+
+.importar-historico-financeiro .pend-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 8px;
+  border: 1px solid var(--ift-border) !important;
+  border-radius: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--ift-text) !important;
+  background: var(--ift-white) !important;
+}
+
+/* Em pendências o header fica simétrico: Nova some mas mantém 28px (igual ao hamburger) para o título centralizar */
+.importar-historico-financeiro[data-estado="pendencias"] [data-header-nova] {
+  visibility: hidden;
+  width: 28px;
+  min-width: 28px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}

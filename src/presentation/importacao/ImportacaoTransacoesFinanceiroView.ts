@@ -26,6 +26,11 @@ interface UploadDraftMemoria {
   updatedAt: string;
 }
 
+const TITULOS_POR_ESTADO: Partial<Record<Estado, string>> = {
+  pendencias: 'Resolver pendências',
+};
+const TITULO_PADRAO = 'Importar histórico financeiro';
+
 const TEMPLATES: Record<Template, URL> = {
   shell: new URL('./templates/importacao-transacoes-financeiro.html', import.meta.url),
   vazio: new URL('./templates/importacao-transacoes-financeiro-vazio.html', import.meta.url),
@@ -124,7 +129,15 @@ export class ImportacaoTransacoesFinanceiroView {
     alvo.innerHTML = await this.template(this.estado);
     await this.preencher();
     this.mostrarMensagem();
+    this.atualizarTitulo();
     this.bind();
+  }
+
+  private atualizarTitulo(): void {
+    const titulo = this.el('[data-titulo-tela]');
+    if (titulo) titulo.textContent = TITULOS_POR_ESTADO[this.estado] ?? TITULO_PADRAO;
+    const raiz = this.el('.importar-historico-financeiro');
+    if (raiz) raiz.dataset.estado = this.estado;
   }
 
   private async preencher(): Promise<void> {

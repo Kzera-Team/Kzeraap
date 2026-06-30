@@ -1,96 +1,89 @@
-<section class="ifwrap">
-  <section class="ifcard ifdanger">
-    <span class="ifbadge warn">Precisa revisar</span>
-    <div class="iftitle">Alguns registros ainda não estão seguros.</div>
-    <p>Resolva os grupos abaixo antes de gerar a prévia. Registros bloqueados não entram no financeiro oficial.</p>
+<main class="pend-screen">
+  <section class="pend-section">
+    <div class="pend-card">
+      <div class="pend-pill">Precisa revisar</div>
+      <h1 class="pend-hero-title">Alguns registros ainda não estão seguros.</h1>
+      <p class="pend-hero-desc">Resolva os grupos abaixo antes de gerar a prévia. Registros bloqueados não entram no financeiro oficial.</p>
+    </div>
   </section>
 
-  <div class="ifhead">Bloqueios agrupados</div>
-
-  <div class="iflist">
-    <section class="ifissue">
-      <div class="ifrow">
+  <section class="pend-section">
+    <div class="pend-section-head">Bloqueios agrupados</div>
+    <div class="pend-issue">
+      <div class="pend-issue-head">
         <div>
-          <div class="iftitle">Falta financeiro</div>
-          <div class="ifmeta">Venda encontrada, mas sem pagamento ou movimento confiável.</div>
+          <div class="pend-issue-title">Falta financeiro</div>
+          <div class="pend-issue-desc">Venda encontrada, mas sem pagamento ou movimento confiável.</div>
         </div>
-        <span class="ifbadge warn" data-pendencias-financeiro>0</span>
+        <div class="pend-issue-count" data-pendencias-financeiro>0</div>
       </div>
-      <button class="ifsecondary" data-ir-detalhes>Ver casos</button>
-    </section>
-
-    <section class="ifissue">
-      <div class="ifrow">
+      <button class="pend-btn-ghost" data-ir-detalhes>Ver casos</button>
+    </div>
+    <div class="pend-issue">
+      <div class="pend-issue-head">
         <div>
-          <div class="iftitle">Valor diferente</div>
-          <div class="ifmeta">O valor da venda não bate com o financeiro encontrado.</div>
+          <div class="pend-issue-title">Valor diferente</div>
+          <div class="pend-issue-desc">O valor da venda não bate com o financeiro encontrado.</div>
         </div>
-        <span class="ifbadge warn" data-pendencias-valor>0</span>
+        <div class="pend-issue-count" data-pendencias-valor>0</div>
       </div>
-      <button class="ifsecondary" data-ir-detalhes>Conferir valores</button>
-    </section>
-
-    <section class="ifissue">
-      <div class="ifrow">
+      <button class="pend-btn-ghost" data-ir-detalhes>Conferir valores</button>
+    </div>
+    <div class="pend-issue">
+      <div class="pend-issue-head">
         <div>
-          <div class="iftitle">Pode estar duplicado</div>
-          <div class="ifmeta">Existe registro parecido no lote ou no histórico oficial.</div>
+          <div class="pend-issue-title">Pode estar duplicado</div>
+          <div class="pend-issue-desc">Existe registro parecido no lote ou no histórico oficial.</div>
         </div>
-        <span class="ifbadge warn" data-pendencias-duplicidade>0</span>
+        <div class="pend-issue-count" data-pendencias-duplicidade>0</div>
       </div>
-      <button class="ifsecondary" data-ir-detalhes>Analisar duplicados</button>
-    </section>
-  </div>
+      <button class="pend-btn-ghost" data-ir-detalhes>Analisar duplicados</button>
+    </div>
+  </section>
 
-  <div data-secao-transacoes-pendentes hidden>
-    <div class="ifhead">Transações em staging</div>
+  <section class="pend-section" data-secao-transacoes-pendentes hidden>
+    <div class="pend-section-head">Transações em staging</div>
     <div data-lista-transacoes-pendentes></div>
-  </div>
+  </section>
 
-  <div data-secao-financeiros-pendentes hidden>
-    <div class="ifhead">Movimentos financeiros em staging</div>
+  <section class="pend-section" data-secao-financeiros-pendentes hidden>
+    <div class="pend-section-head">Movimentos financeiros em staging</div>
     <div data-lista-financeiros-pendentes></div>
+  </section>
+
+  <section class="pend-section">
+    <button class="pend-btn-ghost" data-vincular-massa-segura>Aprovar seguros em massa</button>
+    <button class="pend-btn-primary" data-gerar-previa>Gerar prévia segura</button>
+    <div class="pend-hint">A prévia só inclui registros aprovados para confirmação.</div>
+  </section>
+</main>
+
+<template data-tpl-row-transacao>
+  <div class="pend-issue" data-registro-row data-tipo="transacao">
+    <div class="pend-issue-head">
+      <div>
+        <div class="pend-issue-title" data-cell-titulo></div>
+        <div class="pend-issue-desc" data-cell-meta></div>
+      </div>
+      <div class="pend-row-badge" data-cell-badge></div>
+    </div>
+    <button class="pend-btn-ghost" data-ignorar-registro data-tipo="transacao">Ignorar</button>
+    <button class="pend-btn-ghost" data-marcar-revisao-registro data-tipo="transacao">Revisão</button>
   </div>
+</template>
 
-  <template data-tpl-row-transacao>
-    <section class="ifissue" data-registro-row data-tipo="transacao">
-      <div class="ifrow">
-        <div>
-          <div class="iftitle" data-cell-titulo></div>
-          <div class="ifmeta" data-cell-meta></div>
-        </div>
-        <span class="ifbadge" data-cell-badge></span>
+<template data-tpl-row-financeiro>
+  <div class="pend-issue" data-registro-row data-tipo="financeiro">
+    <div class="pend-issue-head">
+      <div>
+        <div class="pend-issue-title" data-cell-titulo></div>
+        <div class="pend-issue-desc" data-cell-meta></div>
       </div>
-      <div class="ifbar-inner">
-        <button class="ifsecondary" data-ignorar-registro data-tipo="transacao">Ignorar</button>
-        <button class="ifsecondary" data-marcar-revisao-registro data-tipo="transacao">Revisão</button>
-      </div>
-    </section>
-  </template>
-
-  <template data-tpl-row-financeiro>
-    <section class="ifissue" data-registro-row data-tipo="financeiro">
-      <div class="ifrow">
-        <div>
-          <div class="iftitle" data-cell-titulo></div>
-          <div class="ifmeta" data-cell-meta></div>
-        </div>
-        <span class="ifbadge" data-cell-badge></span>
-      </div>
-      <div class="ifbar-inner">
-        <input type="text" class="ifinput" data-input-vincular-txn placeholder="ID staging transação" />
-        <button class="ifsecondary" data-vincular-financeiro-registro>Vincular</button>
-        <button class="ifsecondary" data-ignorar-registro data-tipo="financeiro">Ignorar</button>
-        <button class="ifsecondary" data-marcar-revisao-registro data-tipo="financeiro">Revisão</button>
-      </div>
-    </section>
-  </template>
-</section>
-
-<div class="ifbar">
-  <div class="ifbar-inner">
-    <button class="ifsecondary" data-vincular-massa-segura>Aprovar seguros em massa</button>
-    <button class="ifprimary" data-gerar-previa>Gerar prévia segura</button>
-    <div class="ifnote">A prévia só inclui registros aprovados para confirmação.</div>
+      <div class="pend-row-badge" data-cell-badge></div>
+    </div>
+    <input type="text" class="pend-input" data-input-vincular-txn placeholder="ID staging transação" />
+    <button class="pend-btn-ghost" data-vincular-financeiro-registro>Vincular</button>
+    <button class="pend-btn-ghost" data-ignorar-registro data-tipo="financeiro">Ignorar</button>
+    <button class="pend-btn-ghost" data-marcar-revisao-registro data-tipo="financeiro">Revisão</button>
   </div>
-</div>
+</template>
