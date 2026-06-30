@@ -43,9 +43,9 @@ function mergeTransacaoPayload(record: RegistroImportacaoTransacaoRecord, payloa
     id: record.id,
     loteImportacaoId: record.loteImportacaoId,
     linha: record.linha,
-    dadosBrutos: payload.dadosBrutos,
+    dadosBrutos: structuredClone(payload.dadosBrutos),
     status: record.status,
-    pendencias: payload.pendencias,
+    pendencias: structuredClone(payload.pendencias),
     createdAt: record.createdAt,
     updatedAt: record.updatedAt
   };
@@ -88,9 +88,9 @@ function mergeFinanceiroPayload(record: RegistroImportacaoFinanceiraRecord, payl
     id: record.id,
     loteImportacaoId: record.loteImportacaoId,
     linha: record.linha,
-    dadosBrutos: payload.dadosBrutos,
+    dadosBrutos: structuredClone(payload.dadosBrutos),
     status: record.status,
-    pendencias: payload.pendencias,
+    pendencias: structuredClone(payload.pendencias),
     createdAt: record.createdAt,
     updatedAt: record.updatedAt
   };

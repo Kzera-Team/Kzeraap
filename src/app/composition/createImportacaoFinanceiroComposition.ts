@@ -3,7 +3,7 @@ import { PrepararImportacaoFinanceiraUseCase } from '../../application/importaca
 import { ListarStagingImportacaoUseCase } from '../../application/importacao/ListarStagingImportacaoUseCase';
 import { ConciliarTransacoesFinanceiroUseCase } from '../../application/importacao/ConciliarTransacoesFinanceiroUseCase';
 import { ResolverPendenciaImportacaoUseCase } from '../../application/importacao/ResolverPendenciaImportacaoUseCase';
-import { ConfirmarImportacaoHistoricaFinanceiraUseCase } from '../../application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase';
+import { ConfirmarImportacaoHistoricaFinanceiraUseCase, PacoteHistoricoStorage } from '../../application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase';
 import { ImportacaoTransacoesFinanceiroView } from '../../presentation/importacao/ImportacaoTransacoesFinanceiroView';
 import type { createRepositoryComposition } from './createRepositoryComposition';
 import type { appClock } from './AppCompositionIds';
@@ -52,7 +52,7 @@ export function createImportacaoFinanceiroComposition(repositories: Repositories
       repositories.movimentosFinanceiros,
       clock,
       nextId,
-      repositories.pacotesConfirmacaoHistorica
+      new PacoteHistoricoStorage(repositories.pacotesConfirmacaoHistorica)
     ),
     onRascunhoAtualizado: async acao => {
       if (acao === 'salvar') {

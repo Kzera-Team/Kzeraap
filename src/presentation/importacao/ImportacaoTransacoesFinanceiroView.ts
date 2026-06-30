@@ -39,10 +39,28 @@ const TEMPLATES: Record<Template, URL> = {
 };
 const CSS_URL = new URL('./templates/importacao-transacoes-financeiro.css', import.meta.url);
 const EXTENSOES_TEXTO = ['csv', 'tsv', 'txt'];
-const UPLOAD_DRAFT_MEMORIA_KEY = '__kzeraImportacaoTransacoesFinanceiroUploadDraft__';
 
-function uploadDraftMemoriaStore(): Record<string, UploadDraftMemoria | undefined> {
-  return globalThis as unknown as Record<string, UploadDraftMemoria | undefined>;
+class UploadDraftStore {
+  private static readonly KEY = '__kzeraImportacaoTransacoesFinanceiroUploadDraft__';
+  private get store(): Record<string, UploadDraftMemoria | undefined> {
+    return globalThis as unknown as Record<string, UploadDraftMemoria | undefined>;
+  }
+
+  salvar(transacoes: ArquivoImportacao | null, financeiro: ArquivoImportacao | null): void {
+    this.store[UploadDraftStore.KEY] = {
+      transacoes: transacoes ? { nomeArquivo: transacoes.nomeArquivo, conteudo: transacoes.conteudo } : null,
+      financeiro: financeiro ? { nomeArquivo: financeiro.nomeArquivo, conteudo: financeiro.conteudo } : null,
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  restaurar(): UploadDraftMemoria | null {
+    return this.store[UploadDraftStore.KEY] ?? null;
+  }
+
+  limpar(): void {
+    delete this.store[UploadDraftStore.KEY];
+  }
 }
 
 export class ImportacaoTransacoesFinanceiroView {
@@ -55,12 +73,14 @@ export class ImportacaoTransacoesFinanceiroView {
   private previa: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
   private ultima: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
   private confirmacaoArmada = false;
+  private readonly uploadDraft = new UploadDraftStore();
 
   constructor(private readonly deps: ImportacaoTransacoesFinanceiroDeps) {}
 
   release(): void {
     releaseObject(this.previa);
     releaseObject(this.ultima);
+    this.uploadDraft.limpar();
     this.transacoes = null;
     this.financeiro = null;
     this.previa = null;
@@ -247,28 +267,19 @@ export class ImportacaoTransacoesFinanceiroView {
   }
 
   private restaurarUploadEmMemoria(): void {
-    const draft = uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY];
+    const draft = this.uploadDraft.restaurar();
     if (!draft) return;
-    this.transacoes = this.clonarArquivo(draft.transacoes);
-    this.financeiro = this.clonarArquivo(draft.financeiro);
+    this.transacoes = draft.transacoes || null;
+    this.financeiro = draft.financeiro || null;
     if (this.temArquivos()) this.estado = 'carregado';
   }
 
   private salvarUploadEmMemoria(): void {
-    uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY] = {
-      transacoes: this.clonarArquivo(this.transacoes),
-      financeiro: this.clonarArquivo(this.financeiro),
-      updatedAt: new Date().toISOString()
-    };
+    this.uploadDraft.salvar(this.transacoes, this.financeiro);
   }
 
   private limparUploadEmMemoria(): void {
-    delete uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY];
-  }
-
-  private clonarArquivo(arquivo: ArquivoImportacao | null | undefined): ArquivoImportacao | null {
-    if (!arquivo) return null;
-    return { nomeArquivo: arquivo.nomeArquivo, conteudo: arquivo.conteudo };
+    this.uploadDraft.limpar();
   }
 
   private extensaoTexto(nomeArquivo: string): boolean {

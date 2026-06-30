@@ -9,6 +9,7 @@ import { ParseImportacaoCatalogoItensUseCase } from '../application/item/ParseIm
 import { ItemCatalogoDomView, type ItemCatalogoUiState } from '../presentation/item/ItemCatalogoDomView';
 import { releaseTransferPayload } from '../runtime/TransferScope';
 import type { ImportacaoRascunhoUseCase } from '../application/importacao/ImportacaoRascunhoUseCase';
+import type { ReprocessarPendenciasItemNomeUseCase } from '../application/importacao/ReprocessarPendenciasItemNomeUseCase';
 
 function validarPreview(item: ItemImportacaoPreviewRegistro): ItemImportacaoPreviewRegistro {
   const erros: string[] = [];
@@ -22,7 +23,8 @@ export function createItemCatalogoUiApp(
   balancas: Repository<Balanca>,
   clock: Clock,
   idFactory: () => string,
-  rascunho?: ImportacaoRascunhoUseCase
+  rascunho?: ImportacaoRascunhoUseCase,
+  reprocessarPendenciasItem?: ReprocessarPendenciasItemNomeUseCase
 ) {
   const module = createItemCatalogoModule(items, balancas, clock, idFactory);
   const parser = new ParseImportacaoCatalogoItensUseCase(new BuildSafeItemSpreadsheetImportGateway());
@@ -118,11 +120,12 @@ export function createItemCatalogoUiApp(
         lotes: [loteInicial]
       }];
 
-      await module.criar.execute({
+      const itemCriado = await module.criar.execute({
         nome: input.nome,
         categoria: input.categoria || '',
         variacoes
       });
+      await reprocessarPendenciasItem?.execute(itemCriado.nome, itemCriado.id);
       await rerender('Item criado.');
     },
 
@@ -186,7 +189,8 @@ export function createItemCatalogoUiApp(
       tags: string[];
       observacao?: string;
     }) {
-      await module.editar.execute(itemId, input);
+      const itemSalvo = await module.editar.execute(itemId, input);
+      await reprocessarPendenciasItem?.execute(itemSalvo.nome, itemSalvo.id);
       editandoItemId = undefined;
       await rerender('Item salvo.');
     },
@@ -255,6 +259,11 @@ export function createItemCatalogoUiApp(
         try {
           await rascunho.descartar('itens');
         } catch { /* best-effort */ }
+      }
+      if (reprocessarPendenciasItem) {
+        for (const item of result.importados) {
+          await reprocessarPendenciasItem.execute(item.nome, item.id);
+        }
       }
       await rerender(`${result.importados.length} itens importados.`);
     },
