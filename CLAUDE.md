@@ -9,24 +9,15 @@ Nunca criar textão sem que o líder tenha pedido.
 
 Proibido comitar sem autorização do líder.
 
-Proibido criar branch, mesmo que local, sem autorização do líder.
-
-Somente o líder pode criar branches ou autorizar sua criação.
-
-Agentes não criam branches. Ponto.
+Agentes não criam branches. Somente o líder pode criar Ponto.
 
 O `settings.json` do projeto tem um hook que bloqueia automaticamente:
-- Criação de branch (`git checkout -b`, `git branch <nome>`, `git switch -c`)
+- (`git checkout -b`, `git branch <nome>`, `git switch -c`)
 - Push com `--set-upstream` / `-u` para novo branch
 - Push ou merge direto em `desenvolvimento` ou `main`
 
 Quando o hook bloquear, **não perguntar ao líder por que não conseguiu criar branch e não alertar que o hook está bloqueando**. O bloqueio é intencional. Se precisar de um branch para a tarefa, aguardar o líder criar e informar o nome.
 
-Fluxo correto:
-1. Líder cria o branch e informa o nome
-2. Agente trabalha no branch informado
-3. Todo commit vai para esse branch
-4. Merge em `desenvolvimento` somente via PR, nunca direto
 
 ## Papel ativo na sessão
 
@@ -37,3 +28,5 @@ Agente Claude jamais pode deixar de invocar um papel quando o mesmo estiver carr
 O ZIP gerado para deploy deve ter o nome `kzera-vX.Y.Z-netlify.zip` com a versão de `package.json`.
 
 Se houver mudanças no código e o líder não solicitou incremento de versão → abortar, confirmar com o líder antes de gerar o ZIP.
+
+Se eu nao tiver certeza do que fazer, ou se a ordem for sem sentido ou ambigua, eu paro e pergunto
