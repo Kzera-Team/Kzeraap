@@ -72,10 +72,18 @@ Resultado esperado:
 - se faltar aprovacao, o sistema bloqueia confirmacao
 
 Resultado obtido:
+- staging pos-conciliar: 7 registros, varios com status=validado
+- apenas 1 registro teve confirmacaoPreviaId setado (unico incluido no plano apos gerar previa)
+- apos confirmacao: transacoesFinanceiras=1 (somente o do plano)
+- os demais registros validados permaneceram em staging sem virar oficiais
+- o sistema exige geracao explicita de previa e confirmacao para oficializar
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_reg03.mjs
+- saida: Staging pos-previa: txn[2-7] confirmacaoPreviaId=N/A, txn[8] confirmacaoPreviaId=previa-h747ij-1
+- saida: transacoesFinanceiras apos confirmar: 1
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ---
 
@@ -191,10 +199,20 @@ Resultado esperado:
 - nao usa apenas status tecnico generico
 
 Resultado obtido:
+- 7 registros em staging: 6 validado + 1 pendente_item
+- pendente_item bloqueado antes do plano (pendencias abertas) ✓
+- 5 dos 6 validados bloqueados pelo montarPlano: "valor pago exige aprovacao de conciliacao" ou "tem valor pago, mas nao tem movimentacao financeira vinculada"
+- apenas 1 registro (txn[8], linha 508, valorPago=0) entrou no plano — sem valor pago, sem vinculos financeiros obrigatorios
+- confirmacaoPreviaId setado explicitamente somente no registro aprovado ✓
+- estado explícito: campo confirmacaoPreviaId marca o registro como parte do plano congelado ✓
+- Observacao: duplicidade interna nao testada — o CSV nao tem linhas duplicadas (pendente proxima rodada)
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_reg03.mjs
+- saida: Staging pos-previa: txn[2-6] confirmacaoPreviaId=N/A, txn[8] confirmacaoPreviaId=previa-h747ij-1
+- codigo montarPlano() linhas 378-400: bloqueios explícitos por valorPago sem conciliacao
 
-Status: Aguardando evidencia
+Status: Aprovado com ressalva (duplicidade pendente proxima rodada)
 
 ---
 
@@ -219,10 +237,16 @@ Resultado esperado:
 - previa informa claramente que nao mexe no estoque
 
 Resultado obtido:
+- cenario 1: apos conciliacao, [data-abrir-confirmacao] e [data-confirmar-importacao] nao aparecem na UI
+- cenario 2: pacote apagado do IDB depois da previa; ao confirmar: pageerror "Pacote congelado nao encontrado. Gere a previa novamente antes de confirmar."
+- em ambos os cenarios zero transacoesFinanceiras foram criadas
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_reg04.mjs
+- cenario 1: [data-abrir-confirmacao] visivel: false / [data-confirmar-importacao] visivel: false
+- cenario 2: Pacote congelado nao encontrado. Gere a previa novamente antes de confirmar.
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ---
 
@@ -243,10 +267,18 @@ Resultado esperado:
 - usuario recebe mensagem clara de que a revisao mudou
 
 Resultado obtido:
+- registro linha=8 estava 'validado' no plano congelado
+- status alterado para 'pendente_perfil' no IndexedDB apos previa gerada
+- ao confirmar: pageerror "Pacote bloqueado: linha 8 mudou de status depois da previa."
+- zero transacoesFinanceiras criadas
+- UI manteve mensagem "Previa pronta: 1 registros podem entrar" (previa antiga nao foi usada)
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_reg08.mjs
+- saida: [19:17:04] [pageerror] Pacote bloqueado: linha 8 mudou de status depois da previa.
+- saida: RESULTADO CT-REG-08: APROVADO
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ---
 
@@ -273,10 +305,20 @@ Resultado esperado:
 - duplicidade nao infla quantidade de vendas
 
 Resultado obtido:
+- CSV com 2 linhas identicas de transacao 801 (Ricardo, Escova, total=25, valorPago=0)
+- staging recebeu 2 registros (ambas as linhas foram importadas)
+- previa: transacoesPrevistas=1, registrosBloqueados=1 (segunda linha bloqueada por duplicidade interna)
+- bloqueio: "duplicidade interna no proprio pacote de confirmacao"
+- faturamentoTotal na previa: 25 (nao 50) — nao inflado
+- apos confirmar: 1 transacaoFinanceira criada (nao 2)
+- mensagem: "Historico confirmado: 1 registros salvos. Estoque nao foi alterado."
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_reg09.mjs
+- saida: Transacoes previstas: 1 / Bloqueadas: 1 / Faturamento: 25
+- saida: transacoesFinanceiras criadas: 1
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ---
 
@@ -330,10 +372,15 @@ Resultado esperado:
 - mensagem informa que cria historico financeiro e nao mexe no estoque
 
 Resultado obtido:
+- fluxo completo executado: importacao, conciliacao, previa, confirmacao
+- mensagem pos-confirmacao: "Historico confirmado: 1 registros salvos. Estoque nao foi alterado."
+- estoque nao modificado — confirmado pela mensagem do proprio sistema
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_reg03.mjs
+- saida: Mensagem pos-confirmar: Historico confirmado: 1 registros salvos. Estoque nao foi alterado.
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ---
 

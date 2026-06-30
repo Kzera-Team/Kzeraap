@@ -1,6 +1,6 @@
 import type { PrepararImportacaoTransacoesUseCase } from '../../application/importacao/PrepararImportacaoTransacoesUseCase';
 import type { PrepararImportacaoFinanceiraUseCase } from '../../application/importacao/PrepararImportacaoFinanceiraUseCase';
-import type { ListarStagingImportacaoUseCase } from '../../application/importacao/ListarStagingImportacaoUseCase';
+import type { ListarStagingImportacaoUseCase, StagingImportacaoResumo } from '../../application/importacao/ListarStagingImportacaoUseCase';
 import type { ConciliarTransacoesFinanceiroUseCase } from '../../application/importacao/ConciliarTransacoesFinanceiroUseCase';
 import type { ResolverPendenciaImportacaoUseCase } from '../../application/importacao/ResolverPendenciaImportacaoUseCase';
 import type { ConfirmarImportacaoHistoricaFinanceiraUseCase, ConfirmarImportacaoHistoricaFinanceiraResultado } from '../../application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase';
@@ -161,6 +161,62 @@ export class ImportacaoTransacoesFinanceiroView {
     this.texto('[data-pendencias-financeiro]', String(staging.resumoTransacoes.pendentesFinanceiro));
     this.texto('[data-pendencias-valor]', String(staging.resumoFinanceiro.pendentes));
     this.texto('[data-pendencias-duplicidade]', String(staging.resumoTransacoes.pendentesPerfil + staging.resumoTransacoes.pendentesItem));
+    this.html('[data-lista-registros-pendentes]', this.renderizarRegistrosPendentes(staging));
+  }
+
+  private escHtml(val: string | number | undefined): string {
+    if (val == null) return '';
+    return String(val).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  private renderizarRegistrosPendentes(staging: StagingImportacaoResumo): string {
+    const linhas: string[] = [];
+
+    if (staging.registrosTransacoes.length > 0) {
+      linhas.push('<div class="ifhead">Transações em staging</div>');
+      for (const r of staging.registrosTransacoes) {
+        const bloqueado = r.status === 'ignorado' || r.status === 'confirmado' ? ' disabled' : '';
+        linhas.push(`
+          <section class="ifissue" data-registro-row data-registro-id="${this.escHtml(r.id)}" data-tipo="transacao">
+            <div class="ifrow">
+              <div>
+                <div class="iftitle">Linha ${this.escHtml(r.linha)}${r.numeroOriginal ? ` · #${this.escHtml(r.numeroOriginal)}` : ''}</div>
+                <div class="ifmeta">Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}</div>
+              </div>
+              <span class="ifbadge ${r.status === 'validado' ? 'ok' : 'warn'}">${this.escHtml(r.status)}</span>
+            </div>
+            <div class="ifbar-inner">
+              <button class="ifsecondary" data-ignorar-registro data-registro-id="${this.escHtml(r.id)}" data-tipo="transacao"${bloqueado}>Ignorar</button>
+              <button class="ifsecondary" data-marcar-revisao-registro data-registro-id="${this.escHtml(r.id)}" data-tipo="transacao">Revisão</button>
+            </div>
+          </section>`);
+      }
+    }
+
+    if (staging.registrosFinanceiros.length > 0) {
+      linhas.push('<div class="ifhead">Movimentos financeiros em staging</div>');
+      for (const r of staging.registrosFinanceiros) {
+        const bloqueado = r.status === 'ignorado' || r.status === 'confirmado' ? ' disabled' : '';
+        linhas.push(`
+          <section class="ifissue" data-registro-row data-registro-id="${this.escHtml(r.id)}" data-tipo="financeiro">
+            <div class="ifrow">
+              <div>
+                <div class="iftitle">Linha ${this.escHtml(r.linha)}${r.numeroTransacaoReferenciado ? ` · ref #${this.escHtml(r.numeroTransacaoReferenciado)}` : ''}</div>
+                <div class="ifmeta">Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}</div>
+              </div>
+              <span class="ifbadge ${r.status === 'validado' ? 'ok' : 'warn'}">${this.escHtml(r.status)}</span>
+            </div>
+            <div class="ifbar-inner">
+              <input type="text" class="ifinput" data-input-vincular-txn placeholder="ID staging transação" />
+              <button class="ifsecondary" data-vincular-financeiro-registro data-registro-id="${this.escHtml(r.id)}"${bloqueado}>Vincular</button>
+              <button class="ifsecondary" data-ignorar-registro data-registro-id="${this.escHtml(r.id)}" data-tipo="financeiro"${bloqueado}>Ignorar</button>
+              <button class="ifsecondary" data-marcar-revisao-registro data-registro-id="${this.escHtml(r.id)}" data-tipo="financeiro">Revisão</button>
+            </div>
+          </section>`);
+      }
+    }
+
+    return linhas.join('\n');
   }
 
   private preencherPrevia(): void {
@@ -200,6 +256,74 @@ export class ImportacaoTransacoesFinanceiroView {
     this.on('[data-abrir-confirmacao]', () => this.abrirConfirmacao());
     this.on('[data-cancelar-confirmacao]', () => this.ir('previa'));
     this.on('[data-confirmar-importacao]', () => this.confirmar());
+    this.on('[data-vincular-massa-segura]', () => this.vincularMassaSegura());
+    this.onAll('[data-ignorar-registro]', el => {
+      const id = el.dataset.registroId;
+      const tipo = el.dataset.tipo as 'transacao' | 'financeiro';
+      if (id && tipo) void this.ignorarRegistro(tipo, id);
+    });
+    this.onAll('[data-marcar-revisao-registro]', el => {
+      const id = el.dataset.registroId;
+      const tipo = el.dataset.tipo as 'transacao' | 'financeiro';
+      if (id && tipo) void this.marcarRevisaoRegistro(tipo, id);
+    });
+    this.onAll('[data-vincular-financeiro-registro]', el => {
+      const finId = el.dataset.registroId;
+      const row = el.closest('[data-registro-row]') as HTMLElement | null;
+      const txnId = row?.querySelector<HTMLInputElement>('[data-input-vincular-txn]')?.value?.trim();
+      if (finId && txnId) void this.vincularFinanceiro(finId, txnId);
+      else this.mensagem = 'Informe o ID da transação em staging para vincular.';
+    });
+  }
+
+  private async ignorarRegistro(tipo: 'transacao' | 'financeiro', id: string): Promise<void> {
+    try {
+      const resultado = await this.deps.resolverPendencia.execute({ acao: 'ignorar', tipo, registroId: id });
+      this.mensagem = resultado.mensagem;
+      await this.ir('pendencias');
+    } catch (error) {
+      await this.falha(error instanceof Error ? error.message : 'Não foi possível ignorar o registro.');
+    }
+  }
+
+  private async marcarRevisaoRegistro(tipo: 'transacao' | 'financeiro', id: string): Promise<void> {
+    try {
+      const resultado = await this.deps.resolverPendencia.execute({ acao: 'marcar_revisao', tipo, registroId: id });
+      this.mensagem = resultado.mensagem;
+      await this.ir('pendencias');
+    } catch (error) {
+      await this.falha(error instanceof Error ? error.message : 'Não foi possível marcar para revisão.');
+    }
+  }
+
+  private async vincularFinanceiro(registroFinanceiroId: string, registroTransacaoId: string): Promise<void> {
+    try {
+      const resultado = await this.deps.resolverPendencia.execute({ acao: 'vincular_financeiro', registroTransacaoId, registroFinanceiroId });
+      this.mensagem = resultado.mensagem;
+      await this.ir('pendencias');
+    } catch (error) {
+      await this.falha(error instanceof Error ? error.message : 'Não foi possível vincular o financeiro.');
+    }
+  }
+
+  private async vincularMassaSegura(): Promise<void> {
+    const container = this.el('[data-lista-registros-pendentes]');
+    if (!container) return;
+    const vinculos: { registroTransacaoId: string; registroFinanceiroId: string }[] = [];
+    container.querySelectorAll<HTMLElement>('[data-vincular-financeiro-registro]').forEach(btn => {
+      const finId = btn.dataset.registroId;
+      const row = btn.closest('[data-registro-row]') as HTMLElement | null;
+      const txnId = row?.querySelector<HTMLInputElement>('[data-input-vincular-txn]')?.value?.trim();
+      if (finId && txnId) vinculos.push({ registroTransacaoId: txnId, registroFinanceiroId: finId });
+    });
+    if (!vinculos.length) return this.falha('Nenhum vínculo informado para aprovação em massa.');
+    try {
+      const resultado = await this.deps.resolverPendencia.execute({ acao: 'vincular_financeiro_em_massa', vinculos });
+      this.mensagem = resultado.mensagem;
+      await this.ir('pendencias');
+    } catch (error) {
+      await this.falha(error instanceof Error ? error.message : 'Aprovação em massa bloqueada.');
+    }
   }
 
   private async preparar(): Promise<void> {
@@ -301,6 +425,12 @@ export class ImportacaoTransacoesFinanceiroView {
     this.el(selector)?.addEventListener('click', () => void handler());
   }
 
+  private onAll(selector: string, handler: (el: HTMLElement) => void): void {
+    this.root?.querySelectorAll<HTMLElement>(selector).forEach(el => {
+      el.addEventListener('click', () => handler(el));
+    });
+  }
+
   private temArquivos(): boolean {
     return Boolean(this.transacoes?.conteudo.trim() && this.financeiro?.conteudo.trim());
   }
@@ -315,6 +445,11 @@ export class ImportacaoTransacoesFinanceiroView {
     if (!toast) return;
     toast.textContent = this.mensagem;
     toast.hidden = !this.mensagem;
+  }
+
+  private html(selector: string, valor: string): void {
+    const alvo = this.el(selector);
+    if (alvo) alvo.innerHTML = valor;
   }
 
   private texto(selector: string, valor: string): void {

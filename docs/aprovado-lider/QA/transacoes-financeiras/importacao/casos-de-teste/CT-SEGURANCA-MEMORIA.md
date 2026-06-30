@@ -47,10 +47,24 @@ Esperado:
 - dados nao ficam expostos sem autenticacao
 
 Obtido:
+- preview gerada com 1 transacao visivel ([data-previa-transacoes]=1)
+- mensagem: "Previa pronta: 1 registros podem entrar."
+- [data-abrir-confirmacao] visivel: true
+- staging IDB antes: 7 registros
+- apos logout ([data-testid="logout-button"]): tela de login apareceu
+- apos reconectar e navegar para importacao:
+  - [data-previa-transacoes]: null (memoria zerada)
+  - [data-importacao-mensagem]: vazio (limpo)
+  - [data-abrir-confirmacao] visivel: false (confirmacao nao exposta)
+  - staging IDB depois: 7 registros (IDB persiste, so memoria foi zerada)
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_seg02.mjs
+- saida: Previa limpa apos bloqueio: ✓ (null)
+- saida: Botao confirmar nao exposto apos bloqueio: ✓
+- saida: Staging IDB persistiu: ✓
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-SEG-03 - Falha nao deixa dados abertos
 

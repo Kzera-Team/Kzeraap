@@ -21,10 +21,17 @@ Esperado:
 - nada definitivo e criado
 
 Obtido:
+- staging pos-conciliar: 7 registros
+- 6 registros com status=validado (conciliados — perfil, item e financeiro ok)
+- 1 registro com status=pendente_item (item nao encontrado, nao entrou na previa)
+- nenhum dado oficial criado durante a conciliacao (apenas classificacao de staging)
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_reg03.mjs
+- saida: Staging pos-conciliar: 7 registros
+- saida: txn[2-6,8] status=validado
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-CON-02 - Pendente sem financeiro
 
@@ -81,10 +88,18 @@ Esperado:
 - nao entra em aprovacao automatica
 
 Obtido:
+- 3 transacoes e 3 financeiros em staging apos preparacao
+- conciliacao retornou: "Conferencia pronta: 0 pagamentos conferidos"
+- txn 701 (total=100, valorPago=100) com financeiro #701 (valor=90, Ricardo) → financeiroStagingIdsResolvidos=[] (sem vinculo automatico)
+- previa gerada: 2 bloqueadas (701 e 702), transacoesPrevistas=1 (apenas 703 com valorPago=0 entrou)
+- zero transacoesFinanceiras oficiais criadas
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_con04_05_06.mjs
+- saida: CT-CON-04: txn 701 financeiroIds=0 → APROVADO
+- saida: Bloqueadas: 2 (701 e 702)
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-CON-05 - Divergencia de perfil
 
@@ -96,10 +111,17 @@ Esperado:
 - fica para revisao manual
 
 Obtido:
+- txn 702 (total=25, valorPago=25, cliente=Ricardo) com financeiro #702 (valor=25, cliente=Guilherme) → perfil divergente
+- financeiroStagingIdsResolvidos=[] para txn 702 (sem vinculo automatico)
+- txn 702 bloqueada na previa junto com txn 701
+- nao entrou em aprovacao automatica
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_con04_05_06.mjs
+- saida: CT-CON-05: txn 702 financeiroIds=0 → APROVADO
+- saida: Bloqueadas: 2 (inclui txn 702)
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-CON-06 - Pagamento posterior provavel
 
@@ -112,7 +134,16 @@ Esperado:
 - nao confirma automaticamente
 
 Obtido:
+- txn 703 (Guilherme, Shampoo, total=45, valorPago=0) com financeiro sem referencia (Credito Guilherme, valor=45, Guilherme, 15/06)
+- candidato de pagamento posterior provavel: financeiro sem numRef, valor=45, mesma cliente, data >= transacao
+- financeiroStagingIdsResolvidos=[] para txn 703 (sem vinculo automatico)
+- nenhuma transacaoFinanceira oficial criada (0)
+- txn 703 entrou na previa somente como historico sem pagamento vinculado (pagamentos=0, movimentos=0)
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_con04_05_06.mjs
+- saida: CT-CON-06: txn 703 financeiroIds=0 → APROVADO
+- saida: Pagamentos previstos: 0 / Movimentos previstos: 0
+- saida: transacoesFinanceiras (antes de confirmar): 0
 
-Status: Aguardando evidencia
+Status: Aprovado

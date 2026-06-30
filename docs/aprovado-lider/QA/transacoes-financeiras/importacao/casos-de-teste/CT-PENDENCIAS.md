@@ -20,10 +20,17 @@ Esperado:
 - estoque nao muda
 
 Obtido:
+- fin703 (Guilherme, sem ref, valor=45, data 15/06) vinculado manualmente a txn703 (Guilherme, Shampoo, valorPago=0)
+- financeiroStagingIdsResolvidos do txn703: [fin703.id]
+- transacaoStagingIdResolvida do fin703: txn703.id
+- resolucaoConciliacao em ambos: manual
+- nenhuma transacaoFinanceira oficial criada (0)
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_pen01_03.mjs
+- saida: CT-PEN-01: ✓ APROVADO
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-PEN-02 - Marcar para revisao manual
 
@@ -41,10 +48,18 @@ Esperado:
 - nao altera estoque
 
 Obtido:
+- txn702 marcada para revisao manual via botao [data-marcar-revisao-registro]
+- status apos acao: erro
+- tiposPendencia inclui revisao_manual
+- nao entrou em aprovacao automatica
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_pen01_03.mjs
+- saida: CT-PEN-02: ✓ APROVADO
+- saida: txn702 status apos revisao: erro
+- saida: tiposPendencia inclui revisao_manual: ✓
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-PEN-03 - Ignorar registro
 
@@ -63,10 +78,18 @@ Esperado:
 - contadores atualizam
 
 Obtido:
+- txn701 ignorada via botao [data-ignorar-registro] na tela de pendencias
+- status apos acao: ignorado
+- nao entrou na confirmacao (nenhuma transacaoFinanceira criada)
+- contadores refletem o registro ignorado no re-render
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_pen01_03.mjs
+- saida: CT-PEN-03: ✓ APROVADO
+- saida: txn701 status apos ignorar: ignorado
+- saida: nenhuma transacaoFinanceira criada: ✓
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-PEN-04 - Aprovacao em massa segura
 
@@ -87,7 +110,18 @@ Esperado:
 - caso de uso revalida antes de aplicar
 
 Obtido:
+- fin703 vinculado a txn703 via [data-vincular-massa-segura] com input preenchido no row do financeiro
+- resolucaoConciliacao=massa_segura em txn703 e fin703
+- txn703 financeiroStagingIdsResolvidos: [fin703.id]
+- fin703 transacaoStagingIdResolvida: txn703.id
+- mensagem UI: "1 vínculos seguros aprovados em massa."
+- nenhuma transacaoFinanceira oficial criada (0)
+- incompletos (701, 702) ficaram fora — use case revalidou cada par
 
 Evidencias:
+- script: docs/aprovado-lider/QA/transacoes-financeiras/importacao/scripts/diag_pen04.mjs
+- saida: resolucaoConciliacao txn703: massa_segura
+- saida: resolucaoConciliacao fin703: massa_segura
+- saida: Status: APROVADO
 
-Status: Aguardando evidencia
+Status: Aprovado
