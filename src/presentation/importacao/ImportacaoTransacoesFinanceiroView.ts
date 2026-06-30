@@ -5,8 +5,6 @@ import type { ConciliarTransacoesFinanceiroUseCase } from '../../application/imp
 import type { ResolverPendenciaImportacaoUseCase } from '../../application/importacao/ResolverPendenciaImportacaoUseCase';
 import type { ConfirmarImportacaoHistoricaFinanceiraUseCase, ConfirmarImportacaoHistoricaFinanceiraResultado } from '../../application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase';
 import { releaseObject } from '../../runtime/RuntimeCleanup';
-import rowTransacaoTemplate from './templates/importacao-transacoes-financeiro-pendencias-row-transacao.html?raw';
-import rowFinanceiroTemplate from './templates/importacao-transacoes-financeiro-pendencias-row-financeiro.html?raw';
 
 export interface ImportacaoTransacoesFinanceiroDeps {
   prepararTransacoes: PrepararImportacaoTransacoesUseCase;
@@ -163,41 +161,47 @@ export class ImportacaoTransacoesFinanceiroView {
     this.texto('[data-pendencias-financeiro]', String(staging.resumoTransacoes.pendentesFinanceiro));
     this.texto('[data-pendencias-valor]', String(staging.resumoFinanceiro.pendentes));
     this.texto('[data-pendencias-duplicidade]', String(staging.resumoTransacoes.pendentesPerfil + staging.resumoTransacoes.pendentesItem));
-    this.html('[data-lista-transacoes-pendentes]', this.renderizarRows(staging.registrosTransacoes, rowTransacaoTemplate, r => r.numeroOriginal));
-    this.visivel('[data-secao-transacoes-pendentes]', staging.registrosTransacoes.length > 0);
-    this.html('[data-lista-financeiros-pendentes]', this.renderizarRows(staging.registrosFinanceiros, rowFinanceiroTemplate, r => r.numeroTransacaoReferenciado));
-    this.visivel('[data-secao-financeiros-pendentes]', staging.registrosFinanceiros.length > 0);
+    this.preencherListaRegistros('[data-lista-transacoes-pendentes]', '[data-secao-transacoes-pendentes]', '[data-tpl-row-transacao]', staging.registrosTransacoes, r => r.numeroOriginal);
+    this.preencherListaRegistros('[data-lista-financeiros-pendentes]', '[data-secao-financeiros-pendentes]', '[data-tpl-row-financeiro]', staging.registrosFinanceiros, r => r.numeroTransacaoReferenciado);
   }
 
-  private escHtml(val: string | number | undefined): string {
-    if (val == null) return '';
-    return String(val).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  private preencherTemplate(template: string, values: Record<string, string>): string {
-    return Object.entries(values).reduce(
-      (html, [key, value]) => html.replaceAll(`{{${key}}}`, value),
-      template
-    );
-  }
-
-  private renderizarRows<T extends { id: string; linha: number; status: string; pendencias: unknown[] }>(
+  private preencherListaRegistros<T extends { id: string; linha: number; status: string; pendencias: unknown[] }>(
+    seletorLista: string,
+    seletorSecao: string,
+    seletorTemplate: string,
     registros: T[],
-    template: string,
     obterRef: (r: T) => string | undefined
-  ): string {
-    return registros.map(r => {
+  ): void {
+    const lista = this.el(seletorLista);
+    const tpl = this.el<HTMLTemplateElement>(seletorTemplate);
+    if (!lista || !tpl) return;
+    lista.replaceChildren();
+    for (const r of registros) {
+      const frag = tpl.content.cloneNode(true) as DocumentFragment;
+      const section = frag.querySelector<HTMLElement>('[data-registro-row]');
+      if (!section) continue;
       const ref = obterRef(r);
       const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
-      return this.preencherTemplate(template, {
-        id: this.escHtml(r.id),
-        titulo: `Linha ${this.escHtml(r.linha)}${ref ? ` · #${this.escHtml(ref)}` : ''}`,
-        meta: `Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}`,
-        status: this.escHtml(r.status),
-        badgeClass: r.status === 'validado' ? 'ok' : 'warn',
-        disabled: bloqueado ? 'disabled' : '',
+      section.dataset.registroId = r.id;
+      const titulo = section.querySelector('[data-cell-titulo]');
+      if (titulo) titulo.textContent = `Linha ${r.linha}${ref ? ` · #${ref}` : ''}`;
+      const meta = section.querySelector('[data-cell-meta]');
+      if (meta) meta.textContent = `Status: ${r.status} · Pendências: ${r.pendencias.length}`;
+      const badge = section.querySelector('[data-cell-badge]');
+      if (badge) {
+        badge.textContent = r.status;
+        badge.classList.toggle('ok', r.status === 'validado');
+        badge.classList.toggle('warn', r.status !== 'validado');
+      }
+      section.querySelectorAll<HTMLButtonElement>('[data-ignorar-registro], [data-marcar-revisao-registro], [data-vincular-financeiro-registro]').forEach(btn => {
+        btn.dataset.registroId = r.id;
+        if (btn.hasAttribute('data-ignorar-registro') || btn.hasAttribute('data-vincular-financeiro-registro')) {
+          btn.disabled = bloqueado;
+        }
       });
-    }).join('\n');
+      lista.appendChild(frag);
+    }
+    this.visivel(seletorSecao, registros.length > 0);
   }
 
   private preencherPrevia(): void {
@@ -426,11 +430,6 @@ export class ImportacaoTransacoesFinanceiroView {
     if (!toast) return;
     toast.textContent = this.mensagem;
     toast.hidden = !this.mensagem;
-  }
-
-  private html(selector: string, valor: string): void {
-    const alvo = this.el(selector);
-    if (alvo) alvo.innerHTML = valor;
   }
 
   private texto(selector: string, valor: string): void {

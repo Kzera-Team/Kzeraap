@@ -51,6 +51,40 @@
     <div class="ifhead">Movimentos financeiros em staging</div>
     <div data-lista-financeiros-pendentes></div>
   </div>
+
+  <template data-tpl-row-transacao>
+    <section class="ifissue" data-registro-row data-tipo="transacao">
+      <div class="ifrow">
+        <div>
+          <div class="iftitle" data-cell-titulo></div>
+          <div class="ifmeta" data-cell-meta></div>
+        </div>
+        <span class="ifbadge" data-cell-badge></span>
+      </div>
+      <div class="ifbar-inner">
+        <button class="ifsecondary" data-ignorar-registro data-tipo="transacao">Ignorar</button>
+        <button class="ifsecondary" data-marcar-revisao-registro data-tipo="transacao">Revisão</button>
+      </div>
+    </section>
+  </template>
+
+  <template data-tpl-row-financeiro>
+    <section class="ifissue" data-registro-row data-tipo="financeiro">
+      <div class="ifrow">
+        <div>
+          <div class="iftitle" data-cell-titulo></div>
+          <div class="ifmeta" data-cell-meta></div>
+        </div>
+        <span class="ifbadge" data-cell-badge></span>
+      </div>
+      <div class="ifbar-inner">
+        <input type="text" class="ifinput" data-input-vincular-txn placeholder="ID staging transação" />
+        <button class="ifsecondary" data-vincular-financeiro-registro>Vincular</button>
+        <button class="ifsecondary" data-ignorar-registro data-tipo="financeiro">Ignorar</button>
+        <button class="ifsecondary" data-marcar-revisao-registro data-tipo="financeiro">Revisão</button>
+      </div>
+    </section>
+  </template>
 </section>
 
 <div class="ifbar">
