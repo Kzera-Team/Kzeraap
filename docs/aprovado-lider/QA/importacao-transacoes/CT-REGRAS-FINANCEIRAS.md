@@ -35,15 +35,19 @@ Resultado esperado:
 - lote nao muda
 
 Resultado obtido:
+- dados oficiais antes: {transacoesFinanceiras: 0, pagamentosTransacao: 0, movimentosFinanceiros: 0}
+- dados oficiais depois: {transacoesFinanceiras: 0, pagamentosTransacao: 0, movimentosFinanceiros: 0}
+- staging recebeu 5 transacoes e 5 registros financeiros corretamente
+- nenhum dado oficial foi criado durante preparar importacao
 
 Evidencias:
-- arquivo de transacoes usado:
-- arquivo financeiro usado:
-- print ou dump antes:
-- print ou dump depois:
-- print do staging:
+- arquivo de transacoes usado: vendas_qa.csv (clientes e produtos mascarados)
+- arquivo financeiro usado: financeiro_qa.csv (clientes mascarados)
+- print ou dump antes: prints/01-estado-inicial.png
+- print ou dump depois: prints/04-staging-apos-preparar.png (Financeiro oficial R$0)
+- print do staging: prints/04-staging-apos-preparar.png
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ---
 

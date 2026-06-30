@@ -18,10 +18,16 @@ Esperado:
 - dados descriptografados aparecem somente durante sessao autenticada
 
 Obtido:
+- localStorage inspecionado apos importacao: 0 chaves expostas fora do prefixo kzera-runtime e kzera-config
+- campos acessiveis no IndexedDB sem autenticacao: apenas metadata (status, tiposPendencia, numeroTransacaoReferenciado, numeroOriginal, id, loteImportacaoId)
+- dados do cliente e produto presentes somente em payloadProtegido (criptografado, AES-GCM)
+- campos dadosBrutos e dadosNormalizados nao ficam em texto claro no IndexedDB
 
 Evidencias:
+- localStorage keys expostas: 0
+- print apos importacao: prints/07-seguranca-posimportacao.png
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-SEG-02 - Limpeza ao bloquear sessao ou sair
 

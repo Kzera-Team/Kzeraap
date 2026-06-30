@@ -36,10 +36,16 @@ Esperado:
 - nao confirma automaticamente
 
 Obtido:
+- Bloqueado: as transacoes da massa de teste ficaram em pendente_item (item nao encontrado) antes de chegar na etapa de conciliacao
+- a validacao de item bloqueia antes da conciliacao ser executada
+- nao foi possivel validar financeiro_nao_encontrado com a massa atual
+- nenhuma transacao foi confirmada automaticamente (confirmado)
 
 Evidencias:
+- transacoes em staging: tiposPendencia incluindo item_nao_encontrado para todos os 5 registros
+- conciliacao nao executada pois pendencias de item bloqueiam o avanco
 
-Status: Aguardando evidencia
+Status: Bloqueado
 
 ## CT-CON-03 - Pendente sem transacao
 
@@ -51,10 +57,15 @@ Esperado:
 - fica para revisao
 
 Obtido:
+- 2 registros financeiros sem numeroTransacaoReferenciado (descricao "Adicao de Credito" sem referencia de numero de transacao)
+- nenhuma transacao foi criada automaticamente para esses registros
+- registros ficaram disponiveis para revisao em staging
 
 Evidencias:
+- dump staging financeiro: 2 registros com numRef ausente (undefined/null)
+- print: prints/04-staging-apos-preparar.png
 
-Status: Aguardando evidencia
+Status: Aprovado
 
 ## CT-CON-04 - Divergencia de valor
 
