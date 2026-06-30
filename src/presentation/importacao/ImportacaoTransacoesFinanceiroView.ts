@@ -5,6 +5,8 @@ import type { ConciliarTransacoesFinanceiroUseCase } from '../../application/imp
 import type { ResolverPendenciaImportacaoUseCase } from '../../application/importacao/ResolverPendenciaImportacaoUseCase';
 import type { ConfirmarImportacaoHistoricaFinanceiraUseCase, ConfirmarImportacaoHistoricaFinanceiraResultado } from '../../application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase';
 import { releaseObject } from '../../runtime/RuntimeCleanup';
+import rowTransacaoTemplate from './templates/importacao-transacoes-financeiro-pendencias-row-transacao.html?raw';
+import rowFinanceiroTemplate from './templates/importacao-transacoes-financeiro-pendencias-row-financeiro.html?raw';
 
 export interface ImportacaoTransacoesFinanceiroDeps {
   prepararTransacoes: PrepararImportacaoTransacoesUseCase;
@@ -169,54 +171,47 @@ export class ImportacaoTransacoesFinanceiroView {
     return String(val).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  private preencherTemplate(template: string, values: Record<string, string>): string {
+    return Object.entries(values).reduce(
+      (html, [key, value]) => html.replaceAll(`{{${key}}}`, value),
+      template
+    );
+  }
+
   private renderizarRegistrosPendentes(staging: StagingImportacaoResumo): string {
-    const linhas: string[] = [];
+    const partes: string[] = [];
 
     if (staging.registrosTransacoes.length > 0) {
-      linhas.push('<div class="ifhead">Transações em staging</div>');
+      partes.push('<div class="ifhead">Transações em staging</div>');
       for (const r of staging.registrosTransacoes) {
-        const bloqueado = r.status === 'ignorado' || r.status === 'confirmado' ? ' disabled' : '';
-        linhas.push(`
-          <section class="ifissue" data-registro-row data-registro-id="${this.escHtml(r.id)}" data-tipo="transacao">
-            <div class="ifrow">
-              <div>
-                <div class="iftitle">Linha ${this.escHtml(r.linha)}${r.numeroOriginal ? ` · #${this.escHtml(r.numeroOriginal)}` : ''}</div>
-                <div class="ifmeta">Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}</div>
-              </div>
-              <span class="ifbadge ${r.status === 'validado' ? 'ok' : 'warn'}">${this.escHtml(r.status)}</span>
-            </div>
-            <div class="ifbar-inner">
-              <button class="ifsecondary" data-ignorar-registro data-registro-id="${this.escHtml(r.id)}" data-tipo="transacao"${bloqueado}>Ignorar</button>
-              <button class="ifsecondary" data-marcar-revisao-registro data-registro-id="${this.escHtml(r.id)}" data-tipo="transacao">Revisão</button>
-            </div>
-          </section>`);
+        const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
+        partes.push(this.preencherTemplate(rowTransacaoTemplate, {
+          id: this.escHtml(r.id),
+          titulo: `Linha ${this.escHtml(r.linha)}${r.numeroOriginal ? ` · #${this.escHtml(r.numeroOriginal)}` : ''}`,
+          meta: `Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}`,
+          status: this.escHtml(r.status),
+          badgeClass: r.status === 'validado' ? 'ok' : 'warn',
+          disabled: bloqueado ? 'disabled' : '',
+        }));
       }
     }
 
     if (staging.registrosFinanceiros.length > 0) {
-      linhas.push('<div class="ifhead">Movimentos financeiros em staging</div>');
+      partes.push('<div class="ifhead">Movimentos financeiros em staging</div>');
       for (const r of staging.registrosFinanceiros) {
-        const bloqueado = r.status === 'ignorado' || r.status === 'confirmado' ? ' disabled' : '';
-        linhas.push(`
-          <section class="ifissue" data-registro-row data-registro-id="${this.escHtml(r.id)}" data-tipo="financeiro">
-            <div class="ifrow">
-              <div>
-                <div class="iftitle">Linha ${this.escHtml(r.linha)}${r.numeroTransacaoReferenciado ? ` · ref #${this.escHtml(r.numeroTransacaoReferenciado)}` : ''}</div>
-                <div class="ifmeta">Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}</div>
-              </div>
-              <span class="ifbadge ${r.status === 'validado' ? 'ok' : 'warn'}">${this.escHtml(r.status)}</span>
-            </div>
-            <div class="ifbar-inner">
-              <input type="text" class="ifinput" data-input-vincular-txn placeholder="ID staging transação" />
-              <button class="ifsecondary" data-vincular-financeiro-registro data-registro-id="${this.escHtml(r.id)}"${bloqueado}>Vincular</button>
-              <button class="ifsecondary" data-ignorar-registro data-registro-id="${this.escHtml(r.id)}" data-tipo="financeiro"${bloqueado}>Ignorar</button>
-              <button class="ifsecondary" data-marcar-revisao-registro data-registro-id="${this.escHtml(r.id)}" data-tipo="financeiro">Revisão</button>
-            </div>
-          </section>`);
+        const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
+        partes.push(this.preencherTemplate(rowFinanceiroTemplate, {
+          id: this.escHtml(r.id),
+          titulo: `Linha ${this.escHtml(r.linha)}${r.numeroTransacaoReferenciado ? ` · ref #${this.escHtml(r.numeroTransacaoReferenciado)}` : ''}`,
+          meta: `Status: ${this.escHtml(r.status)} · Pendências: ${this.escHtml(r.pendencias.length)}`,
+          status: this.escHtml(r.status),
+          badgeClass: r.status === 'validado' ? 'ok' : 'warn',
+          disabled: bloqueado ? 'disabled' : '',
+        }));
       }
     }
 
-    return linhas.join('\n');
+    return partes.join('\n');
   }
 
   private preencherPrevia(): void {
