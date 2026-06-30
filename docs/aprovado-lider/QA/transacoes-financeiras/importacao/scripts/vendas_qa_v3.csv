@@ -1,0 +1,8 @@
+Número,Cliente,Status,Data,Data de Entrega,Data de Vencimento,Data do Pagamento,Quantidade,Descrição,Desconto,Entrega,Taxa de Vendas,Total,Valor Pago,Custo,Lucro,Tipos de Pagamento,Observação
+501,Ricardo,Finalizado,05/06/2026 10:00:00,,,05/06/2026 10:00:00,1,"1 un x Escova (25,00)",0,,,25,25,10,15,Pix,
+502,Guilherme,Finalizado,05/06/2026 11:00:00,,,05/06/2026 11:00:00,2,"2 un x Shampoo (45,00)",0,,,90,90,30,60,Pix,
+503,Paulo,Finalizado,05/06/2026 12:00:00,,,05/06/2026 12:00:00,1,"1 un x Pasta (18,00)",0,,,18,18,6,12,Pix,
+504,Ricardo,Finalizado,05/06/2026 13:00:00,,,05/06/2026 13:00:00,1,"1 un x Escova (25,00)",0,,,25,25,10,15,Pix,
+505,Marcelo,Finalizado,05/06/2026 14:00:00,,,05/06/2026 14:00:00,1,"1 un x Escova (25,00)",0,,,25,25,10,15,Pix,
+506,Ricardo,Finalizado,05/06/2026 15:00:00,,,05/06/2026 15:00:00,1,"1 un x Produto Fantasma (30,00)",0,,,30,30,10,20,Pix,
+508,Ricardo,Finalizado,05/06/2026 17:00:00,,,,1,"1 un x Escova (25,00)",0,,,25,0,10,15,Pix,
