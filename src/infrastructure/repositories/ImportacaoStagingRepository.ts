@@ -50,7 +50,7 @@ function mergeTransacaoPayload(record: RegistroImportacaoTransacaoRecord, payloa
     updatedAt: record.updatedAt
   };
   if (record.numeroOriginal) registro.numeroOriginal = record.numeroOriginal;
-  if (payload.dadosNormalizados) registro.dadosNormalizados = payload.dadosNormalizados;
+  if (payload.dadosNormalizados) registro.dadosNormalizados = structuredClone(payload.dadosNormalizados);
   if (payload.clienteNomeImportado) registro.clienteNomeImportado = payload.clienteNomeImportado;
   if (record.perfilIdResolvido) registro.perfilIdResolvido = record.perfilIdResolvido;
   if (record.transacaoFinanceiraId) registro.transacaoFinanceiraId = record.transacaoFinanceiraId;
@@ -94,7 +94,7 @@ function mergeFinanceiroPayload(record: RegistroImportacaoFinanceiraRecord, payl
     createdAt: record.createdAt,
     updatedAt: record.updatedAt
   };
-  if (payload.dadosNormalizados) registro.dadosNormalizados = payload.dadosNormalizados;
+  if (payload.dadosNormalizados) registro.dadosNormalizados = structuredClone(payload.dadosNormalizados);
   if (payload.clienteNomeImportado) registro.clienteNomeImportado = payload.clienteNomeImportado;
   if (record.perfilIdResolvido) registro.perfilIdResolvido = record.perfilIdResolvido;
   if (record.numeroTransacaoReferenciado) registro.numeroTransacaoReferenciado = record.numeroTransacaoReferenciado;

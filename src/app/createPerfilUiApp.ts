@@ -6,13 +6,15 @@ import { createPerfilModule } from './createPerfilModule';
 import { PerfilDomView, type PerfilUiState, type PerfilTimelineItem } from '../presentation/perfil/PerfilDomView';
 import { releaseTransferPayload } from '../runtime/TransferScope';
 import type { ImportacaoRascunhoUseCase } from '../application/importacao/ImportacaoRascunhoUseCase';
+import type { ReprocessarPendenciasPerfilUseCase } from '../application/importacao/ReprocessarPendenciasPerfilUseCase';
 
 export function createPerfilUiApp(
   perfis: Repository<Perfil>,
   clock: Clock,
   idFactory: () => string,
   getIdentityRule?: () => IdentityRule,
-  rascunho?: ImportacaoRascunhoUseCase
+  rascunho?: ImportacaoRascunhoUseCase,
+  reprocessarPendenciasPerfil?: ReprocessarPendenciasPerfilUseCase
 ) {
   const module = createPerfilModule(perfis, clock, idFactory);
   const view = new PerfilDomView();
@@ -90,7 +92,14 @@ export function createPerfilUiApp(
       municipio?: string;
       conhecePessoalmente: boolean;
     }) {
-      await runWithFeedback(async () => module.criar.execute(input), 'Perfil criado.');
+      await runWithFeedback(async () => {
+        const perfil = await module.criar.execute(input);
+        if (reprocessarPendenciasPerfil) {
+          try {
+            await reprocessarPendenciasPerfil.execute(perfil.nome, perfil.id);
+          } catch { /* best-effort */ }
+        }
+      }, 'Perfil criado.');
     },
 
     async onBuscar(termo: string) {
@@ -146,13 +155,16 @@ export function createPerfilUiApp(
       try {
         const result = await module.fluxoImportacao.confirmar();
         const rule = getIdentityRule?.();
-        if (rule?.parts?.length) {
-          for (const perfil of result.importados) {
-            if (perfil.bairro) {
-              try {
-                await module.definirCodigo.execute(perfil.id, rule);
-              } catch { /* best-effort */ }
-            }
+        for (const perfil of result.importados) {
+          if (rule?.parts?.length && perfil.bairro) {
+            try {
+              await module.definirCodigo.execute(perfil.id, rule);
+            } catch { /* best-effort */ }
+          }
+          if (reprocessarPendenciasPerfil) {
+            try {
+              await reprocessarPendenciasPerfil.execute(perfil.nome, perfil.id);
+            } catch { /* best-effort */ }
           }
         }
         const restantes = result.ignoradosInvalidos
