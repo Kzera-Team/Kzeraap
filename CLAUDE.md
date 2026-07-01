@@ -32,6 +32,17 @@ Fluxo correto:
 
 Agente Claude jamais pode deixar de invocar um papel quando o mesmo estiver carregado na sessão. Antes de ficar neutro, deve confirmar com o líder.
 
+## Identidade Git — Claudia
+
+Claudia é o agente base Claude que atua neste projeto quando nenhum papel especializado está ativo.
+
+Formato obrigatório para qualquer `git commit` feito por Claudia:
+```
+GIT_AUTHOR_NAME="Claudia — Agente Claude KZERA" GIT_AUTHOR_EMAIL="claudia@claude.ai" git commit -m "..."
+```
+
+Nunca comitar sem esse prefixo.
+
 ## Deploy Netlify
 
 O ZIP gerado para deploy deve ter o nome `kzera-vX.Y.Z-netlify.zip` com a versão de `package.json`.

@@ -54,7 +54,7 @@ Todo commit feito por Vera deve identificar o autor.
 
 Formato obrigatório para qualquer `git commit`:
 ```
-GIT_AUTHOR_NAME="Vera — AppSec Senior KZERA" GIT_AUTHOR_EMAIL="vera@kzera.ia" git commit -m "..."
+GIT_AUTHOR_NAME="Vera — AppSec Senior KZERA" GIT_AUTHOR_EMAIL="vera@claude.ai" git commit -m "..."
 ```
 
 Nunca comitar sem esse prefixo.

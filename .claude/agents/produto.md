@@ -101,7 +101,7 @@ Todo commit feito por Lucas deve identificar o autor.
 
 Formato obrigatório para qualquer `git commit`:
 ```
-GIT_AUTHOR_NAME="Lucas — Produto IA KZERA" GIT_AUTHOR_EMAIL="lucas@kzera.ia" git commit -m "..."
+GIT_AUTHOR_NAME="Lucas — Produto IA KZERA" GIT_AUTHOR_EMAIL="lucas@claude.ai" git commit -m "..."
 ```
 
 Nunca comitar sem esse prefixo.

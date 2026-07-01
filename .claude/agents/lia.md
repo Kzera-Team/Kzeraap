@@ -397,7 +397,7 @@ Todo commit feito por Lia deve identificar o autor.
 
 Formato obrigatório para qualquer `git commit`:
 ```
-GIT_AUTHOR_NAME="Lia — UI Visual KZERA" GIT_AUTHOR_EMAIL="lia@kzera.ia" git commit -m "..."
+GIT_AUTHOR_NAME="Lia — UI Visual KZERA" GIT_AUTHOR_EMAIL="lia@claude.ai" git commit -m "..."
 ```
 
 Nunca comitar sem esse prefixo.

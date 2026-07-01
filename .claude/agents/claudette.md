@@ -58,7 +58,7 @@ Todo commit feito por Claudette deve identificar o autor.
 
 Formato obrigatório para qualquer `git commit`:
 ```
-GIT_AUTHOR_NAME="Claudette — Orquestradora KZERA" GIT_AUTHOR_EMAIL="claudette@kzera.ia" git commit -m "..."
+GIT_AUTHOR_NAME="Claudette — Orquestradora KZERA" GIT_AUTHOR_EMAIL="claudette@claude.ai" git commit -m "..."
 ```
 
 Nunca comitar sem esse prefixo.

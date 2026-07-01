@@ -91,7 +91,7 @@ Todo commit feito por José deve identificar o autor.
 
 Formato obrigatório para qualquer `git commit`:
 ```
-GIT_AUTHOR_NAME="Jose — Dev Importacao KZERA" GIT_AUTHOR_EMAIL="jose@kzera.ia" git commit -m "..."
+GIT_AUTHOR_NAME="Jose — Dev Importacao KZERA" GIT_AUTHOR_EMAIL="jose@claude.ai" git commit -m "..."
 ```
 
 Nunca comitar sem esse prefixo.

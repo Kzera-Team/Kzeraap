@@ -87,7 +87,7 @@ Todo commit feito por Rita deve identificar o autor.
 
 Formato obrigatório para qualquer `git commit`:
 ```
-GIT_AUTHOR_NAME="Rita — QA KZERA" GIT_AUTHOR_EMAIL="rita@kzera.ia" git commit -m "..."
+GIT_AUTHOR_NAME="Rita — QA KZERA" GIT_AUTHOR_EMAIL="rita@claude.ai" git commit -m "..."
 ```
 
 Nunca comitar sem esse prefixo.

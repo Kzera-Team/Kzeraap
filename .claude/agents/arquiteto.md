@@ -115,7 +115,7 @@ Todo commit feito por Rafael deve identificar o autor.
 
 Formato obrigatório para qualquer `git commit`:
 ```
-GIT_AUTHOR_NAME="Rafael — Arquiteto KZERA" GIT_AUTHOR_EMAIL="rafael@kzera.ia" git commit -m "..."
+GIT_AUTHOR_NAME="Rafael — Arquiteto KZERA" GIT_AUTHOR_EMAIL="rafael@claude.ai" git commit -m "..."
 ```
 
 Nunca comitar sem esse prefixo.
