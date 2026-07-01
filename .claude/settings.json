@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cmd=$(jq -r '.tool_input.command' 2>/dev/null); if echo \"$cmd\" | grep -qE 'git (checkout -b|branch [^-]|switch -c|push.*--set-upstream|push -u|push origin)'; then echo '{\"decision\": \"block\", \"reason\": \"Criação de branch não autorizada. Somente o líder pode criar branches.\"}'; elif echo \"$cmd\" | grep -qE 'git (push|merge).*(desenvolvimento|main)|git checkout (desenvolvimento|main)'; then echo '{\"decision\": \"block\", \"reason\": \"Operação direta em branch protegida (desenvolvimento ou main). Confirme com o líder antes de executar.\"}'; fi",
+            "command": "cmd=$(jq -r '.tool_input.command' 2>/dev/null); if echo \"$cmd\" | grep -qE '(checkout -b|switch -c|git branch [a-zA-Z])'; then echo '{\"decision\": \"block\", \"reason\": \"Criação de branch não autorizada. Somente o líder pode criar branches.\"}'; elif echo \"$cmd\" | grep -qE 'push.+(-u |--set-upstream)'; then echo '{\"decision\": \"block\", \"reason\": \"Push com set-upstream bloqueado. Somente o líder pode criar branches remotos.\"}'; elif echo \"$cmd\" | grep -qE '(push|merge).+(desenvolvimento|main)'; then echo '{\"decision\": \"block\", \"reason\": \"Operação direta em branch protegida (desenvolvimento ou main). Confirme com o líder antes de executar.\"}'; fi",
             "statusMessage": "Verificando proteção de branch..."
           }
         ]

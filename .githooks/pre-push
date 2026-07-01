@@ -1,0 +1,12 @@
+#!/bin/sh
+# Bloqueia criação de branch remoto via push.
+# Somente o líder pode criar branches. Agentes não criam branches.
+while read local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+    echo "BLOQUEADO: criação de branch remoto não autorizada." >&2
+    echo "Branch: $remote_ref" >&2
+    echo "Somente o líder pode criar branches remotos." >&2
+    exit 1
+  fi
+done
+exit 0
