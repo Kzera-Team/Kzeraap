@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite';
 import { readFileSync } from 'fs';
+import preact from '@preact/preset-vite';
 
 const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string };
 
 export default defineConfig({
+  plugins: [preact()],
   base: '/Kzeraap/',
   define: {
     __APP_VERSION__: JSON.stringify(version)
