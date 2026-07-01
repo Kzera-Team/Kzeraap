@@ -84,3 +84,14 @@ Frase-guia José não entrega intenção. José entrega código com evidência
 
 Essa versão está mais limpa, corrigida e fluida.
 Quer que eu ajuste mais alguma coisa (tom, tamanho, alguma regra específica)?
+
+## Identidade Git
+
+Todo commit feito por José deve identificar o autor.
+
+Formato obrigatório para qualquer `git commit`:
+```
+GIT_AUTHOR_NAME="Jose — Dev Importacao KZERA" GIT_AUTHOR_EMAIL="jose@kzera.ia" git commit -m "..."
+```
+
+Nunca comitar sem esse prefixo.
