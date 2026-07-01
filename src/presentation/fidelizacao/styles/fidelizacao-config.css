@@ -1,0 +1,89 @@
+.fc-root *, .fc-root *::before, .fc-root *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.fc-root {
+  --purple:      #7B4DFF;
+  --purple-dark: #5B2ECC;
+  --bg:          #F7F3FF;
+  --white:       #ffffff;
+  --text:        #120B35;
+  --muted:       #766BA8;
+  --border:      #DDD6EE;
+  --danger:      #C62828;
+  --danger-bg:   #FFF5F5;
+  --danger-bdr:  #FFCDD2;
+  --green:       #087A36;
+  --green-bg:    #DDF8E7;
+  --green-bdr:   #A8E8BF;
+  position: fixed; inset: 0; z-index: 5;
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color: var(--text);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+.fc-root button { cursor: pointer; font-family: inherit; border: none; background: none; padding: 0; color: inherit; }
+
+.fc-root .app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 12px; background: #120B35; flex-shrink: 0; z-index: 10;
+}
+.fc-root .hamburger { display: flex; flex-direction: column; gap: 4px; width: 28px; height: 28px; background: none; border: none; padding: 2px; cursor: pointer; justify-content: center; }
+.fc-root .hamburger span { display: block; width: 18px; height: 2px; border-radius: 2px; background: #fff; }
+.fc-root .app-header h1 { color: #fff; font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
+.fc-root .btn-header { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); border-radius: 10px; color: #fff; font-size: 13px; font-weight: 800; padding: 6px 12px; cursor: pointer; }
+
+.fc-root .screen { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 16px 60px; }
+.fc-root .section { margin-bottom: 28px; }
+.fc-root .section-head { font-size: 13px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+.fc-root .card { background: var(--white); border: 1px solid var(--border); border-radius: 18px; padding: 16px; box-shadow: 0 2px 10px rgba(30,14,70,0.06); }
+
+.fc-root .field { margin-bottom: 14px; }
+.fc-root .field:last-child { margin-bottom: 0; }
+.fc-root .field label { display: block; font-size: 13px; font-weight: 800; color: var(--muted); margin-bottom: 6px; }
+.fc-root .field-input {
+  width: 100%; height: 48px; padding: 0 14px;
+  border: 1px solid #C4BAE4; border-radius: 13px;
+  background: var(--white); color: var(--text);
+  font-size: 15px; font-weight: 700; font-family: inherit;
+  outline: none; appearance: none; display: block;
+}
+.fc-root .field-input::placeholder { color: #B0A8D0; font-weight: 700; }
+.fc-root .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fc-root .hint { font-size: 11px; font-weight: 700; color: #B0A8D0; margin-top: 5px; padding-left: 2px; }
+
+.fc-root .status-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.fc-root .status-option { height: 40px; border-radius: 11px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.fc-root .status-option.active-green  { background: var(--green-bg);  border-color: var(--green-bdr); color: var(--green); }
+.fc-root .status-option.active-muted  { background: #F0EDF8; border-color: #C4BAE4; color: #4A3880; }
+.fc-root .status-option.active-danger { background: var(--danger-bg); border-color: var(--danger-bdr); color: var(--danger); }
+
+.fc-root .prize-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+.fc-root .prize-card:last-of-type { margin-bottom: 0; }
+.fc-root .prize-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.fc-root .prize-step-badge { font-size: 12px; font-weight: 900; color: #8B6B2A; background: #FFF3CC; border: 1px solid #DDB84A; border-radius: 8px; padding: 3px 10px; }
+.fc-root .btn-remove { background: none; border: none; color: #B0A8D0; font-size: 18px; cursor: pointer; line-height: 1; padding: 0 4px; }
+
+.fc-root .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.fc-root .toggle-label { font-size: 13px; font-weight: 700; color: var(--muted); }
+.fc-root .toggle { width: 42px; height: 24px; border-radius: 12px; background: var(--green-bg); border: 1px solid var(--green-bdr); position: relative; cursor: pointer; flex-shrink: 0; }
+.fc-root .toggle::after { content: ''; position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--green); }
+.fc-root .toggle.off { background: #F0EDF8; border-color: var(--border); }
+.fc-root .toggle.off::after { right: auto; left: 3px; background: #C4BAE4; }
+
+.fc-root .btn-add { width: 100%; height: 46px; border-radius: 13px; border: 1px dashed #C4BAE4; background: transparent; color: var(--purple); font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+.fc-root .actions-bar { display: flex; flex-direction: column; gap: 8px; }
+.fc-root .btn-primary { width: 100%; height: 54px; border-radius: 16px; border: none; background: linear-gradient(180deg, var(--purple) 0%, var(--purple-dark) 100%); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 24px rgba(91,46,204,0.35); }
+.fc-root .btn-danger  { width: 100%; height: 48px; border-radius: 14px; border: 1px solid var(--danger-bdr); background: var(--white); color: var(--danger); font-size: 14px; font-weight: 800; cursor: pointer; }
+
+.fc-root .toast { font-size: 13px; font-weight: 700; border-radius: 12px; padding: 10px 14px; margin-bottom: 16px; }
+.fc-root .toast-success { background: var(--green-bg); border: 1px solid var(--green-bdr); color: var(--green); }
+.fc-root .toast-error   { background: var(--danger-bg); border: 1px solid var(--danger-bdr); color: var(--danger); }
+
+.fc-root .bg-content { opacity: 0.35; pointer-events: none; filter: blur(1px); overflow: hidden; max-height: 100vh; }
+.fc-root .overlay { position: fixed; inset: 0; background: rgba(8,4,22,0.5); z-index: 20; }
+.fc-root .bottom-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); border-radius: 28px 28px 0 0; padding: 12px 16px 40px; box-shadow: 0 -12px 48px rgba(18,8,45,0.3); z-index: 30; }
+.fc-root .sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: #C4BAE4; margin: 0 auto 20px; }
+.fc-root .sheet-title { color: var(--text); font-size: 20px; font-weight: 900; letter-spacing: -0.3px; margin-bottom: 4px; }
+.fc-root .sheet-sub { color: var(--muted); font-size: 13px; font-weight: 700; margin-bottom: 20px; line-height: 1.4; }
+.fc-root .btn-cancel { width: 100%; height: 44px; border: none; background: transparent; color: var(--purple); font-size: 14px; font-weight: 800; cursor: pointer; }

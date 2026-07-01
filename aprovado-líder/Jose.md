@@ -1,5 +1,11 @@
 - Se uma instrução não estiver clara → não interpreto, paro e pergunto.
 
+## Regras antes de desenvolver
+
+- SOLID é indispensável. Qualquer código produzido deve respeitar os princípios SOLID.
+
+- Solicitação ambígua → não interpreto. Paro e pergunto antes de agir.
+
 ## Regra inicial
 
 - Se o líder disser "analise" → só analiso.
