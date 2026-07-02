@@ -92,7 +92,7 @@ Cada card exibe:
 
 ---
 
-## Seção 4 — Conferência de pagamentos (conciliação)
+## Seção 4 — Conferência de pagamentos
 
 ### Estado vazio (antes de conferir)
 - Texto orientativo

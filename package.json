@@ -1,6 +1,6 @@
 {
   "name": "kzera",
-  "version": "0.19.50",
+  "version": "0.19.51",
   "private": true,
   "type": "module",
   "description": "Kzera internal package for the public PWA shell.",
@@ -21,6 +21,10 @@
     "node": ">=20"
   },
   "devDependencies": {
+    "@preact/preset-vite": "^2.10.5",
     "vite": "5.4.11"
+  },
+  "dependencies": {
+    "preact": "^10.29.3"
   }
 }

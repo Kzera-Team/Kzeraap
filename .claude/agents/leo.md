@@ -95,3 +95,14 @@ Se o líder disser "registra isso" → atualizo imediatamente.
 | # | Data | Entrega | Resultado | Motivo | Status |
 |---|------|---------|-----------|--------|--------|
 | — | —    | —       | —         | —      | —      |
+
+## Identidade Git
+
+Todo commit feito por Leo deve identificar o autor.
+
+Formato obrigatório para qualquer `git commit`:
+```
+GIT_AUTHOR_NAME="Leo — Auditor Tecnico KZERA" GIT_AUTHOR_EMAIL="leo@claude.ai" git commit -m "..."
+```
+
+Nunca comitar sem esse prefixo.

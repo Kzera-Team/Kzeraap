@@ -99,6 +99,16 @@ A usuária cansada não deve receber erro genérico como “produto inválido”
 - quais opções seguras existem;
 - o que será criado, mapeado ou ignorado.
 
+## Nomenclatura — decisão do líder
+
+| Conceito | Nome oficial |
+|---|---|
+| Cruzar pagamento manual ou importado do sistema antigo com transação | **Conferência de pagamentos** |
+| Importar extrato do banco como prova real de entrada de dinheiro | **Extrato bancário** |
+| Cruzar extrato bancário com transações (futuro, via API ou CSV bancário) | **Conciliação bancária** |
+
+"Conciliação" fica reservado para quando houver dado bancário real. O fluxo atual de cruzamento manual passa a se chamar "Conferência de pagamentos".
+
 ## Próxima funcionalidade
 
 1.14.1 — Transações Base.

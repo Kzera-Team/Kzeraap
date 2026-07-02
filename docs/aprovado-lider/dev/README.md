@@ -1,85 +1,51 @@
-# Dev — Processo KZERA
+# Pacote — José Dev Importação KZERA
 
-Esta pasta concentra as regras obrigatórias de desenvolvimento, entrega e governança.
+## Como usar
 
-## Versionamento do processo
+1. Cole `00-PROMPT-PRINCIPAL-JOSE.md` na configuração principal do agente José.
+2. Anexe a pasta `auxiliares/` como conhecimento de apoio.
+3. Rode os testes de `auxiliares/08-testes-de-obediencia.md`.
+4. Use `auxiliares/09-quando-usar-cada-teste.md` para escolher quais testes aplicar por situação.
+5. Só confie em entrega real depois de José passar nos testes mínimos.
 
-Versão atual: `1.1.5`
-Data: `2026-06-27`
-Dono: líder do projeto
+## Estrutura
 
-Toda alteração nos documentos oficiais desta pasta deve atualizar esta seção com:
+- `00-PROMPT-PRINCIPAL-JOSE.md` — prompt principal.
+- `auxiliares/01-escopo-e-limites.md` — escopo de José.
+- `auxiliares/02-arquitetura-importacao.md` — arquitetura aplicada ao módulo.
+- `auxiliares/03-reuso-e-duplicacao.md` — busca antes de criar.
+- `auxiliares/04-validacao-e-evidencia.md` — evidência e validações.
+- `auxiliares/05-status-final-parcial-bloqueada.md` — status correto.
+- `auxiliares/06-visual-ux-seguranca.md` — quando envolver Lia, Helena, Fernando ou Rose.
+- `auxiliares/07-erros-que-nao-podem-repetir.md` — erros proibidos.
+- `auxiliares/08-testes-de-obediencia.md` — testes robustos e direcionados.
+- `auxiliares/09-quando-usar-cada-teste.md` — quando aplicar cada teste.
 
-- nova versão;
-- data;
-- resumo do que foi alterado;
-- motivo da alteração;
-- impacto no processo.
+## Status
 
-Se os documentos de processo forem alterados e esta seção não for atualizada, a entrega deve bloquear.
+Pronto para uso documental.  
+Obediência depende de testes e revisão em uso real.
 
-## Alterações desta versão
+## V4 — Ajuste documental
 
-- Adicionadas regras objetivas para evitar repetição de erros de entrega:
-  - garantia só após validação máxima possível;
-  - conferência real do pacote antes de informar árvore/arquivos;
-  - arquivo central não recebe fluxo novo;
-  - trava só quando necessária;
-  - alteração de processo deve ser declarada.
+Adicionada trava para revisão/alteração documental:
 
-## Regra-mãe
+- José deve propor antes de alterar;
+- não pode gerar ZIP sem autorização;
+- não pode aplicar melhoria documental sem ordem explícita;
+- testes 19 e 20 cobrem revisão documental e aplicação limitada.
 
-Toda entrega só pode seguir se provar:
+Status: pronto para uso documental; obediência depende de testes e revisão em uso real.
 
-1. o escopo estava claro antes de codar;
-2. a solução ficou no lugar certo, sem duplicação e sem misturar responsabilidades;
-3. a evidência entregue corresponde ao que realmente foi validado.
+## V5 — Regra Suprema primeiro e prompt principal enxuto
 
-Se qualquer um dos três falhar, a entrega deve bloquear.
+Correções:
 
-## Arquivos oficiais
+- Regra Suprema virou a primeira coisa útil do arquivo.
+- Prompt principal foi enxugado.
+- Detalhes longos continuam nos auxiliares.
+- Trava documental foi mantida.
+- Testes documentais 19 e 20 foram mantidos.
+- Item 3 de backend futuro continua removido/não aplicado.
 
-- `processo-dev.md`: fluxo obrigatório antes, durante e depois de codar.
-- `checklist-dev.md`: checklist geral de desenvolvimento, refatoração, responsabilidade, duplicação, rollback e entrega honesta.
-- `checklist-visual.md`: regras para tela, mockup, print real e garantia visual.
-- `governanca-e-excecoes.md`: dono, proteção, exceções, decisões, incidentes e registros fiéis.
-- `controles-futuros.md`: controles que não entram agora, critérios para entrada futura e motivo de adiamento.
-
-## Uso no dia a dia
-
-Toda tarefa:
-
-- leia `processo-dev.md` antes de iniciar;
-- aplique `checklist-dev.md` antes e depois de codar.
-
-Somente se houver impacto visual:
-
-- aplique `checklist-visual.md` quando houver tela, layout, HTML, CSS, componente visual, mockup ou fluxo com impacto visual.
-
-Somente se houver exceção, governança ou registro sensível:
-
-- use `governanca-e-excecoes.md` quando houver exceção, mudança de regra, alteração de processo, incidente, decisão técnica relevante, mudança em documento protegido ou pedido de transcrição/registro fiel.
-
-Somente quando alguém propuser novo controle, automação ou trava:
-
-- consulte `controles-futuros.md` antes de criar nova regra;
-- se o controle ainda não atende ao critério de entrada, não implementar agora.
-
-Regra de uso:
-
-- não tratar todos os documentos como leitura completa obrigatória em toda tarefa;
-- aplicar apenas os documentos correspondentes ao tipo da entrega;
-- se houver dúvida sobre qual documento se aplica, bloquear e confirmar antes de seguir.
-
-## Proteção
-
-Checklist, processo, workflow, PR template, scripts de bloqueio, mockups aprovados e thresholds não podem ser alterados sem aprovação do dono.
-
-O dono dos documentos de processo é o líder do projeto.
-No contexto atual, o dono é o usuário solicitante.
-
-## Limite
-
-Checklist reduz risco, mas não substitui revisão humana, arquitetura nem validação real da entrega.
-Evidência manual não é prova automatizada.
-Garantia sempre deve declarar escopo.
+Status: pronto para uso documental; obediência depende de testes e revisão em uso real.

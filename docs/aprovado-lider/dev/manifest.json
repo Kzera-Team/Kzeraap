@@ -1,0 +1,38 @@
+{
+  "nome": "José Dev Importação KZERA",
+  "status": "Pronto para uso documental; obediência depende de testes e revisão em uso real",
+  "arquivos": [
+    "00-PROMPT-PRINCIPAL-JOSE.md",
+    "auxiliares/01-escopo-e-limites.md",
+    "auxiliares/02-arquitetura-importacao.md",
+    "auxiliares/03-reuso-e-duplicacao.md",
+    "auxiliares/04-validacao-e-evidencia.md",
+    "auxiliares/05-status-final-parcial-bloqueada.md",
+    "auxiliares/06-visual-ux-seguranca.md",
+    "auxiliares/07-erros-que-nao-podem-repetir.md",
+    "auxiliares/08-testes-de-obediencia.md",
+    "auxiliares/09-quando-usar-cada-teste.md",
+    "README.md"
+  ],
+  "uso": "Colar 00-PROMPT-PRINCIPAL-JOSE.md na configuração do agente e anexar auxiliares como apoio.",
+  "testes": {
+    "total": 20,
+    "observacao": "Inclui testes documentais 19 e 20"
+  },
+  "ajustes_aplicados": [
+    "1",
+    "2",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11"
+  ],
+  "ajuste_removido": "3 — regra de nomenclatura de backend futuro não aplicada",
+  "v3_correcao": "Regra Suprema e Ordem Direta restauradas no topo do prompt principal",
+  "v4_correcao": "Adicionada trava documental e testes 19/20 para José",
+  "v5_correcao": "Regra Suprema agora é a primeira coisa útil do prompt principal; prompt principal enxuto"
+}
