@@ -1,127 +1,30 @@
-<meta charset="UTF-8">
-<title>KZERA · 08 Inputs — Preview</title>
-<link rel="stylesheet" href="componente.css">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<!-- KZERA · 08 — Inputs · componente.html -->
+<!-- Requer: componente.css -->
 
-/* tokens inline para preview funcionar sem importar o bundle todo */
-:root {
-  --kz-light-bg:          #F4F0FC;
-  --kz-light-surface:     #FFFFFF;
-  --kz-light-text:        #120B35;
-  --kz-light-muted:       #6B5FA0;
-  --kz-light-accent:      #7B4DFF;
-  --kz-light-border:      #DDD4F3;
-  --kz-status-danger-bg:  #FECACA;
-  --kz-status-danger-text:#991B1B;
-  --kz-status-success-bg: #DCFCE7;
-  --kz-status-success-text:#166534;
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-12: 48px;
-  --radius-2: 8px;
-  --t-base: 0.875rem;
-  --t-md:   1rem;
-}
+<label class="kz-field">
+  <span class="kz-field-label">Nome do perfil</span>
+  <input class="kz-field-input" type="text" placeholder="Digite o nome do perfil" autocomplete="off">
+</label>
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #F4F0FC;
-  display: flex;
-  justify-content: center;
-  padding: 32px 16px;
-  min-height: 100vh;
-}
+<label class="kz-field">
+  <span class="kz-field-label">Valor recebido</span>
+  <input class="kz-field-input" type="text" inputmode="decimal" placeholder="0,00">
+</label>
 
-/* Phone frame */
-.phone {
-  width: 375px;
-  min-height: 667px;
-  background: #fff;
-  border-radius: 40px;
-  box-shadow: 0 20px 60px rgba(18,11,53,.18);
-  padding: 56px 24px 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
+<label class="kz-field">
+  <span class="kz-field-label">Quantidade</span>
+  <input class="kz-field-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0">
+  <span class="kz-field-help">Informe a quantidade que será vendida.</span>
+</label>
 
-.section-label {
-  font-size: 10px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: #9B8FC8;
-  margin-bottom: 8px;
-}
-</style>
+<label class="kz-field kz-field--error">
+  <span class="kz-field-label">Quantidade</span>
+  <input class="kz-field-input" type="number" inputmode="decimal" value="20" aria-invalid="true" aria-describedby="erro-quantidade">
+  <span class="kz-field-error" id="erro-quantidade">Você informou 20 un, mas só existem 3 un em estoque.</span>
+</label>
 
-<div class="phone">
-
-  <div>
-    <div class="section-label">Padrão — texto</div>
-    <div class="kz-field">
-      <label class="kz-field-label">Nome completo</label>
-      <input class="kz-field-input" type="text" placeholder="Ex.: Maria da Silva">
-      <span class="kz-field-helper">Como aparece no seu cadastro.</span>
-    </div>
-  </div>
-
-  <div>
-    <div class="section-label">Foco (simulado)</div>
-    <div class="kz-field">
-      <label class="kz-field-label">E-mail</label>
-      <input class="kz-field-input" type="email" placeholder="seu@email.com" style="border-color: var(--kz-light-accent);">
-    </div>
-  </div>
-
-  <div>
-    <div class="section-label">Senha com toggle</div>
-    <div class="kz-field">
-      <label class="kz-field-label">Senha</label>
-      <div class="kz-field-wrap">
-        <input class="kz-field-input" type="password" placeholder="Mínimo 8 caracteres" id="pwd">
-        <button class="kz-field-toggle" type="button" onclick="togglePwd()" aria-label="Mostrar senha">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div>
-    <div class="section-label">Erro</div>
-    <div class="kz-field">
-      <label class="kz-field-label">CPF</label>
-      <input class="kz-field-input kz-field-input--error" type="text" value="123.456.789-00" inputmode="numeric">
-      <span class="kz-field-helper kz-field-helper--error">CPF inválido. Verifique e tente novamente.</span>
-    </div>
-  </div>
-
-  <div>
-    <div class="section-label">Sucesso</div>
-    <div class="kz-field">
-      <label class="kz-field-label">Telefone</label>
-      <input class="kz-field-input kz-field-input--success" type="tel" value="(11) 91234-5678" inputmode="tel">
-      <span class="kz-field-helper kz-field-helper--success">Número verificado.</span>
-    </div>
-  </div>
-
-  <div>
-    <div class="section-label">Disabled</div>
-    <div class="kz-field">
-      <label class="kz-field-label" style="opacity:.45;">CNPJ</label>
-      <input class="kz-field-input" type="text" value="12.345.678/0001-90" disabled>
-      <span class="kz-field-helper" style="opacity:.45;">Não editável nesta etapa.</span>
-    </div>
-  </div>
-
-</div>
-
-<script>
-function togglePwd() {
-  var input = document.getElementById('pwd');
-  input.type = input.type === 'password' ? 'text' : 'password';
-}
-</script>
+<label class="kz-field kz-field--success">
+  <span class="kz-field-label">Código do item</span>
+  <input class="kz-field-input" type="text" value="PSY-60G" aria-describedby="ok-codigo">
+  <span class="kz-field-success" id="ok-codigo">Item encontrado.</span>
+</label>
