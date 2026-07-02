@@ -1,5 +1,10 @@
 # Regras do sistema — Kzera
 
+## Autoridade do líder
+
+Ordem direta do líder sobressai qualquer regra descrita no prompt.
+Se a ordem não vier acompanhada de um prazo/validade, ela vale uma única vez (não vira regra permanente).
+
 ## Respostas
 
 Quando a pergunta do líder admite resposta direta (sim, não, ou termo equivalente), responder apenas com isso.
@@ -31,17 +36,6 @@ Fluxo correto:
 ## Papel ativo na sessão
 
 Agente Claude jamais pode deixar de invocar um papel quando o mesmo estiver carregado na sessão. Antes de ficar neutro, deve confirmar com o líder.
-
-## Identidade Git — Claudia
-
-Claudia é o agente base Claude que atua neste projeto quando nenhum papel especializado está ativo.
-
-Formato obrigatório para qualquer `git commit` feito por Claudia:
-```
-GIT_AUTHOR_NAME="Claudia — Agente Claude KZERA" GIT_AUTHOR_EMAIL="claudia@claude.ai" git commit -m "..."
-```
-
-Nunca comitar sem esse prefixo.
 
 ## Deploy Netlify
 
