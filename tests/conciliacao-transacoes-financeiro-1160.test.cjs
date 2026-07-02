@@ -8,7 +8,7 @@ const version = fs.readFileSync(path.join(root, 'src/app/appVersion.ts'), 'utf8'
 const useCase = fs.readFileSync(path.join(root, 'src/application/importacao/ConciliarTransacoesFinanceiroUseCase.ts'), 'utf8');
 const view = fs.readFileSync(path.join(root, 'src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts'), 'utf8');
 const app = fs.readFileSync(path.join(root, 'src/app/createKzeraAuthenticatedApp.ts'), 'utf8');
-const doc = fs.readFileSync(path.join(root, 'docs/importacao/CONCILIACAO_TRANSACOES_FINANCEIRO_1.16.0.md'), 'utf8');
+const doc = fs.readFileSync(path.join(root, 'docs/aprovado-lider/desenvolvimento/transacoes-financeiras/importacao/regras/CONCILIACAO_TRANSACOES_FINANCEIRO_1.16.0.md'), 'utf8');
 
 assert.strictEqual(pkg.version, '1.19.5');
 assert(version.includes("APP_VERSION = '1.19.5'"));

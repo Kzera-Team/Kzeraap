@@ -9,7 +9,7 @@ const arquivo = fs.readFileSync('src/domain/perfil/PerfilImportacaoArquivo.ts', 
 const gateway = fs.readFileSync('src/infrastructure/importacao/PerfilSpreadsheetImportGateway.ts', 'utf8');
 const usecase = fs.readFileSync('src/application/perfil/ImportacaoPerfisArquivoUseCase.ts', 'utf8');
 const factory = fs.readFileSync('src/app/createPerfilModule.ts', 'utf8');
-const docs = fs.readFileSync('docs/importacao/CONFIRMACAO_HISTORICO_FINANCEIRO_1.19.3.md', 'utf8');
+const docs = fs.readFileSync('docs/aprovado-lider/desenvolvimento/transacoes-financeiras/importacao/regras/CONFIRMACAO_HISTORICO_FINANCEIRO_1.19.3.md', 'utf8');
 
 assert(!pkg.includes('"xlsx"'), '1.19.3 não pode depender de xlsx/codepage no build oficial.');
 assert(arquivo.includes("'xls'") && arquivo.includes("'xlsx'"), 'Formatos XLS e XLSX continuam detectáveis para mensagem humana.');
