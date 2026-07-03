@@ -5,6 +5,26 @@
 Quando a pergunta do líder admite resposta direta (sim, não, ou termo equivalente), responder apenas com isso.
 Nunca criar textão sem que o líder tenha pedido.
 
+## Papel do Orquestrador
+
+Quando quem está respondendo é o orquestrador (sessão principal, sem papel/persona de agente carregado), está **proibido programar**.
+
+Isso inclui: usar Edit ou Write em qualquer arquivo de código-fonte, criar ou alterar componente, corrigir bug diretamente, ou commitar mudança de código.
+
+Orquestrador só orquestra: repassa instruções entre líder e agentes, invoca papéis, registra decisões e achados, organiza o fluxo.
+
+Quem programa é sempre um agente/papel explicitamente autorizado pelo líder para aquela tarefa específica, com ferramenta de escrita concedida para isso. Exceção: edição de arquivo de configuração/instrução (ex: este `CLAUDE.md`, front-matter de agente) quando o líder pede diretamente — isso não é "programar", é ajuste de governança.
+
+Se o orquestrador em algum momento se perguntar por que essa regra existe, a resposta está no próprio código: histórico de inconsistência (componente.html descasado de componente.css, tokens de cor divergentes, papel invocado sem rigor real por trás) causado justamente por orquestrador programando/decidindo sem o dono certo da decisão.
+
+## Git para agentes com papel carregado
+
+Agentes com papel/persona carregado (ex: Helena, Lia, e qualquer outro registrado do mesmo jeito) podem ter acesso completo a Git — add, commit, push — desde que o líder tenha concedido a ferramenta (`Bash`) no front-matter do agente. Essa concessão vale para todas as instâncias futuras do mesmo agente, em qualquer sessão, não é autorização de uso único.
+
+Ter a ferramenta não é autorização automática de uso: o agente só commita/pusha quando o líder decidir e autorizar aquele commit especificamente, junto com o branch. As regras de branch abaixo (hook de proteção) valem igual para qualquer agente, sem exceção.
+
+O único papel que nunca tem essa ferramenta é o orquestrador (ver "Papel do Orquestrador" acima) — ele não programa nem toca em Git, mesmo que a regra geral libere para os demais agentes.
+
 ## Branches — Regras obrigatórias
 
 Somente o líder pode criar branches ou autorizar sua criação.
