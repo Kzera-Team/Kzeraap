@@ -6,7 +6,7 @@ Pasta reservada para os mockups HTML da funcionalidade **Venda Manual** do KZERA
 
 - Cada estado visual deve ser um arquivo HTML separado.
 - Cada HTML deve ser independente, com CSS embutido no próprio arquivo.
-- Os mockups devem seguir o manual UX aprovado em `docs/aprovado-lider/manual-ux.md`.
+- Os mockups devem seguir o manual UX aprovado em `docs/aprovados-lider/processo/manual-ux.md`.
 - Dispositivo alvo: iPhone 11, viewport 414 × 896 px.
 - Modal permitido: apenas bottom sheet.
 

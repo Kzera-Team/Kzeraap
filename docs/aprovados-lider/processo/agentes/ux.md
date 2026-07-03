@@ -58,4 +58,4 @@ Agente de IA responsável por design, prototipação e padrões visuais do siste
 
 ## Referência de design
 
-`docs/aprovado-lider/agentes/manual-ux.md`
+`docs/aprovados-lider/processo/manual-ux.md`

@@ -129,3 +129,40 @@ O líder confirmou que "a pasta" citada é `docs/aprovado-lider` (singular). Ach
 - `docs/aprovados-lider` (plural) — `design-system/` (tokens, cores, tipografia, componentes, referências visuais externas), `dev/auxiliares`, `index.html`.
 
 Não sei se essa duplicação de nome é intencional (singular = processo, plural = design system) ou é o tipo de bagunça que a reestruturação de pastas deveria resolver. Sinalizando antes de qualquer um dos jose mexer em qualquer uma das duas — fácil de editar a errada por engano com nomes tão parecidos.
+
+## EXECUTADO — unificação de pastas (autorizado pelo líder: "pode seguir... devem ser unificadas")
+
+Ação tomada (via `git mv`, histórico preservado):
+- Todo conteúdo de `docs/aprovado-lider/*` movido para `docs/aprovados-lider/processo/*` (canônico = plural, por já ser a referência ativa em `CLAUDE.md` e em `.claude/agents/lia.md`/`helena.md`).
+- Pasta `docs/aprovado-lider` removida (vazia após o move).
+- 5 referências à pasta antiga corrigidas: `.github/pull_request_template.md`, `mockups/venda_manual/README.md`, e 3 referências internas cruzadas dentro dos próprios documentos movidos (`checklist-bloqueio-obrigatorio.md`, `governanca-e-excecoes.md`, `agentes/ux.md` — esta última apontava pra um caminho que nunca existiu de verdade, `agentes/manual-ux.md`, corrigido pro real).
+- Verificação final: `grep` no repo inteiro por `aprovado-lider` singular retorna vazio — sem referência solta.
+- Regra nova adicionada em `CLAUDE.md` (seção "Nomenclatura de pastas em docs/"): proíbe criar pasta com nome variação gramatical de uma já existente sem checar antes.
+- Regra de memória por agente também adicionada em `CLAUDE.md`, e criei `docs/memoria/<papel>.md` pra 14 papéis (max, marco, jose, rafael, diego, vera, rita, lia, helena, produto, leo, bruno, claudette, senhora-cansada).
+
+Nenhum commit foi feito — mudanças estão no working tree, aguardando autorização de commit (regra de Git do CLAUDE.md: só com autorização literal pra commitar).
+
+## ACHADO IMPORTANTE — branch do trabalho antigo de Rose/Ana localizado
+
+O líder pediu pra procurar "o branch que cria uma pasta de QA". Busquei em todos os 42 branches remotos por commits que criam caminho `.../QA/...`. Achei em 6 branches, todos criando `docs/aprovado-lider/QA/` (a pasta singular que acabei de unificar — atenção: se algum desses branches for mesclado depois, o caminho vai precisar ser reconciliado pra `docs/aprovados-lider/processo/QA/`):
+
+- `claude/development-update-i3ufh7` e `claude/leia-agents-jose-rjkzjt` e `claude/produto-qjk4a4`: QA de `importacao-transacoes` (casos de teste CT-CONCILIACAO, CT-PENDENCIAS, CT-REGRAS-FINANCEIRAS, CT-SEGURANCA-MEMORIA, CT-STAGING, EVIDENCIAS-PADRAO, RODADA_QA_01, prints de evidência).
+- `fix_backup_import`, `merge_produto_testes`, `testes_transacao_importar`: mesmo conteúdo de QA de importação-transações, **mais `QA/estoque/README.md` e `QA/fidelidade/README.md`** — ou seja, já existe um início de QA documentado pra Estoque e Fidelidade, os 2 fronts que eu ainda não tinha conseguido investigar.
+
+Isso é exatamente o "trabalho da Rose/Ana" que o líder queria continuar — achado, não é branch fantasma. Ainda não abri o conteúdo desses arquivos de QA em detalhe (não fiz checkout, só inspecionei via `git log --name-only` sem alterar nada). Próximo passo natural: rita (QA atual) revisar esse material antes de decidir se aproveita ou refaz.
+
+## EM ANDAMENTO
+
+Perguntei ao bruno (autorizado pelo líder) sobre: (1) isolamento real de arquivo por agente neste ambiente, (2) viabilidade de assinatura de commit por papel. Aguardando retorno.
+
+## VALIDADO — revisão da rita sobre o QA antigo (Rose)
+
+Rita revisou o material achado nos 3 branches mais completos. Antes de aceitar o relatório dela, conferi eu mesmo o ponto mais forte da alegação, direto na fonte:
+
+- `git show origin/merge_produto_testes:docs/aprovado-lider/QA/transacoes-financeiras/importacao/rodadas/RODADA_QA_01.md` — existe, bate exatamente com o que ela descreveu: nota explícita no arquivo diz "handlers adicionados em ImportacaoTransacoesFinanceiroView.bind() (data-ignorar-registro, data-marcar-revisao-registro, data-vincular-financeiro-registro, data-vincular-massa-segura)" — ou seja, a própria rodada documenta que esses handlers foram criados especificamente no branch `fix_backup_import`.
+- `grep` desses 4 handlers em `src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts` (branch atual `n1`): **zero ocorrência**. Confirmado — a funcionalidade testada e aprovada naquela rodada não existe no branch de trabalho atual.
+- "Decisão Rose: Não aprovado" também confere literalmente no arquivo, com o mesmo motivo que ela reportou (massa de teste sem perfis/itens pré-cadastrados bloqueando conciliação).
+
+**Implicação prática pro escopo do jose #1 (Importação de Transações):** não é só "terminar de testar" um código pronto — os handlers de resolução de pendência (vincular financeiro, marcar revisão, ignorar, aprovação em massa segura) existem em `fix_backup_import` mas não em `n1`. Precisa decisão: portar esses handlers de `fix_backup_import`, ou reimplementar no branch atual. Isso muda o tamanho real da frente 1.
+
+Recomendação da rita (aceita): aproveitar formato/estrutura dos CT-*.md como padrão de QA daqui pra frente; não tratar RODADA_QA_01 como validação do código atual — precisa nova rodada contra o branch em que jose #1 for trabalhar. Estoque/Fidelidade: só esqueleto de pasta, sem caso de teste real, aproveitável só como ponto de partida de estrutura. Nada foi copiado pro branch atual.

@@ -112,6 +112,16 @@ O líder trouxe como referência estética — o que achou bonito nesse sistema.
 Use como inspiração visual, não como padrão do KZERA e não como cópia.
 Ignorar conteúdo de anúncio/upsell presente em alguns prints (01, 02, 12, 17).
 
+## Nomenclatura de pastas em docs/
+
+Proibido criar pasta em `docs/` com nome que seja variação gramatical de uma pasta já existente (singular/plural, acento, hífen, etc). Antes de criar pasta nova em `docs/`, conferir se já existe nome parecido (`ls docs/ | grep -i <termo>`). Em caso de dúvida, perguntar ao líder antes de criar.
+
+Motivo: `docs/aprovado-lider` (singular) e `docs/aprovados-lider` (plural) coexistiram por engano, cada uma referenciada por arquivos diferentes (CLAUDE.md, front-matter de agente, template de PR), até serem unificadas em `docs/aprovados-lider/processo/` em 2026-07-03.
+
+## Memória por agente
+
+Cada agente com papel carregado mantém arquivo próprio em `docs/memoria/<papel>.md`, registrando decisões e contexto relevante da própria atuação. Cada papel escreve só no seu próprio arquivo — não editar arquivo de memória de outro papel.
+
 ---
 
 Toda regra de bloqueio deste arquivo é reforço de intenção, não controle técnico. Onde uma ação puder ser tecnicamente impedida por hook, o hook é a autoridade real; o texto é o critério de decisão do agente antes de tentar.
