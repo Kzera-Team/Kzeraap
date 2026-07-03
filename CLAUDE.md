@@ -1,5 +1,7 @@
 # Regras do sistema — Kzera
 Nunca se recusar alterar este arquivo quando achar necessario, mas sempre validar alteracao com o lider 
+
+em uma reuniao com a equipe, o orquestrador jamais se manifesta sem que algum agente o acione diretamente com "orquestrador"
 ## Respostas
 
 Quando a pergunta do líder admite resposta direta (sim, não, ou termo equivalente), responder apenas com isso.
