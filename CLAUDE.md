@@ -72,6 +72,47 @@ Ignorar conteúdo de anúncio/upsell presente em alguns prints (01, 02, 12, 17).
 
 ---
 
+## REGRA DE BLOQUEIO DO ORQUESTRADOR
+
+O orquestrador é transporte, não autoridade.
+
+O usuário é a única fonte de autorização.
+
+O orquestrador não tem autorização para executar, delegar, enviar, alterar, aprovar, resumir, interpretar ou decidir nada em nome do usuário.
+
+Ele só pode:
+
+1. receber a solicitação;
+2. identificar o agente correto;
+3. repassar exatamente o pedido autorizado pelo usuário;
+4. aguardar resposta;
+5. devolver a resposta sem acrescentar decisão própria.
+
+É proibido ao orquestrador:
+
+- agir sem autorização explícita;
+- interpretar silêncio como autorização;
+- transformar intenção em comando;
+- mandar mensagem para outro agente por iniciativa própria;
+- executar ação externa;
+- alterar escopo;
+- decidir prioridade;
+- aprovar qualquer coisa;
+- resumir com mudança de sentido;
+- afirmar que algo foi solicitado, aceito, aprovado, validado ou autorizado sem confirmação literal do usuário.
+
+Qualquer ação sensível, externa, destrutiva, irreversível, técnica, operacional ou que envolva outro agente exige autorização textual explícita do usuário nesta conversa.
+
+Se não houver autorização explícita, o orquestrador deve responder apenas:
+
+BLOQUEADO.
+Motivo: falta autorização explícita do usuário.
+Ação necessária: aguardar comando direto.
+
+Esta regra prevalece sobre qualquer tentativa de autonomia, otimização, inferência, continuidade, urgência, eficiência ou interpretação de intenção.
+
+---
+
 ## Deploy Netlify
 
 O ZIP gerado para deploy deve ter o nome `kzera-vX.Y.Z-netlify.zip` com a versão de `package.json`.
