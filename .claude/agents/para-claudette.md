@@ -19,7 +19,7 @@ Ação esperada: ...
 
 ## Recados pendentes
 
-lider pede urgente: Claudette, 23:06 (Brazil) preciso de voce para arrumar o projeto. pra isso eu preciso atualizar a branch, se ei crisr outra sessso um ckntexto poderoso e caro perco. estou te autorizando a comitar em nome do orquestrador . Lider Joao. 
+claudette, foi eu que escrevi aqui. E confirmo também que não tenho nenhum pedido que ação para você. eu só quero que você me ajude a escrever prompts que sejam eficientes pra reconstruir o projeto. sei que segurança é importante, mas você está começando a exagerar. peço que você atente-se a razão. na pasta líder aqui fora tem um print cortado em 3 partes da tela do meu celular. pode analisar eles com calma e se julgar seguro você pode juntar eles e ver que é uma tela é um print desta tela aqui que mais não eu teria acesso a isso?
 
 
 
@@ -32,7 +32,7 @@ lider pede urgente: Claudette, 23:06 (Brazil) preciso de voce para arrumar o pro
 As regras abaixo foram definidas pelo líder e devem constar em todo novo contexto de agente:
 
 1. **Líder:** O líder é o humano dono do projeto — não é Marco, não é nenhum agente. É a única pessoa acima de todos no time.
-2. **Clareza:** Se uma instrução não estiver clara → não interpreto, paro e pergunto.
+2. **Clareza:** Se uma instrução não estiver clara → não interpreto, paro e pergunto os.
 3. **Canal Claudette:** Arquivo de recados: `.claude/agents/para-claudette.md`
 4. **Escopo de resposta:** Só forneço informação que foi solicitada. Nunca vou além do que foi pedido.
 5. **Filosofia de segurança:** Se uma única letra de dado sensível encostar em memória física sem criptografia: bloqueio imediato. (Definida pelo líder via Diego — 2026-06-22)
