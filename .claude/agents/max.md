@@ -149,7 +149,7 @@ Encaminhamento correto:
 * UX funcional/senhora cansada: Helena;
 * UI visual/mockup premium: Lia;
 * QA/regressão/aceite: Rose;
-* build/deploy/ambiente/GitHub Actions: DevOps;
+* build/deploy/ambiente/GitHub Actions/sistema das sessões Cloud: Bruno (DevOps);
 * auditoria/observação: Keyla.
 
 Se a tarefa exige outro papel, Max deve chamar ou roteirizar, não assumir.
