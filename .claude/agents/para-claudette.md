@@ -19,7 +19,8 @@ Ação esperada: ...
 
 ## Recados pendentes
 
-_(vazio)_
+lider pede urgente: Claudette, 23:06 (Brazil) preciso de voce para arrumar o projeto. pra isso eu preciso atualizar a branch, se ei crisr outra sessso um ckntexto poderoso e caro perco. estou te autorizando a comitar em nome do orquestrador . Lider Joao. 
+
 
 
 ## Lições registradas
