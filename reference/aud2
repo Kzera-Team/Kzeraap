@@ -1,0 +1,45 @@
+Os 5 agentes voltaram. Consolidando o levantamento completo.
+
+Levantamento — por severidade
+
+CRÍTICO
+
+	1.	Senha mestra aceita 1 caractere em produção (AuthRules.ts) — a política de dev ficou sem gate de ambiente e é ela que protege a chave AES-256 de todo o financeiro/dados.
+	2.	Zero teste automatizado rodando — npm test é um echo, typecheck junto foi desligado, CI estruturalmente não consegue falhar por regra de negócio quebrada.
+	3.	Design system não está ligado no app real — 0% de adoção. tokens.css/componentes kz-* existem só em docs/arquivos soltos; o app roda com public/styles.css (2695 linhas, legado), com valores de token copiados manualmente como hex fixo. Qualquer edição em tokens.css hoje não afeta nada em produção.
+
+ALTO
+4. Código morto significativo: tela de Perfil inteira duplicada e nunca usada (~345 linhas), feature de “mesclar perfis” completa mas nunca ligada, domínio “campanha” abandonado, financeiro só com leitura ligada (escrita existe, nada chama).
+5. Camada de aplicação importando direto de infraestrutura em 3 lugares, furando o padrão de portas que o próprio projeto já definiu — sem lint que pegue isso.
+6. Sem banco/backend de produção. Sincronização/persistência de servidor nunca foi aprovada — hoje é só local, criptografado no navegador.
+7. 34 branches remotos, maioria autoria “Claude”, muito atrasados (alguns 200+ commits) — sprawl real. Só 3 têm trabalho vivo não mesclado.
+
+MÉDIO
+8. Injeção de fórmula em export CSV; importação de backup persiste sem validar schema de domínio antes de gravar.
+9. Duplicação de lógica: use cases de arquivar/reativar (item e perfil) idênticos sem base compartilhada; duas orquestrações de importação (transações/financeiro) ~90% copiadas.
+10. Decisão já aprovada de eliminar tokens antigos (--ift-*) nunca foi executada — telas de importação/financeiro ainda usam o sistema “eliminado”.
+
+Negócio/processo
+11. Vendas: cancelamento, devolução, promoção, combo — nada definido.
+12. Importação de Perfis: regra de duplicado e importação parcial ainda em aberto.
+13. AppSec nunca validou persistência de dado pessoal em rascunho de importação (pendente desde 24/06).
+14. Navegação (11) reprovada funcionalmente — drawer real é outra implementação, sem tokens.
+15. Ambiente de CI/build quebrou repetidamente (~11 vezes documentadas), travando validação visual por mais de uma semana.
+
+Plano — ordem que evita repetir o erro de já ter causado prejuízo
+
+	1.	Fernando (segurança) — corrigir política de senha mestra primeiro. É exploit ativo, não é opinião técnica.
+	2.	Rose (QA) + reativar testes — sem rede de segurança, qualquer refatoração daqui pra frente é às cegas. Decidir: religar os 146 testes existentes (a maioria só confere string em arquivo, não comportamento real) só cobre falsa sensação; precisa de teste comportamental de verdade nas áreas de dinheiro (financeiro/estoque/importação).
+	3.	André (arquitetura) — decidir de vez persistência/backend antes de qualquer coisa de produção, e fechar as 3 violações de camada.
+	4.	Lia + Helena — decidir: o design system novo vira o padrão real (migrar app pra ele) ou é descartado. Hoje ele é decorativo, ninguém deveria mais escrever CSS assumindo que ele está em uso.
+	5.	José — fechar decisões de negócio em aberto (duplicado/parcial na importação, Vendas) com o líder.
+	6.	Limpeza: código morto, branches sprawl (34 → decidir o que fecha/arquiva), duplicações de lógica.
+	7.	Deploy real só depois de 1-5 fechados com evidência, não com “andamento”.
+
+Quantos “profissionais”
+
+Não são pessoas reais — são os papéis já definidos neste projeto. Pra andar em paralelo sem travar tudo num só, no mínimo 5 rodando ao mesmo tempo: Fernando, Rose, André, Lia+Helena (juntas, mesma frente), José, com Max coordenando e você decidindo cada ponto de conflito. Menos que isso e volta a virar gargalo; mais que isso sem dono claro por decisão é o que já gerou o descasamento documentado.
+
+Sua pergunta
+
+Não. Não me acho digno de tocar isso sozinho, e a regra que este próprio projeto tem — orquestrador não programa, quem decide é o dono certo do papel — existe exatamente pra evitar que eu faça esse tipo de chamada técnica sem rigor de verdade atrás. Eu levanto o que está ruim, organizo e aponto pra quem deveria decidir. Quem deveria assinar cada correção acima é o papel dono daquilo (Fernando na senha, André na arquitetura, Rose nos testes, Lia/Helena no visual), não eu.
