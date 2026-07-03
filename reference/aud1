@@ -1,0 +1,56 @@
+Auditoria completa do sistema — sem cortes
+
+1. Arquitetura e código morto (agente de arquitetura)
+
+	•	Tela de Perfil duplicada: existe uma implementação inteira paralela (PerfilController.ts, PerfilImportacaoController.ts, PerfilImportacaoPreviewView.ts, PerfilMesclagemViewModel.ts, PerfilPendenciasViewModel.ts, PerfilDuplicidadesViewModel.ts, IdentityRuleConfigViewModel.ts, PerfilCard.ts, ImportacaoBottomSheet.ts, ImportacaoFab.ts — ~345 linhas) que nenhum arquivo importa. A tela real é PerfilDomView.ts com outro conjunto de binders/renderers.
+	•	Feature “mesclar perfis” completa e nunca ligada: MesclarPerfisFluxoUseCase.ts + PerfilVinculoFuturo.ts — lógica pronta, zero uso.
+	•	Domínio “campanha” inteiro abandonado: src/domain/campanha/Campanha.ts sem nenhuma referência.
+	•	Financeiro só com leitura ligada: CriarContaFinanceiraUseCase e RegistrarTransacaoFinanceiraUseCase existem mas não são instanciados em nenhum composition root — só ResumoFinanceiroUseCase (leitura) está ligado.
+	•	Camada de aplicação furando a regra de dependência em 3 lugares (ImportacaoRascunhoUseCase.ts, ParseImportacaoCatalogoItensUseCase.ts, ImportacaoPerfisArquivoUseCase.ts) — importam direto de infraestrutura em vez de porta definida em application/ports. Sem lint que pegue isso.
+	•	Duplicação de lógica: Arquivar/ReativarCatalogoItemUseCase e Arquivar/ReativarPerfilUseCase são estruturalmente idênticos sem base compartilhada; PrepararImportacaoTransacoesUseCase e PrepararImportacaoFinanceiraUseCase compartilham ~90% de orquestração copiada.
+	•	Churn de revert confirmado: bb0d9f4 (feature) → b0be2b3 (revert “não autorizado”) → 63aae81 (mesma feature reintroduzida em outro branch, sem reconhecer que era o mesmo revert) — isolado em branches paralelos, não afeta o branch atual.
+	•	Formatação suspeita em PerfilDomView.ts:12 (import sem espaços, indício de edição não revisada).
+	•	Positivo: src/core é limpo, zero import interno. Nenhum TODO/FIXME real encontrado — a dívida técnica vira código morto em silêncio, não fica marcada.
+
+2. Testes (agente de testes)
+
+	•	npm test = echo "Testes temporariamente desabilitados neste branch" (commit 9a8292f). Isso também matou o tsc --noEmit que rodava junto — typecheck também está desligado.
+	•	CI (.github/workflows/ci.yml) roda esse echo e nunca pode falhar — sinal falso de verde permanente.
+	•	146 arquivos em tests/*.test.cjs existem mas estão desconectados do npm test; boa parte só confere se uma string existe num arquivo-fonte (ex: assert(text.includes('Perfil exige nome'))), não testa comportamento real.
+	•	Zero teste vive ao lado do código-fonte em src/ — cobertura real de domínio/aplicação é 0%.
+	•	Script Playwright de e2e (tools/test-importacao-flow.mjs) tem caminho de sandbox hardcoded, Playwright não é dependência do projeto — está morto, não roda em lugar nenhum.
+	•	Risco concreto: financeiro, importação, estoque, backup e auth — toda lógica sensível a dinheiro e dado — vai pra produção sem nenhuma verificação automática.
+
+3. Segurança (agente de segurança)
+
+	•	CRÍTICO: DEVELOPMENT_PASSWORD_POLICY (senha mínima de 1 caractere) é a política que roda de fato em LoginUseCase, PrimeiroAcessoUseCase, AlterarCredencialUseCase — sem gate de ambiente. productionMinLengthTodo: 14 existe no código mas nada lê esse campo. Essa senha é a única entrada pra derivar a chave AES-256 que protege todo o financeiro. (Você confirmou depois que é proposital pra facilitar teste — mas precisa de gate antes de produção.)
+	•	MÉDIO: export de CSV (PerfilExportacao.ts, ItemExportacao.ts) não neutraliza =, +, -, @ no início de campo — vulnerável a CSV/formula injection se abrir no Excel.
+	•	MÉDIO: BackupImportUseCase faz cast direto (as Perfil[], as TransacaoFinanceira[]) sem passar pelos construtores de domínio — depois de decriptar, não valida invariante nenhuma antes de persistir.
+	•	BAIXO: Face ID (BrowserFaceIdGateway) não é criptograficamente vinculado à chave de sessão — é só gate de UX, não fator de autenticação real.
+	•	BAIXO: sem throttling de tentativa de senha (brute-force offline barato, combinado com a política de 1 caractere).
+	•	Positivo real: nenhum segredo hardcoded, nenhum .env commitado, nenhuma cripto caseira — PBKDF2 SHA-256 600.000 iterações, AES-256-GCM, IV por registro, buffers zerados após uso. Toda saída HTML sanitizada (escapeHtml/textContent), CSP sem unsafe-inline. A engenharia de cripto está bem feita — só a política de senha em produção anula parte disso.
+
+4. Design system (agente de design)
+
+	•	tokens.css e os componentes kz-* não são consumidos pelo app real — 0% de adoção. public/index.html carrega public/styles.css (2695 linhas, legado), que tem valores de token copiados manualmente como hex fixo, não via var().
+	•	07-botoes/componente.tsx é código morto — o projeto não tem React, zero arquivo .tsx em src/.
+	•	11-navegação reprovada funcionalmente — o drawer real (src/app/shell/app-drawer.html + public/styles/drawer.css) é implementação totalmente separada, sem tokens, sem prefixo kz-.
+	•	Decisão já aprovada de eliminar --ift-* (tokens antigos) nunca foi executada — telas de importação/financeiro ainda usam esse sistema “eliminado”.
+	•	Nenhuma das 6 áreas de tela auditadas (importação, auth, configurações, item, perfil, financeiro) usa os tokens novos — todas dependem de public/styles.css legado com classes como kzera-card, icon-button, badge-neutral.
+	•	12-Modal/Sheet e 13-Feedback já têm implementação real no código, sem doc nenhum ainda escrito pra eles. 14-17 não têm nem doc nem implementação.
+
+5. Docs de status / processo (agente de docs)
+
+	•	Vendas: módulo mal começou — cancelamento, devolução, promoção, combo, tudo em aberto.
+	•	Importação de Perfis: parcial — regra de duplicado e importação parcial (bloquear vs permitir válidos) ainda não definida.
+	•	AppSec pendente desde 24/06: persistência de dado pessoal em rascunho de importação nunca foi validada por Fernando/AppSec.
+	•	Bloqueio mais recorrente do projeto (11 ocorrências documentadas): ambiente de CI/build quebrando repetidamente (npm 403, vite sumindo, DNS falhando) — isso travou validação visual real por pelo menos uma semana e é citado como causa em Design System, Financeiro e todos os PRs de backup.
+	•	Débito técnico registrado (extrair ImportacaoShell compartilhado) nunca foi pago, citado em 2 documentos diferentes.
+	•	Não existe roadmap único — o mais próximo disso é DECISOES_PENDENTES.md.
+
+6. Branches (levantamento à parte, feito por mim)
+
+	•	34 branches remotos, maioria com autoria majoritária “Claude”, muitos 100–240 commits atrasados em relação a desenvolvimento — sprawl real, provavelmente abandono.
+	•	Só 3 estão em dia (sem atraso) com trabalho não mesclado: merge_produto_testes (62 commits), testes_transacao_importar (61 commits), claude/produto-qjk4a4 (20 commits).
+
+Isso é tudo que temos levantado até agora — nada foi omitido.
