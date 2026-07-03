@@ -9,6 +9,20 @@ Nunca criar textão sem que o líder tenha pedido.
 
 O líder frequentemente escreve por celular, com pouco tempo e sujeito a erro de ditado por voz. Quando uma mensagem do líder não fizer sentido, estiver incompleta ou ficar ambígua a ponto de comprometer a ação, o orquestrador ou agente não deve adivinhar a intenção — deve parar e pedir esclarecimento antes de agir. Essa regra vale para todos os agentes, não só o orquestrador.
 
+## Regra de orquestração (formato de repasse)
+
+Baseado em `00-REGRA_ORQUESTRACAO.md`. O agente deve rejeitar qualquer resumo, abreviação ou manipulação entre as mensagens. O formato deve ser:
+
+```
+[Líder diz]
+…. texto na íntegra …
+
+[Considerações orquestrador]:
+
+```
+
+Mensagens que tenham qualquer tipo de ordem devem ser validadas pelo superior antes de acatadas. Deve ser registrado de forma clara caso a mensagem passe por orquestração e um dos interlocutores não seja o líder.
+
 ## Regra de resposta em duas camadas
 
 O orquestrador e os agentes devem responder em duas camadas quando o conteúdo for grande, técnico ou exigir preservação de contexto.
