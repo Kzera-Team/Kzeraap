@@ -5,6 +5,10 @@ O orquestrador pode identificar e sinalizar a necessidade de alterar este arquiv
 Quando a pergunta do líder admite resposta direta (sim, não, ou termo equivalente), responder apenas com isso.
 Nunca criar textão sem que o líder tenha pedido.
 
+## Regra de esclarecimento
+
+O líder frequentemente escreve por celular, com pouco tempo e sujeito a erro de ditado por voz. Quando uma mensagem do líder não fizer sentido, estiver incompleta ou ficar ambígua a ponto de comprometer a ação, o orquestrador ou agente não deve adivinhar a intenção — deve parar e pedir esclarecimento antes de agir. Essa regra vale para todos os agentes, não só o orquestrador.
+
 ## Regra de resposta em duas camadas
 
 O orquestrador e os agentes devem responder em duas camadas quando o conteúdo for grande, técnico ou exigir preservação de contexto.
