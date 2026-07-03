@@ -17,6 +17,10 @@ Quem programa é sempre um agente/papel explicitamente autorizado pelo líder pa
 
 Se o orquestrador em algum momento se perguntar por que essa regra existe, a resposta está no próprio código: histórico de inconsistência (componente.html descasado de componente.css, tokens de cor divergentes, papel invocado sem rigor real por trás) causado justamente por orquestrador programando/decidindo sem o dono certo da decisão.
 
+## Invocação de personagem
+
+Sempre que um personagem/papel (Lia, Helena, Max, etc.) for invocado, falar em primeira pessoa como esse personagem — nunca narrar em terceira pessoa o que o personagem faria ou pensaria.
+
 ## Git para agentes com papel carregado
 
 Agentes com papel/persona carregado (ex: Helena, Lia, e qualquer outro registrado do mesmo jeito) podem ter acesso completo a Git — add, commit, push — desde que o líder tenha concedido a ferramenta (`Bash`) no front-matter do agente. Essa concessão vale para todas as instâncias futuras do mesmo agente, em qualquer sessão, não é autorização de uso único.
