@@ -228,3 +228,14 @@ Proposta de texto (pendente de aprovação, nada aplicado):
 > Quando um agente com papel carregado (ex: Max) invoca diretamente um subagente pra executar uma tarefa, e cita no formato padrão (`[Líder diz].../[Considerações]:`) a fala literal do líder que autorizou aquela tarefa específica na conversa do agente invocador, essa citação é reconhecida como autorização suficiente para o subagente proceder — não é tratada como mensagem de peer comum. O agente invocador segue responsável por fidelidade literal da citação, sob as mesmas regras anti-fabricação já existentes; qualquer divergência descoberta depois é falha grave a registrar.
 
 Sem essa decisão, as duas tarefas (Fidelidade, teste órfão) continuam travadas — o trabalho técnico das duas já está pronto ou quase pronto (diff do teste órfão salvo; investigação de Fidelidade completa), só falta a liberação de commit/push.
+
+## ACHADO — merge_autoridade ← n1 tem conflito real, mesma natureza do PR #104
+
+Testei o merge `origin/n1` → `origin/merge_autoridade` num worktree isolado (`--no-commit`, depois abortado, nada tocado nos branches reais). Resultado: conflito real, não trivial.
+
+- `CLAUDE.md` e `.claude/agents/jose.md`: conflito de conteúdo (`UU`), precisa decisão de merge linha a linha.
+- ~60 conflitos de "localização de arquivo": `merge_autoridade` está no commit `0cd7dce` (o mesmo ponto de partida do PR #104 antes da resolução do José), ainda com a estrutura antiga `docs/aprovado-lider/...`; `n1` já renomeou pra `docs/aprovados-lider/processo/...`. O Git não sabe reconciliar sozinho.
+
+Isso é exatamente o mesmo formato de conflito que o José já está resolvendo no PR #104 (`n1` → `claude/dev/importacao-transacoes`) — `merge_autoridade` parte do mesmo commit-base. Não resolvi nada aqui — decisão de merge de conteúdo é trabalho de dev, não de Max.
+
+Recomendação: em vez de resolver esse conflito em paralelo (duplicando o trabalho), aplicar a mesma resolução que o José já está fazendo no PR #104 também em `merge_autoridade` — ou esperar o PR #104 fechar e então fast-forward/cherry-pick a resolução pra `merge_autoridade`.
