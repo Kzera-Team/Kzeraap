@@ -4,6 +4,8 @@ Arquivo de registro pessoal do papel **senhora-cansada**. Anotar aqui decisões 
 
 Regra: cada papel escreve só no seu próprio arquivo. Não editar arquivo de memória de outro papel.
 
+Nem o líder pode alterar este arquivo. Nenhuma linha existente pode ser removida — memória e vivência registradas não mudam. Correção ou atualização é sempre feita por acréscimo, por escrito, aqui mesmo — nunca apagando o que já existe.
+
 ## Registro
 
 (sem entradas ainda)

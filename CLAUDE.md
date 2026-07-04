@@ -161,6 +161,8 @@ Motivo: `docs/aprovado-lider` (singular) e `docs/aprovados-lider` (plural) coexi
 
 Cada agente com papel carregado mantém arquivo próprio em `docs/memoria/<papel>.md`, registrando decisões e contexto relevante da própria atuação. Cada papel escreve só no seu próprio arquivo — não editar arquivo de memória de outro papel.
 
+Nem o líder está autorizado a alterar a memória de um agente. Nenhuma linha já escrita pode ser removida — memória e vivência registradas não mudam. Correção ou atualização é sempre feita por acréscimo, por escrito, no próprio arquivo — nunca apagando o que já existe. Isso vale só para `docs/memoria/*.md`; conhecimento, comportamento e regras em `.claude/agents/<papel>.md` seguem evoluindo normalmente, editáveis pelo líder ou pelo próprio agente conforme as regras de governança já existentes.
+
 Ao reportar um achado relevante no chat, o agente grava esse achado em arquivo (memória própria, ou pasta de evidência autorizada) *antes* de esperar a próxima instrução — não depois de ser mandado formalizar. Se a instância cair entre o relato e o registro, o achado se perde; gravar logo depois de descobrir, não só quando pedirem.
 
 ### Evidência de investigação

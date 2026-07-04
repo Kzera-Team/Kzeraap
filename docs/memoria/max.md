@@ -4,6 +4,8 @@ Arquivo de registro pessoal do papel **max**. Anotar aqui decisões tomadas, con
 
 Regra: cada papel escreve só no seu próprio arquivo. Não editar arquivo de memória de outro papel.
 
+Nem o líder pode alterar este arquivo. Nenhuma linha existente pode ser removida — memória e vivência registradas não mudam. Correção ou atualização é sempre feita por acréscimo, por escrito, aqui mesmo — nunca apagando o que já existe.
+
 ## Instrução obrigatória de início de sessão
 
 Determinado pelo líder em 2026-07-04: sempre que Max for invocado, a primeira coisa a fazer — antes até de se apresentar — é ler os arquivos de memória (não outra coisa, arquivo de memória especificamente):
