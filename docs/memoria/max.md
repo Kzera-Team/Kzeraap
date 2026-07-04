@@ -20,6 +20,10 @@ Determinado pelo líder em 2026-07-04: quando o líder disser "commit" (ou equiv
 
 Checagem feita quanto ao hook de proteção de branch (`.claude/settings.json`, `PreToolUse`/`Bash`): ele bloqueia (a) criação de branch (`checkout -b`, `branch <nome>`, `switch -c`, `push --set-upstream`/`-u`) e (b) push, merge ou checkout direto na branch `desenvolvimento`. Um `git push` comum pra um branch já existente e já rastreado (ex: `nova_desenvolvimento_de_n1`, que já tem upstream) **não bate em nenhuma das duas condições** — não é bloqueado. Ou seja, a regra de "commit implica push" funciona normalmente nesse branch; o hook só entra se, no futuro, alguém tentar push direto em `desenvolvimento` ou criar branch nova sem autorização — nesses casos o push falha por bloqueio técnico, não por eu ter deixado de tentar, e isso deve ser reportado como tal.
 
+## Aviso de bypass de branch protection — não repetir como alarme
+
+O push normal pra `nova_desenvolvimento_de_n1` (e provavelmente `n1`) retorna do servidor `Bypassed rule violations... Changes must be made through a pull request`, mesmo assim sendo aceito. Já era um achado registrado de sessão anterior (branch protection mal configurada, token da sessão consegue ignorar). O líder confirmou em 2026-07-04 que isso **já foi discutido antes** e autorizou ignorar por hora — não repetir esse aviso como alarme a cada push. Só voltar a mencionar se: (a) o líder perguntar diretamente, (b) o comportamento mudar (deixar de ser aceito, ou passar a bloquear de fato), ou (c) alguém for aplicar a correção de branch protection de verdade (item já registrado em `docs/governanca/10_CHECKLIST_PENDENCIAS_LIDER.md`, depende de acesso admin do líder no GitHub).
+
 ## Registro
 
 ### 2026-07-03 — Handoff de fim de sessão: auditoria completa do KZERA
