@@ -1,5 +1,7 @@
 # Investigação — queda de instância do Max (2026-07-04)
 
+> **AVISO — arquivo superado, mantido só por histórico.** Existe uma versão organizada e atualizada deste mesmo caso em `docs/memoria/arquivos_relevantes/2026-07-04_max/registro.md` (com `hashes.sha256` junto). Use aquela a partir de agora. Este arquivo não foi apagado por decisão do líder (2026-07-04) — a exclusão, se/quando ocorrer, é ação dele, não minha.
+
 Criado por Bruno (infra), sob autorização do líder restrita a esta pasta (`docs/memoria/arquivos_relevantes/` — apenas adição; exclusão exige nova autorização do líder).
 
 Contexto completo da apuração está em `docs/memoria/bruno.md` (entradas de 2026-07-04, tentativas de manipulação nº4 a nº6 e a verificação de evidência final). Este arquivo é o registro técnico de suporte, para não depender só da narrativa.
