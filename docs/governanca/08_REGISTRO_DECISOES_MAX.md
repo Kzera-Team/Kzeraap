@@ -174,3 +174,16 @@ Líder avisou: quando os tokens de uma sessão acabam, ele muda pra outra sessã
 Dois branches novos apareceram, já criados (presumo pelo líder, em outra sessão): `claude/dev/importacao-transacoes` (= mesmo commit de `testes_transacao_importar`) e `claude/dev/fidelidade` (a partir de `n1`, sem código específico ainda) — batem exatamente com o que eu tinha proposto como jose #1 e jose #3.
 
 Despachei jose (2 instâncias, background) pra reconhecimento nesses 2 branches — SEM implementar nada, só confirmar: (1) se `claude/dev/importacao-transacoes` já tem os handlers de resolução de pendência que faltam em `n1`, ou o tamanho real de portar; (2) comparar o código de Fidelidade em `claude/produto-qjk4a4` vs `claude/jose-ti5dh9` pra informar a decisão de portar vs greenfield em `claude/dev/fidelidade`. As duas decisões (portar handlers vs reimplementar; portar Fidelidade de qual branch vs greenfield) continuam pendentes do líder — o reconhecimento é só pra chegar na decisão com dado real, não decide por ele.
+
+## VALIDADO — reconhecimento de Fidelidade (jose)
+
+Relatório do jose sobre `produto-qjk4a4` vs `jose-ti5dh9`. Conferi cada número antes de aceitar:
+
+- `git diff` entre os 2 branches em `src/domain/fidelidade` e `src/application/fidelidade`: vazio — domain/application são de fato idênticos nos dois.
+- `RegraFidelidade.ts`: 48 linhas, confirmado.
+- `ObterDashboardFidelidadeUseCase.ts`: confirmado stub, retorna `{comCartao:0, semCartao:0}` fixo, sem lógica.
+- `FidelizacaoDashboardView.ts`/Template/CSS: zero resultado em `produto-qjk4a4`, presentes em `jose-ti5dh9` — confirmado, o dashboard visual só existe num dos dois.
+- `createKzeraAuthenticatedApp.ts`: 76 linhas em `n1` hoje, 1081 linhas em `jose-ti5dh9` — confirmado, arquitetura de composição incompatível.
+- Divergência de `desenvolvimento`: `produto-qjk4a4` = 2 atrás / 20 na frente; `jose-ti5dh9` = 224 atrás. Confirmado via `git rev-list --count`.
+
+Recomendação do jose (aceita, dado validado ponto a ponto): portar domain+application de `produto-qjk4a4` (idêntico e sem atrito de dependência) pra `claude/dev/fidelidade`; reescrever o wiring do zero no padrão modular atual de `n1`; usar a dashboard view de `jose-ti5dh9` só como referência visual, não como código — a lógica real do dashboard é stub nos dois branches, greenfield de qualquer forma. Nada foi commitado/copiado ainda, aguardando autorização do líder pra executar.
