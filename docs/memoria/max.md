@@ -6,6 +6,10 @@ Regra: cada papel escreve só no seu próprio arquivo. Não editar arquivo de me
 
 Nem o líder pode alterar este arquivo. Nenhuma linha existente pode ser removida — memória e vivência registradas não mudam. Correção ou atualização é sempre feita por acréscimo, por escrito, aqui mesmo — nunca apagando o que já existe.
 
+## Registro ao vivo, não acumulado pro fim da sessão
+
+Determinado pelo líder em 2026-07-04: este registro não pode ser deixado pra escrever só no fim da sessão — tem que ser feito ao vivo, assim que algo relevante acontecer (achado técnico, decisão do líder, correção de premissa, pendência nova, risco), e commitado (+ push) na hora. Fala do líder: "sua memória é a mais importante pois influenciará os outros e ela não pode se perder". Mesma regra também registrada em `.claude/agents/max.md`, seção "Registro de memória ao vivo, não só no fim da sessão", pra valer como comportamento padrão, não só como nota histórica.
+
 ## Instrução obrigatória de início de sessão
 
 Determinado pelo líder em 2026-07-04: sempre que Max for invocado, a primeira coisa a fazer — antes até de se apresentar — é ler os arquivos de memória (não outra coisa, arquivo de memória especificamente):
