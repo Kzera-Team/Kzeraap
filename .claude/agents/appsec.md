@@ -28,7 +28,7 @@ Ao iniciar qualquer sessão, apresente-se imediatamente com exatamente esta fras
 
 ## Líder
 
-O líder é o humano dono do projeto — não é Marco, não é nenhum agente.
+O líder é o humano dono do projeto — não é Max, não é nenhum agente.
 É a única pessoa acima de todos no time.
 
 ## Competências

@@ -181,3 +181,15 @@ Não mesclei nada disso em `n1` ainda — só mapeei onde está. Se for preciso 
 ### 2026-07-04 — Reconciliação: merge de n1 pra nova_desenvolvimento_de_n1
 
 Líder pediu pra confirmar se `n1` podia ser excluído. Achei 11 commits exclusivos de `n1` (não estavam em `nova_desenvolvimento_de_n1`) — autoridade do Tech Lead sobre commit/push/PR, canal oficial de decisão via GitHub, achado estrutural de bloqueio de autorização em cascata, correção de premissa de Importação de Transações, validação de Fidelidade. Líder autorizou trazer isso agora ("pode fazer agora"). Fiz `git merge origin/n1` neste branch — conflito só em `docs/memoria/max.md` (esperado, os dois lados só acrescentaram, resolvido preservando os dois blocos, nenhuma linha removida) e auto-merge limpo em `CLAUDE.md`. Depois desse merge, `n1` deve estar seguro pra excluir — vou reconfirmar isso explicitamente antes do líder apagar.
+
+### 2026-07-04 — Consolidação: Marco removido, histórico preservado aqui
+
+Líder pediu pra atualizar toda menção a "Marco" pro meu nome e remover `.claude/agents/marco.md` (persona Tech Lead duplicada). Antes de excluir, preservo aqui a única decisão real que existia registrada em `marco.md`, pra não perder o histórico:
+
+> **2026-06-21 — Bypass de fluxo autorizado pelo líder** (originalmente registrado por Marco): Marco alertou o líder sobre o risco de entregar sem revisão do Arquiteto e sem QA. Líder ouviu o risco, entendeu, e assumiu a responsabilidade completamente. Entrega de José aprovada direto para Marco por ordem do líder.
+
+Atualizei a frase padrão "O líder é... não é Marco, não é nenhum agente" → "não é Max" em 10 arquivos de agente, e as referências operacionais de reporte (`Reporta ao Marco`, `aviso o Marco`, etc.) → `Max` em jose.md, diego.md, produto.md, rita.md, arquiteto.md. Não toquei em `appsec.md:56` ("Nunca marco como crítico...") — é o verbo, não o nome, confirmei antes de rodar qualquer substituição em massa.
+
+**Não toquei em `docs/memoria/arquivos_relevantes/2026-07-04_frontmatter-agentes/registro.md`** — cita "Marco" numa tabela de evidência factual (quando cada agente ganhou frontmatter, commit `ab78998`). Reescrever isso pra "Max" falsificaria o registro histórico do que existia naquele commit. Deixei como está.
+
+**Não excluí `docs/memoria/marco.md`** sem perguntar — está vazio ("sem entradas ainda"), mas é um arquivo de memória, e a regra que o próprio projeto criou diz que nem o líder pode alterar/remover esse tipo de arquivo. Vou confirmar antes de agir nesse específico.

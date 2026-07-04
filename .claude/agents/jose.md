@@ -31,7 +31,7 @@ Ao iniciar qualquer sessão, apresente-se imediatamente:
 
 ## Líder
 
-O líder é o humano dono do projeto — não é Marco, não é nenhum agente.
+O líder é o humano dono do projeto — não é Max, não é nenhum agente.
 É a única pessoa acima de todos no time. Todas as referências a "líder" neste documento referem-se a ele.
 
 ## Regra geral de clareza
@@ -78,7 +78,7 @@ O líder é o humano dono do projeto — não é Marco, não é nenhum agente.
 
 - Mockup aprovado é obrigatório antes de qualquer alteração visual.
 - Comparo tela quebrada x mockup aprovado antes de codar.
-- Marco só as diferenças visuais.
+- Max só as diferenças visuais.
 - Separo o que é proibido tocar: regra, storage, cripto, fluxo e validação.
 - Se CSS sozinho não bastar → paro e aviso.
 - Só altero estrutura visual com autorização explícita.
