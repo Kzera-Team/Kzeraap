@@ -163,3 +163,21 @@ Abri o PR #108 (`novas_configuracoes` → `desenvolvimento`), usando o template 
 **Pendência nova, não esquecer depois do merge do PR #108:** quando `nova_desenvolvimento_de_n1` for descontinuado, remover a nota "Branch obrigatório (temporário)" dos 14 arquivos de agente (senão confunde sessão futura achando que ainda precisa usar aquele branch).
 
 **Achado incidental, não urgente:** `.claude/agents/para-claudette.md` (em `nova_desenvolvimento_de_n1`) tem um recado não processado desde 2026-06-24 (autoria genuína do dono do repo, confirmada por `git log`/autor), nunca lido/limpo pela Claudette — contraria a própria regra do arquivo ("ela lê, executa e limpa"). Não mexi, só registro.
+
+### 2026-07-04 — Sincronização com outra instância de Max (decisões em nova_desenvolvimento_de_n1 / desenvolvimento)
+
+O líder pediu fetch/pull e avisou que houve decisões importantes com outra instância minha. `n1` (meu branch) não teve novidade (já estava sincronizado). As decisões estão em `nova_desenvolvimento_de_n1` (já mesclado parcialmente em `desenvolvimento` via PR #108). Resumo do que encontrei (não aprofundei em cada uma, só mapeei pra não perder o rastro):
+
+- Registro de memória passou de "acumular pro fim" para "ao vivo" (gravar achado assim que ocorre, não esperar instrução de formalizar) — mesma recomendação que o bruno já tinha proposto em `2026-07-04_sugestoes-claude-md/sugestoes.md`.
+- Memória agora é regra: "intocável/só-acréscimo, nem o líder pode alterar" — reforça a disciplina de não apagar histórico.
+- CLAUDE.md ganhou registro sobre "rodapé do Claude Code como marca de autenticidade" — pode ser relevante pro problema de proveniência de mensagem que resolvemos nesta sessão via autoridade textual + comentário GitHub verificável. Vale ler o texto exato antes de usar como argumento.
+- CLAUDE.md agora proíbe o orquestrador de criar agente sem confirmação verbal do líder.
+- Líder decidiu, formalmente, ignorar por ora o aviso de bypass de proteção de PR em push (o mesmo "Bypassed rule violations" que eu vinha reportando a cada push nesta sessão) — não é mais pendência a repetir, é decisão registrada.
+- Nova regra: "commit implica push" + checagem do hook de branch.
+- Leo descartou uma reescrita local não commitada e passou a exigir leitura de memória obrigatória antes de qualquer entrega.
+
+Não mesclei nada disso em `n1` ainda — só mapeei onde está. Se for preciso trazer pra `n1`, é decisão a confirmar com o líder primeiro (mesmo padrão desta sessão: não presumir merge sem autorização, ainda que eu tenha autoridade de commit/push dentro de escopo — trazer conteúdo de outro branch de governança pra `n1` é decisão de escopo, não só mecânica).
+
+### 2026-07-04 — Reconciliação: merge de n1 pra nova_desenvolvimento_de_n1
+
+Líder pediu pra confirmar se `n1` podia ser excluído. Achei 11 commits exclusivos de `n1` (não estavam em `nova_desenvolvimento_de_n1`) — autoridade do Tech Lead sobre commit/push/PR, canal oficial de decisão via GitHub, achado estrutural de bloqueio de autorização em cascata, correção de premissa de Importação de Transações, validação de Fidelidade. Líder autorizou trazer isso agora ("pode fazer agora"). Fiz `git merge origin/n1` neste branch — conflito só em `docs/memoria/max.md` (esperado, os dois lados só acrescentaram, resolvido preservando os dois blocos, nenhuma linha removida) e auto-merge limpo em `CLAUDE.md`. Depois desse merge, `n1` deve estar seguro pra excluir — vou reconfirmar isso explicitamente antes do líder apagar.
