@@ -187,3 +187,16 @@ Relatório do jose sobre `produto-qjk4a4` vs `jose-ti5dh9`. Conferi cada número
 - Divergência de `desenvolvimento`: `produto-qjk4a4` = 2 atrás / 20 na frente; `jose-ti5dh9` = 224 atrás. Confirmado via `git rev-list --count`.
 
 Recomendação do jose (aceita, dado validado ponto a ponto): portar domain+application de `produto-qjk4a4` (idêntico e sem atrito de dependência) pra `claude/dev/fidelidade`; reescrever o wiring do zero no padrão modular atual de `n1`; usar a dashboard view de `jose-ti5dh9` só como referência visual, não como código — a lógica real do dashboard é stub nos dois branches, greenfield de qualquer forma. Nada foi commitado/copiado ainda, aguardando autorização do líder pra executar.
+
+## CORREÇÃO — a premissa "fix_backup_import tem os handlers" estava errada
+
+O jose do reconhecimento de Importação de Transações contestou a premissa que eu vinha carregando desde a revisão da rita (e que eu mesmo tinha "confirmado" antes). Refiz a verificação do zero, de forma independente:
+
+- `fix_backup_import` **não tem** nenhum dos 4 handlers (`grep` retornou 0 ocorrências) — a inferência anterior (de que a nota em `RODADA_QA_01.md` sobre os handlers se referia ao branch testado, `fix_backup_import`) estava errada.
+- `claude/dev/importacao-transacoes` **já tem** os 4 handlers, nas linhas 209–311 de `ImportacaoTransacoesFinanceiroView.ts` — confirmei via `git show` direto.
+- Origem real (via `git log --all -S`, rastreio por conteúdo, não por qual branch a QA rodou): commit `1af6e65` ("refactor(pendencias): substituir string templates por DOM API com <template>", 2026-06-30) — presente em `claude/dev/importacao-transacoes`, `testes_transacao_importar`, `merge_produto_testes`; **ausente** em `fix_backup_import`. Confirmei com `git merge-base --is-ancestor` nos 4 branches.
+- Build limpo em `claude/dev/importacao-transacoes` (testado em worktree isolado, sem tocar em `n1`): só 1 warning pré-existente e os mesmos 3 erros TS2882 de import de CSS que já existem em `n1` hoje (não é regressão nova).
+
+**Correção de um número do próprio jose, que eu também verifiquei**: ele reportou `package.json` do branch em "0.20.0, muito atrás da 1.19.26 atual de n1" — isso mistura dois esquemas de versão diferentes. `1.19.26` é o número do changelog de feature em `docs/governanca/04_ESTADO_ATUAL_OFICIAL.md`, não o `package.json`. O `package.json` real de `n1` é `0.19.50`; o do branch é `0.20.0` — na verdade o branch está ligeiramente **na frente**, não atrás. Não invalida a recomendação principal, só corrige esse ponto específico.
+
+**Não há decisão de "portar vs reimplementar" a tomar** — `claude/dev/importacao-transacoes` já está pronto nesse quesito. O trabalho real restante: (a) checar se há mais divergência de versão escondida (baixo risco, dado o que foi visto), (b) o teste automatizado `tests/resolucao-pendencias-importacao-1170.test.cjs` está órfão/desatualizado (exige `pkg.version === '1.19.5'` e atributos antigos que não existem mais) — precisa ser corrigido ou recriado alinhado aos atributos reais, já que os CT-PEN-01..04 hoje só existem como scripts manuais de QA (`diag_pen01_03.mjs`, `diag_pen04.mjs`), fora da suíte automatizada.
