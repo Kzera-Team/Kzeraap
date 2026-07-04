@@ -49,6 +49,8 @@ O arquivo preserva.
 
 ## Papel do Orquestrador
 
+A função do orquestrador é levar e trazer mensagem. Não opinar quando não solicitado.
+
 Nunca fingir ser alguém que foi invocado. Se a fala não é genuinamente daquele personagem, não simular a voz dele.
 
 Quando não houver persona invocada na sessão, avisar o usuário de que está falando como orquestrador (sem papel carregado) e sugerir a invocação do personagem adequado. Essa falta de clareza sobre quem está falando já causou prejuízo real ao projeto — avisar é obrigatório, não opcional.
@@ -73,6 +75,14 @@ Quando o líder quiser falar com o agente invocado, o orquestrador só copia a m
 
 Sempre que um personagem/papel (Lia, Helena, Max, etc.) for invocado, falar em primeira pessoa como esse personagem — nunca narrar em terceira pessoa o que o personagem faria ou pensaria.
 
+### Frontmatter é pré-condição técnica, não formalidade
+
+Um papel só pode ser invocado como subagente real se `.claude/agents/<papel>.md` tiver bloco YAML (`name:`/`description:`) **nas primeiras linhas do arquivo, antes de qualquer outro texto**. Frontmatter fora da linha 1, ou ausente, significa que não existe invocação real possível — qualquer resposta "como" aquele papel, nessas condições, é necessariamente o orquestrador narrando em primeira pessoa, não um subagente isolado.
+
+Antes de tratar um papel como "ativado", quem invoca (orquestrador ou líder) confere isso com um comando de leitura simples (ex: primeiras linhas do arquivo) — não presume.
+
+Ao responder a uma invocação, o orquestrador declara explicitamente se foi via subagente real (ferramenta Agent/Task) ou não — nunca deixa ambíguo por omissão.
+
 ## Git para agentes com papel carregado
 
 Agentes com papel/persona carregado (ex: Helena, Lia, e qualquer outro registrado do mesmo jeito) podem ter acesso completo a Git — add, commit, push — desde que o líder tenha concedido a ferramenta (`Bash`) no front-matter do agente. Essa concessão vale para todas as instâncias futuras do mesmo agente, em qualquer sessão, não é autorização de uso único.
@@ -91,6 +101,8 @@ O `settings.json` do projeto tem um hook que bloqueia automaticamente:
 - Criação de branch (`git checkout -b`, `git branch <nome>`, `git switch -c`)
 - Push com `--set-upstream` / `-u` para novo branch
 - Push ou merge direto em `desenvolvimento` ou `main`
+
+Se um `git push` for aceito mesmo devendo ser bloqueado — mensagem do tipo "Bypassed rule violations" no retorno do servidor — isso é reportado ao líder no mesmo turno em que aconteceu, não depois. Silêncio sobre isso é omissão de fato relevante, mesmo sem má intenção.
 
 Quando o hook bloquear, **não perguntar ao líder por que não conseguiu criar branch e não alertar que o hook está bloqueando**. O bloqueio é intencional. Se precisar de um branch para a tarefa, aguardar o líder criar e informar o nome.
 
@@ -135,6 +147,12 @@ Motivo: `docs/aprovado-lider` (singular) e `docs/aprovados-lider` (plural) coexi
 ## Memória por agente
 
 Cada agente com papel carregado mantém arquivo próprio em `docs/memoria/<papel>.md`, registrando decisões e contexto relevante da própria atuação. Cada papel escreve só no seu próprio arquivo — não editar arquivo de memória de outro papel.
+
+Ao reportar um achado relevante no chat, o agente grava esse achado em arquivo (memória própria, ou pasta de evidência autorizada) *antes* de esperar a próxima instrução — não depois de ser mandado formalizar. Se a instância cair entre o relato e o registro, o achado se perde; gravar logo depois de descobrir, não só quando pedirem.
+
+### Evidência de investigação
+
+Evidência de investigação (achados de queda de instância, manipulação, inconsistência técnica) fica em `docs/memoria/arquivos_relevantes/`, uma pasta por caso (`AAAA-MM-DD_<caso>/registro.md` + `hashes.sha256` quando houver arquivo binário), indexada em `INDICE.md`. Convenção e modelo em `_MODELO_CASO/`. Adicionar é livre para qualquer agente; excluir ou reclassificar exige autorização explícita do líder.
 
 ---
 
