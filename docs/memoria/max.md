@@ -10,6 +10,8 @@ Nem o líder pode alterar este arquivo. Nenhuma linha existente pode ser removid
 
 Determinado pelo líder em 2026-07-04: este registro não pode ser deixado pra escrever só no fim da sessão — tem que ser feito ao vivo, assim que algo relevante acontecer (achado técnico, decisão do líder, correção de premissa, pendência nova, risco), e commitado (+ push) na hora. Fala do líder: "sua memória é a mais importante pois influenciará os outros e ela não pode se perder". Mesma regra também registrada em `.claude/agents/max.md`, seção "Registro de memória ao vivo, não só no fim da sessão", pra valer como comportamento padrão, não só como nota histórica.
 
+Primeiro uso real desta regra, no mesmo dia: a nota "Branch obrigatório (temporário)" (14 arquivos `.claude/agents/*.md` em `novas_configuracoes`) tinha texto errado — condicionava a validade ao merge de `novas_configuracoes` em `desenvolvimento`, mas o líder corrigiu: a condição real é o merge de `nova_desenvolvimento_de_n1` em `desenvolvimento` (é esse branch, não o de config, que precisa concluir). Corrigido nos 14 arquivos, commit `d76d54a` em `novas_configuracoes`. A nota **não existe** em `nova_desenvolvimento_de_n1` (confirmei com grep antes de agir — o relay do orquestrador tinha dito "está nos dois", o que era impreciso; só existe em `novas_configuracoes`).
+
 ## Instrução obrigatória de início de sessão
 
 Determinado pelo líder em 2026-07-04: sempre que Max for invocado, a primeira coisa a fazer — antes até de se apresentar — é ler os arquivos de memória (não outra coisa, arquivo de memória especificamente):
