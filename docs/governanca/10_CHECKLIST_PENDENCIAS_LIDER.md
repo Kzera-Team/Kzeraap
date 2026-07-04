@@ -4,12 +4,18 @@ Mantido por Max. Só itens onde a ação/decisão é sua — o resto (execução
 
 Detalhe completo de cada item, com evidência, está em `docs/memoria/max.md`.
 
-## Aberto
+## Aberto — só o que é risco real ou depende só de você
 
-- [ ] **Nomear os 2 branches pros jose** (Importação de Transações; Fidelidade) — convenção confirmada: `claude/dev/<frente-curta>` (ex: `claude/dev/importacao-transacoes`). Sem isso ninguém começa a codificar. Você já sinalizou "já volto com as branches".
-- [ ] **Aplicar/corrigir branch protection no GitHub** — hoje a exigência de PR está pegando `n1` e `nova_desenvolvimento_de_n1` também, quando deveria valer só pra `desenvolvimento`. Ninguém da sessão tem admin pra mexer nisso; passo a passo já existe (ver `docs/memoria/arquivos_relevantes/09_RELATORIOS_AGENTES_NA_INTEGRA.md`, seção Bruno #2). Enquanto isso, os pushes seguem indo com bypass silencioso — você já aceitou isso por ora.
-- [ ] **Decisão: portar a reorganização de QA junto com Importação?** Achei que a "QA anterior" reorganizou `CT-*.md`/`RODADA_QA_01` de Importação (branch `mover_docs_qa`, PR #84), mas isso só existe em `fix_backup_import` e derivados — não está no nosso branch atual. Minha recomendação: portar junto (rita ganha material real em vez de partir do zero), mas quero sua confirmação antes de incluir isso no escopo do porte.
-- [ ] **Aprovar a auditoria dirigida (pente fino)** — triagem completa dos 43 branches em `docs/governanca/11_TRIAGEM_BRANCHES_PENTE_FINO.md`. 13 branches são descartáveis (zero conteúdo útil); 10 têm diff grande e ainda não avaliado, listados em ordem de prioridade. Recomendo leo tocar essa auditoria, com apoio de rafael e diego no item de criptografia. Aguardando seu sinal verde pra acionar.
+A partir de 2026-07-04, por pedido seu ("me tragam só branches e itens que vcs realmente acham que tem risco"), paro de trazer item de decisão óbvia — resolvo e só registro. Este arquivo agora lista só: (a) coisas que só você pode fazer (acesso/permissão), ou (b) risco real que exige seu julgamento.
+
+- [ ] **Aplicar/corrigir branch protection no GitHub** — a exigência de PR está pegando `n1`/`nova_desenvolvimento_de_n1` além de `desenvolvimento`. Ninguém da sessão tem admin — só você resolve isso.
+
+## Decidido por mim, sem precisar de você (registro, não pergunta)
+
+- [x] **QA reorganizada (`mover_docs_qa`) entra no porte de Importação junto com os handlers** — risco baixo, reversível, ganho claro (rita trabalha com material real). Decidido, jose já recebe isso no escopo.
+- [x] Branches dos jose criados por você: `claude/dev/importacao-transacoes`, `claude/dev/fidelidade`.
+- [x] Auditoria dirigida (pente fino) acionada com leo — baixo risco (só leitura), alto valor depois do achado da QA. Não vou trazer os 13 branches descartáveis nem os que derem "sem achado" — só o que leo/diego classificarem como risco real.
+- [x] Commit `ce9275b` (recado antigo em `para-claudette.md`) confirmado como sua autoria genuína — não é ameaça, arquivado como histórico.
 
 ## Resolvido nesta sessão (histórico, não precisa reler)
 
