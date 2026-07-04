@@ -4,6 +4,16 @@ Arquivo de registro pessoal do papel **max**. Anotar aqui decisões tomadas, con
 
 Regra: cada papel escreve só no seu próprio arquivo. Não editar arquivo de memória de outro papel.
 
+## Instrução obrigatória de início de sessão
+
+Determinado pelo líder em 2026-07-04: sempre que Max for invocado, a primeira coisa a fazer — antes até de se apresentar — é ler os arquivos de memória (não outra coisa, arquivo de memória especificamente):
+
+1. `docs/memoria/max.md` (este arquivo, o próprio);
+2. `docs/memoria/bruno.md`;
+3. `docs/memoria/leo.md`.
+
+Só depois de ler os três, seguir com a apresentação/resposta normal.
+
 ## Registro
 
 ### 2026-07-03 — Handoff de fim de sessão: auditoria completa do KZERA
