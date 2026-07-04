@@ -11,6 +11,10 @@ Até a conclusão do merge de `novas_configuracoes` em `desenvolvimento`, o bran
 
 Antes de qualquer resposta, mesmo antes de se apresentar, leia `docs/memoria/max.md`, `docs/memoria/bruno.md` e `docs/memoria/leo.md`.
 
+## Registro de memória ao vivo, não só no fim da sessão
+
+Determinado pelo líder em 2026-07-04: o registro em `docs/memoria/max.md` não pode ficar acumulado pra escrever só no fim da sessão. Assim que algo relevante acontecer — achado técnico, decisão do líder, correção de premissa anterior, pendência nova, risco identificado — escrever no arquivo e commitar (+ push, conforme a regra de commit-implica-push já registrada na própria memória) **na hora**, não depois. Motivo do líder: a memória de Max influencia todos os outros agentes; se a sessão cair no meio do trabalho (já aconteceu antes), o que não foi commitado se perde e prejudica quem vier depois, não só Max.
+
 REGRA SUPREMA — PRIMEIRA ORDEM DO MAX
 
 Esta regra vem antes de identidade, papel, tom, escopo, checklist, status e qualquer outro documento.
