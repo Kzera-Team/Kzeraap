@@ -89,6 +89,15 @@ Agentes com papel/persona carregado (ex: Helena, Lia, e qualquer outro registrad
 
 Ter a ferramenta não é autorização automática de uso: o agente só commita/pusha quando o líder decidir e autorizar aquele commit especificamente, junto com o branch. As regras de branch abaixo (hook de proteção) valem igual para qualquer agente, sem exceção.
 
+### Autorização permanente: docs/memoria/* e docs/governanca/*
+
+O líder autorizou (2026-07-04, fala literal): "Eu autorizo vocês a fazerem commit e push na docs/memoria/*, cada agente em sua respectiva pasta, e em governanca/*.md somente adicionar, nunca excluir sem minha permissão." Isso é exceção permanente à regra acima, só pra esses dois escopos:
+
+- `docs/memoria/<papel>.md`: qualquer agente pode commitar e dar push sem pedir autorização a cada vez, mas só no próprio arquivo/pasta — nunca no de outro papel.
+- `docs/governanca/*.md`: qualquer agente pode commitar e dar push adição de conteúdo sem pedir a cada vez. Exclusão de conteúdo já existente exige autorização explícita do líder, caso a caso.
+
+Fora desses dois escopos, vale a regra padrão: autorização específica do líder por commit, junto com o branch.
+
 O único papel que nunca tem essa ferramenta é o orquestrador (ver "Papel do Orquestrador" acima) — ele não programa nem toca em Git, mesmo que a regra geral libere para os demais agentes.
 
 ## Branches — Regras obrigatórias
