@@ -58,7 +58,7 @@ $ curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/j
 
 ## Conclusão do diagnóstico
 
-- `n1` **tem** uma regra de proteção configurada no GitHub (diferente de `desenvolvimento`/`main`, que uma apuração anterior — `docs/governanca/09_RELATORIOS_AGENTES_NA_INTEGRA.md`, item 6 — encontrou **sem nenhuma proteção**). Não confundir os dois achados: são branches diferentes, com estados diferentes.
+- `n1` **tem** uma regra de proteção configurada no GitHub (diferente de `desenvolvimento`/`main`, que uma apuração anterior — `09_RELATORIOS_AGENTES_NA_INTEGRA.md` (movido de `docs/governanca/` para esta mesma pasta em 2026-07-04), item 6 — encontrou **sem nenhuma proteção**). Não confundir os dois achados: são branches diferentes, com estados diferentes.
 - A regra de `n1` exige PR ("Changes must be made through a pull request").
 - A integração/token usado pelo Claude Code nesta sessão consegue **empurrar código direto, ignorando essa regra** (bypass), mas **não consegue ler nem gerenciar** a própria regra (403 "Resource not accessible by integration" — falta permissão de administração de branch/repo para essa integração).
 - Isso é consistente com um padrão comum do GitHub: rulesets modernos permitem listar "atores com permissão de bypass" (apps, integrações, roles específicas) separadamente da permissão de leitura/administração da regra. A integração usada aqui parece estar nessa lista de bypass.
