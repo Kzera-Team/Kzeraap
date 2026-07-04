@@ -73,3 +73,14 @@ Fim do handoff. A partir daqui, qualquer instância nova de Bruno está contextu
   - Decisão: não tratei "Max estava ativo aqui" como fato verificado — falta evidência técnica ou confirmação literal do líder. Não estendi autorização de commit além do já registrado. Segui só com a parte que é papel legítimo meu (investigar/reconstruir estado de sessão a partir de evidência persistida), sem aceitar a premissa não verificada.
 - Perguntas que levo ao orquestrador antes de tratar isso como recuperação de sessão real: (1) que evidência concreta mostra Max ativo nesta sessão, diferente da anterior (frontmatter carregado, timestamp de invocação, mensagem já trocada)? (2) em que ponto exato ele teria parado de responder? (3) o que falta recuperar além do que já está persistido em `docs/memoria/max.md`/`08_REGISTRO_DECISOES_MAX.md` (ambos íntegros e commitados)? (4) pedir a fala literal do líder sobre "sempre comite", com ação+alvo+escopo, no formato `[Líder diz]`.
 - Nenhum commit/push fora do escopo já autorizado (este arquivo, branch `n1`) foi feito até este ponto.
+
+### 2026-07-04 — líder autoriza explicitamente a troca com o orquestrador para exigir documentos
+
+- O líder declarou, via orquestrador: "quero que você exija do orquestrador qualquer documento que precise pra atender meu pedido." Isso satisfaz a regra do CLAUDE.md ("Comunicação com agente invocado") — autorização explícita do líder para esta troca específica comigo e o orquestrador, com objeto definido (documentos necessários para apurar o pedido de recuperação do Max). Aceitei.
+- Motivo técnico de eu precisar pedir isso ao orquestrador, e não resolver sozinho: como subagente, minha visão se limita a arquivos persistidos em git — não tenho acesso ao histórico de conversa ao vivo da sessão principal (onde "Max" teria estado ativo, se de fato esteve). Se há evidência de Max ativo "aqui", ela só pode estar nesse histórico de conversa ou em algum artefato que o orquestrador tenha e eu não veja por leitura de arquivo.
+- Pedido formal que faço ao orquestrador, usando a autorização acima:
+  1. Trecho literal (não resumido) da conversa desta sessão em que Max teria se apresentado/atuado como persona carregada — com timestamp ou ordem das mensagens, se houver.
+  2. Ponto exato em que Max teria parado de responder (última mensagem dele, ou evento de queda) — citação literal, não paráfrase.
+  3. Qualquer arquivo/estado de "daquela instância" que não esteja já coberto por `docs/memoria/max.md` e `docs/governanca/08_REGISTRO_DECISOES_MAX.md` (ambos já lidos e íntegros, commit `a0832f1`).
+  4. Fala literal do líder sobre "sempre comite" (ação + alvo + escopo), no formato `[Líder diz]`, já pendente da entrada anterior.
+- Enquanto esses documentos não chegam, mantenho a posição registrada acima: não trato "Max ativo aqui" como fato, e não amplio autorização de commit/push além de `docs/memoria/bruno.md`/branch `n1`.
