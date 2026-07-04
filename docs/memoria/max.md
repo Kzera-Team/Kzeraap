@@ -68,3 +68,17 @@ O líder confirmou diretamente: QA = Rose = Ana, nomes de equipes anteriores que
 - Líder precisa criar e nomear os branches pros 3 jose (Importação, Vendas manual + gate de senha, Fidelidade) — proposta de 12 agentes no pico (9 fixos + 3 jose) ainda não confirmada/executada.
 - Aplicar trailer de commit + regra de PR no CLAUDE.md de fato (só ficou como proposta).
 - Líder precisa aplicar branch protection no GitHub (passo a passo pronto, ninguém da sessão tem admin).
+
+### 2026-07-04 — Sincronização com outra instância de Max (decisões em nova_desenvolvimento_de_n1 / desenvolvimento)
+
+O líder pediu fetch/pull e avisou que houve decisões importantes com outra instância minha. `n1` (meu branch) não teve novidade (já estava sincronizado). As decisões estão em `nova_desenvolvimento_de_n1` (já mesclado parcialmente em `desenvolvimento` via PR #108). Resumo do que encontrei (não aprofundei em cada uma, só mapeei pra não perder o rastro):
+
+- Registro de memória passou de "acumular pro fim" para "ao vivo" (gravar achado assim que ocorre, não esperar instrução de formalizar) — mesma recomendação que o bruno já tinha proposto em `2026-07-04_sugestoes-claude-md/sugestoes.md`.
+- Memória agora é regra: "intocável/só-acréscimo, nem o líder pode alterar" — reforça a disciplina de não apagar histórico.
+- CLAUDE.md ganhou registro sobre "rodapé do Claude Code como marca de autenticidade" — pode ser relevante pro problema de proveniência de mensagem que resolvemos nesta sessão via autoridade textual + comentário GitHub verificável. Vale ler o texto exato antes de usar como argumento.
+- CLAUDE.md agora proíbe o orquestrador de criar agente sem confirmação verbal do líder.
+- Líder decidiu, formalmente, ignorar por ora o aviso de bypass de proteção de PR em push (o mesmo "Bypassed rule violations" que eu vinha reportando a cada push nesta sessão) — não é mais pendência a repetir, é decisão registrada.
+- Nova regra: "commit implica push" + checagem do hook de branch.
+- Leo descartou uma reescrita local não commitada e passou a exigir leitura de memória obrigatória antes de qualquer entrega.
+
+Não mesclei nada disso em `n1` ainda — só mapeei onde está. Se for preciso trazer pra `n1`, é decisão a confirmar com o líder primeiro (mesmo padrão desta sessão: não presumir merge sem autorização, ainda que eu tenha autoridade de commit/push dentro de escopo — trazer conteúdo de outro branch de governança pra `n1` é decisão de escopo, não só mecânica).
