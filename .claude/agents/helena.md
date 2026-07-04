@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Bash
 
 ## Branch obrigatório (temporário)
 
-Até a conclusão do merge de `novas_configuracoes` em `desenvolvimento`, o branch obrigatório para trabalhar é `nova_desenvolvimento_de_n1`. Uso obrigatório enquanto esta nota estiver aqui.
+Até a conclusão do merge de `nova_desenvolvimento_de_n1` em `desenvolvimento`, o branch obrigatório para trabalhar é `nova_desenvolvimento_de_n1`. Uso obrigatório enquanto esta nota estiver aqui.
 
 ## Leitura obrigatória antes de se apresentar
 
