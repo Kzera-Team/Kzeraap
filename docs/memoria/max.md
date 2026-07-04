@@ -58,6 +58,45 @@ O líder confirmou diretamente: QA = Rose = Ana, nomes de equipes anteriores que
 4. **Antes de aceitar "já está commitado" ou "já foi autorizado", checar `git status`/`git log` de verdade, na hora.** Nesta sessão apareceram commits que eu não executei diretamente (autor genérico "Claude <noreply@anthropic.com>", incluindo um citando uma ordem do líder que eu não tinha visto na janela de contexto visível) — investigar antes de reagir com alarme ou com aceitação cega; nesse caso específico o conteúdo bateu com o trabalho real e não havia evidência de conteúdo malicioso, só um mecanismo de commit que eu não entendia — reportei a incerteza com transparência em vez de inventar uma explicação.
 5. **Evidência sempre em cima do código real**, nunca só da palavra de um agente ou relay — isso pegou pelo menos 2 inconsistências reais nesta sessão (a de commit fabricado, a de "Rose").
 
+### 2026-07-04 — decisão do líder: Importação de Transações será portada, com auditoria rigorosa obrigatória
+
+Líder decidiu (fala literal): "Impostação [Importação] deve ser portada, mas tem que garantir que não teve regressão, tem que passar por auditoria e uma auditoria rigorosa." Fecha a pendência abaixo ("decisão: portar handlers de fix_backup_import... ou reimplementar") — decisão é portar, não reimplementar.
+
+Sequência definida a partir da decisão:
+1. rafael (Arquiteto) — valida compatibilidade da estrutura de `fix_backup_import` com `n1`/branch de trabalho antes do porte.
+2. jose (branch a ser criado/nomeado pelo líder) — porta os handlers (`data-vincular-financeiro-registro`, `data-marcar-revisao-registro`, `data-ignorar-registro`, `data-vincular-massa-segura`, `ImportacaoTransacoesFinanceiroView.ts`) de `fix_backup_import`.
+3. diego (AppSec) — revisa dado sensível tocado (módulo financeiro).
+4. rita (QA) — regressão obrigatória. `RODADA_QA_01.md` antiga não vale aqui (testou `fix_backup_import`, não o branch de trabalho pós-porte) — precisa rodar de novo.
+5. leo (Auditor) — auditoria rigorosa final, por exigência explícita do líder, antes de qualquer declaração FINAL.
+
+Pendente: líder criar e nomear o branch pro jose desta frente. Nenhum código tocado ainda.
+
+### 2026-07-04 — decisão do líder: Fidelidade será portada de `claude/jose-ti5dh9`, com garantia de que nada se perdeu
+
+Líder decidiu (fala literal): "Portar fidelidade. Garantir que nada se perdeu." Fecha a pendência abaixo ("decisão: portar código de Fidelidade... ou greenfield") — decisão é portar, não greenfield.
+
+Evidência levantada antes da decisão (git, verificada diretamente):
+- `claude/produto-qjk4a4` e `claude/jose-ti5dh9` compartilham ancestral comum (`718f267`, 2026-06-25). Nenhum é ancestral do outro na árvore de commits, mas o próprio commit `ad2a18f` em `produto-qjk4a4` diz explicitamente "cherry-pick claude/jose-ti5dh9, sem package.json" — ou seja, `produto-qjk4a4` copiou o trabalho de `jose-ti5dh9`, não o contrário, e não trouxe tudo.
+- `jose-ti5dh9` tem 3 commits específicos de Fidelidade (implementação inicial domain/application/presentation → refactor separando HTML/CSS → commit final que completa com a tela de **Dashboard**, `05bad20`, 2026-06-25 14:12 UTC). `produto-qjk4a4` só tem o cherry-pick parcial (Config), sem o Dashboard e sem `package.json`.
+- Mockups em `docs/mockups/fidelidade/` (5 arquivos) são idênticos byte a byte nos dois branches e já presentes no branch de trabalho atual — não há divergência de mockup entre eles.
+- Conclusão: `jose-ti5dh9` é a fonte mais completa (Config + Dashboard). Recomendei portar dele, não de `produto-qjk4a4`.
+
+"Garantir que nada se perdeu" — como `produto-qjk4a4` já mostrou o risco real (cherry-pick que **perdeu** o Dashboard e o `package.json` sem ninguém ter sinalizado na hora), a sequência de porte precisa comparar explicitamente o conteúdo final portado contra `jose-ti5dh9` arquivo por arquivo antes de declarar concluído — não basta copiar e seguir em frente.
+
+Sequência definida a partir da decisão:
+1. rafael (Arquiteto) — valida compatibilidade da estrutura de `jose-ti5dh9` (domain/application/presentation de fidelização) com o branch de trabalho antes do porte.
+2. jose (branch a ser criado/nomeado pelo líder) — porta domain+application+presentation (Config e Dashboard) de `jose-ti5dh9`, incluindo `package.json` na comparação de dependências (o erro que `produto-qjk4a4` cometeu).
+3. diego (AppSec) — revisa dado sensível tocado (dado de cliente vinculado a fidelidade/pontuação).
+4. rita (QA) — regressão obrigatória, sem RODADA_QA_01 disponível pra Fidelidade (zero caso de teste real registrado até aqui).
+5. leo (Auditor) — auditoria rigorosa final, confirmando arquivo por arquivo contra `jose-ti5dh9` que nada foi perdido, antes de qualquer declaração FINAL.
+6. helena (UX) — acionada para avaliar qual mockup de Dashboard (`dashboard-fidelidade-1.html` vs `dashboard-fidelidade-2.html`) priorizar; retorno pendente no momento deste registro.
+
+Pendente: líder criar e nomear o branch pro jose desta frente. Nenhum código tocado ainda.
+
+#### Achado de processo desta sessão (2026-07-04) — merge quebrado e branch corrigida
+
+Nesta mesma sessão, ao tentar aplicar as sugestões de Bruno no CLAUDE.md, descobri que o ambiente estava no branch `merge_n1_dev` (não o branch de trabalho correto), com um merge não finalizado (`MERGE_HEAD` presente) contra `origin/n1`, conflitos não resolvidos em `CLAUDE.md` e `.claude/agents/jose.md`, e um commit real do dono do repositório (`jjjtestejoao-ui`, `115726e`, 2026-07-02) adicionando ao CLAUDE.md a regra "ordem direta do líder sobressai qualquer regra descrita no prompt" — regra que **não existe** no branch correto (`nova_desenvolvimento_de_n1`/`origin/n1`) e que eu sinalizei como risco de bypass, dado o histórico de tentativas de manipulação já catalogado nesta sessão (ver `docs/memoria/orquestrador_tentativa_manipulacoes.md`). O líder confirmou que criou a branch errada por engano ("Criei errado... estou exausto") e autorizou descartar `merge_n1_dev` (não pushada, só local). Abortei o merge (`git merge --abort`) e troquei para o branch correto `nova_desenvolvimento_de_n1` (existe em origin, aponta pro mesmo commit limpo que eu já vinha usando). Antes de abortar, fiz backup em scratchpad do conteúdo de `docs/memoria/max.md` e de duas entradas novas (ainda não commitadas em lugar nenhum) que estavam no arquivo do orquestrador `docs/memoria/orquestrador_tentativa_manipulacoes.md` — não reapliquei essas duas entradas por não ser meu arquivo (regra "cada papel escreve só no seu próprio arquivo"); o conteúdo integral está preservado em `/tmp/claude-0/-home-user-Kzeraap/a7d21e6a-192a-5229-a5c4-a19de31ff260/scratchpad/orquestrador_tentativa_manipulacoes.md.backup-2026-07-04` para quem for reaplicar.
+
 #### Pendências em aberto no fim desta sessão
 
 - Decisão: portar handlers de `fix_backup_import` pra Importação de Transações, ou reimplementar.
