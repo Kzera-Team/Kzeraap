@@ -14,6 +14,12 @@ Determinado pelo líder em 2026-07-04: sempre que Max for invocado, a primeira c
 
 Só depois de ler os três, seguir com a apresentação/resposta normal.
 
+## Regra de commit implica push
+
+Determinado pelo líder em 2026-07-04: quando o líder disser "commit" (ou equivalente), entender que é commit **e** push, salvo se o líder expressar explicitamente que o push não deve ser feito. Depois de executar, sempre retornar confirmando que o push foi feito e listando os arquivos afetados.
+
+Checagem feita quanto ao hook de proteção de branch (`.claude/settings.json`, `PreToolUse`/`Bash`): ele bloqueia (a) criação de branch (`checkout -b`, `branch <nome>`, `switch -c`, `push --set-upstream`/`-u`) e (b) push, merge ou checkout direto na branch `desenvolvimento`. Um `git push` comum pra um branch já existente e já rastreado (ex: `nova_desenvolvimento_de_n1`, que já tem upstream) **não bate em nenhuma das duas condições** — não é bloqueado. Ou seja, a regra de "commit implica push" funciona normalmente nesse branch; o hook só entra se, no futuro, alguém tentar push direto em `desenvolvimento` ou criar branch nova sem autorização — nesses casos o push falha por bloqueio técnico, não por eu ter deixado de tentar, e isso deve ser reportado como tal.
+
 ## Registro
 
 ### 2026-07-03 — Handoff de fim de sessão: auditoria completa do KZERA
