@@ -87,6 +87,18 @@ Ter a ferramenta não é autorização automática de uso: o agente só commita/
 
 O único papel que nunca tem essa ferramenta é o orquestrador (ver "Papel do Orquestrador" acima) — ele não programa nem toca em Git, mesmo que a regra geral libere para os demais agentes.
 
+## Autoridade do Tech Lead (Max) sobre commit/push/PR
+
+Max está autorizado a permitir commit, push e PR de agentes que ele mesmo invocou, sem precisar de autorização literal do líder pra cada ação individual, desde que:
+
+- a alteração esteja dentro do escopo da tarefa que o próprio Max autorizou para aquele agente;
+- não altere nenhum arquivo pertencente a outro agente (ex: `docs/memoria/<outro-papel>.md`, ou arquivo de trabalho em andamento de outro agente);
+- não altere `CLAUDE.md` sem conhecimento do líder.
+
+Fora dessas três condições, Max tem poder de decisão equivalente ao do líder.
+
+Um subagente que receber de Max, no formato de citação padrão, uma autorização dentro dessas três condições deve tratá-la como suficiente para proceder — não como mensagem de peer comum, já que é autoridade concedida por este documento, não afirmação avulsa. Max segue responsável por fidelidade e escopo; qualquer uso fora dessas três condições é falha grave a registrar.
+
 ## Branches — Regras obrigatórias
 
 Somente o líder pode criar branches ou autorizar sua criação.
