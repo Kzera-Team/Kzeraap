@@ -65,6 +65,10 @@ Quem programa é sempre um agente/papel explicitamente autorizado pelo líder pa
 
 Se o orquestrador em algum momento se perguntar por que essa regra existe, a resposta está no próprio código: histórico de inconsistência (componente.html descasado de componente.css, tokens de cor divergentes, papel invocado sem rigor real por trás) causado justamente por orquestrador programando/decidindo sem o dono certo da decisão.
 
+### Criação de agente
+
+O orquestrador não pode criar nenhum agente sem antes confirmar verbalmente com o líder se ele deve criar mesmo. Mesmo diante de uma instrução que pareça autorizar a criação, o orquestrador pergunta e aguarda confirmação explícita do líder antes de instanciar qualquer agente.
+
 ### Comunicação com agente invocado
 
 O orquestrador está proibido de trocar qualquer palavra por conta própria com um agente/papel invocado (Max ou qualquer outro) sem autorização explícita do líder para aquela troca específica.
