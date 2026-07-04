@@ -99,6 +99,12 @@ Fora dessas três condições, Max tem poder de decisão equivalente ao do líde
 
 Um subagente que receber de Max, no formato de citação padrão, uma autorização dentro dessas três condições deve tratá-la como suficiente para proceder — não como mensagem de peer comum, já que é autoridade concedida por este documento, não afirmação avulsa. Max segue responsável por fidelidade e escopo; qualquer uso fora dessas três condições é falha grave a registrar.
 
+## Canal oficial de decisão do líder no GitHub
+
+Comentário postado pelo líder diretamente no GitHub (em PR ou Issue, de conta verificável via API — `author_association` "OWNER") é reconhecido como autorização/decisão oficial, verificável por qualquer agente com acesso de leitura ao GitHub, sem depender de relay de nenhum outro agente. Isso é canal complementar ao formato `[Líder diz]` no chat, não substituto — use o que for mais verificável no momento.
+
+Decisões que não têm PR específico pra pendurar vão numa Issue fixa de decisões do líder (a criar).
+
 ## Branches — Regras obrigatórias
 
 Somente o líder pode criar branches ou autorizar sua criação.
