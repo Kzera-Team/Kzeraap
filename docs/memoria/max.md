@@ -213,3 +213,23 @@ José apurou por conta própria (documentado bem em `docs/memoria/jose.md`) que 
 Líder instruiu, diante desse achado: "sempre consultar suas lembranças pra tentar entender cada ajuste... se não tiver nada aí vc me contata novamente" — antes de reportar algo como pendência/risco, checar primeiro a memória relevante (própria e do agente envolvido) atrás de explicação já registrada, e só escalar de novo se a memória não explicar. Registrando aqui como prática permanente daqui pra frente, não só para este caso.
 
 Não mudei nada no PR #104 além de leitura/verificação até este ponto. Ainda não autorizei o merge final do PR na íntegra (clicar merge no GitHub) — aguardando o líder depois deste achado.
+
+### 2026-07-05 (continuação) — HANDOFF: líder define responsabilidade permanente minha por evitar "confusão entre instâncias"
+
+Se você é uma instância nova de Max retomando isto: leia esta entrada inteira antes de fazer qualquer coisa nova. O líder foi direto: "Essas confusões todas entre instâncias não podem ocorrer novamente, e o responsável pra que isso não ocorra é você [Max]... deixar sua próxima instância completamente informada... a sessão pode cair a qualquer momento sem aviso." Por isso este handoff é escrito ao vivo, não no fim.
+
+**Estado do PR #104 neste momento:** conteúdo já resolvido e **pushado em `origin/n1`** (commits `a6ce9ca`, `d917627`, `218b04c` — ver entrada acima). As 3 decisões do líder (jose.md=versão n1, settings.json=desenvolvimento+main sem bloqueio amplo de push, paths=plural) estão aplicadas corretamente no conteúdo. Falta: (1) resposta do José confirmando/explicando por que deu push apesar da instrução contrária — perguntei duas vezes, ainda sem retorno literal dele quando escrevi isto; (2) autorização do líder para eu de fato clicar "merge" no PR #104 do GitHub (`n1` → `claude/dev/importacao-transacoes`) — ele só disse "se não houver regressão pode seguir com o merge" ANTES de eu achar o push não autorizado, não confirmou depois desse achado. Não cliquei merge ainda.
+
+**Branches principais confirmadas pelo líder (2026-07-05):** hoje são `desenvolvimento` (onde toda sessão nova nasce, tem a nota "Branch obrigatório" apontando pra `nova_desenvolvimento_de_n1`), `nova_desenvolvimento_de_n1` (branch de trabalho obrigatório atual), `n1` (**temporário, o líder já avisou que vai sair em breve** — não vale a pena investir esforço de sincronização de longo prazo nele) e as branches `claude/dev/*` ativas no momento. Depois que `n1` sair, a lista fica só `desenvolvimento` + `nova_desenvolvimento_de_n1` + `claude/dev/*` ativas — **a lista muda com o tempo**, qualquer solução de sincronização de memória não pode fixar `n1` como premanente.
+
+**Delegação em andamento:** pedi ao Bruno (subagente, lançado com `isolation: worktree` desta vez — importante, ver abaixo) para montar um plano de sincronização de `docs/memoria/*.md` entre as branches principais, e para dar uma opinião técnica sobre como reduzir o risco do tipo de erro que o José cometeu (push de branch inteira arrastando commit não autorizado, ao exercer autorização de push restrita a um único arquivo). Resultado dele ainda não chegou quando escrevi isto — checar `docs/memoria/bruno.md` e o retorno dele nesta thread antes de repetir o pedido.
+
+**Lição operacional que fica valendo daqui pra frente, não só para este caso:** ao lançar um subagente (José, Bruno, qualquer um) para tarefa que envolve `git checkout`/commit/branch, usar `isolation: "worktree"` na chamada do Agent tool sempre que eu quiser garantir que o trabalho dele não se mistura com meu próprio estado de git compartilhado antes da minha revisão. Nesta sessão eu não fiz isso com o José (por isso meu `git branch --show-current` mudou sozinho de baixo de mim) — já corrigi ao chamar o Bruno agora. Não presumir isolamento por padrão.
+
+**Outra lição, também permanente:** antes de escalar um achado/risco ao líder, checar primeiro a memória relevante (minha e do agente envolvido) atrás de explicação já registrada — só escalar de novo se a memória não explicar. Instrução literal do líder, registrada na entrada anterior.
+
+**Pendências abertas no momento deste handoff:**
+- Resposta do José sobre o push (perguntei 2x, sem retorno ainda).
+- Plano do Bruno sobre sincronização de memória + mitigação técnica do erro de push (pedido feito, sem retorno ainda).
+- Autorização do líder para fechar (merge) o PR #104 de fato, depois do achado do push não autorizado.
+- Confirmação da lista de "branches principais" após `n1` sair (líder já avisou que vai acontecer "em breve", sem data — não assumir que já aconteceu sem checar `git ls-remote` de novo).
