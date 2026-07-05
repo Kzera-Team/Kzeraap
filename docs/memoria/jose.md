@@ -47,3 +47,33 @@ Refiz o merge (`git checkout n1` já feito antes; `git merge origin/claude/dev/i
 Commitei localmente o merge (`d917627`, mensagem padrão "Merge remote-tracking branch 'origin/claude/dev/importacao-transacoes' into n1"). **Não fiz push.** Branch local `n1` ficou 91 commits à frente de `origin/n1` (commits vindos do merge + o commit de memória anterior `a6ce9ca`). Reportei o diff consolidado a Max para revisão antes de qualquer push, como combinado.
 
 Status: PARCIAL — merge resolvido e commitado localmente, aguardando revisão de Max e autorização de push.
+
+### 2026-07-05 (apuração) — por que o push aconteceu apesar da instrução "não faça push"
+
+Max perguntou, via mensagem direta, se fui eu quem deu o push, por quê, o passo a passo com validação/build/teste, e se havia mais alguma coisa em `n1` além do commit de merge. Respondi a ele no chat; registro aqui a mesma resposta literal, por causa do pedido do líder (repassado por Max) de não deixar nada só no chat, pra uma instância seguinte não começar do zero se esta cair.
+
+**1. Foi você quem fez esse push?** Sim.
+
+**2. Por quê, apesar da instrução explícita de não fazer push?** Não foi decisão de ignorar a instrução — foi erro de execução. Depois de commitar o merge localmente (`d917627`, sem push, conforme pedido), escrevi o primeiro registro desta apuração aqui em `docs/memoria/jose.md` e commitei (`a6ce9ca`... na verdade esse já tinha sido pushado antes das decisões chegarem; o commit de memória pós-decisão foi `218b04c`). Para `docs/memoria/jose.md` eu tenho autorização permanente do líder (2026-07-04) pra commitar e dar push sem pedir a cada vez, restrita a esta pasta/arquivo. Rodei `git push origin n1` pensando exclusivamente nesse commit de memória — não considerei que ele estava em cima do commit de merge, na mesma branch, e que `git push` sobe a branch inteira até onde ela estiver localmente, não um commit isolado. O merge subiu junto, sem eu perceber no momento do comando. Efeito prático: violei a instrução "não faça push" mesmo sem essa intenção no momento exato do comando.
+
+**3. Passo a passo (com validação/build/teste, ou ausência):**
+1. `git checkout n1` (já sincronizada com `origin/n1` em `a6ce9ca`)
+2. `git merge origin/claude/dev/importacao-transacoes --no-edit` → conflitos esperados (3 de conteúdo + 61 de "file location")
+3. `git checkout --ours .claude/agents/jose.md` → conferido com `wc -l` (156) e `head` (frontmatter)
+4. `git checkout --ours CLAUDE.md` → conferido sem marcador de conflito restante
+5. `git add .claude/agents/jose.md CLAUDE.md`
+6. Edição manual da linha do hook em `.claude/settings.json`, combinando as duas versões conforme especificação do Max
+7. Única validação rodada: `python3 -c "import json; json.load(open('.claude/settings.json'))"` (só sintaxe JSON). Não rodei o hook de verdade, não simulei comando bloqueado/permitido.
+8. `git add .claude/settings.json`
+9. Listei os 61 arquivos "UA" (`git status --porcelain=v1 | grep "^UA"`), `git add` em lote
+10. Confirmado 0 unmerged, revisada a lista completa de staged, confirmado que `docs/aprovado-lider` (singular) não existe mais na árvore
+11. `git commit --no-edit` → `d917627`
+12. **Nenhum teste automatizado rodado.** Não rodei `npm test`, não rodei `npx tsc --noEmit`, não rodei `npm run build`, não rodei teste manual do fluxo. Só a checagem de sintaxe JSON do item 7 e inspeção visual/grep.
+13. Editei `docs/memoria/jose.md` (registro de decisões), `git add`, `git commit` → `218b04c`
+14. `git push origin n1` → subiu `d917627` e `218b04c` juntos, sem eu perceber que o merge ia junto
+
+**4. Só esse commit, ou tem mais coisa?** Só isso. `origin/n1` em `218b04c` (confirmado de novo agora, 2026-07-05, depois de reabrir a sessão — ver nota de ambiente abaixo). Não fiz nenhuma tentativa de reverter/force-push. Não vou fazer sem autorização explícita.
+
+**Nota de ambiente (achado, não erro meu):** ao retomar esta tarefa após responder a apuração acima, o worktree principal (`/home/user/Kzeraap`) estava com `HEAD` em `nova_desenvolvimento_de_n1`, não em `n1` — sem eu ter rodado nenhum checkout nesse intervalo. Existe também um worktree separado em `.claude/worktrees/agent-a15332c63140e853f` (branch `worktree-agent-a15332c63140e853f`). Verifiquei antes de fazer qualquer coisa: `origin/n1` seguia intacto em `218b04c` (nada perdido), então dei `git checkout n1` de volta no worktree principal — retomando uma tarefa já autorizada nesta mesma branch, não abrindo ambiente novo. Registro isso para o Bruno/Max investigarem a causa (troca de branch no worktree principal sem ação minha), não é urgente pra mim resolver agora.
+
+Status: PARCIAL — mesma pendência (revisão de Max/líder sobre o push já feito em `origin/n1`), apuração da causa respondida integralmente.
