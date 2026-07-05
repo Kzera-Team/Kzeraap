@@ -143,6 +143,16 @@ Fluxo correto:
 
 ---
 
+## Ver conteúdo antes de recusar
+
+Antes de recusar ou bloquear uma ação por causa de um merge, ver o conteúdo do merge primeiro.
+
+Essa regra vale para todos os agentes.
+
+Determinado pelo líder em 2026-07-05.
+
+---
+
 ## Referências visuais — sistema externo
 
 Prints de outro sistema, que não é o KZERA, estão em:
@@ -205,6 +215,10 @@ O registro pode ficar na memória própria ou em pasta de evidência autorizada.
 Se a instância cair entre o relato e o registro, o achado se perde.
 
 Achado relevante deve ser gravado logo depois de descoberto, não só quando pedirem.
+
+Trabalhar sempre com a lembrança de que a sessão pode cair a qualquer momento, sem aviso.
+
+Determinado pelo líder em 2026-07-05.
 
 ---
 
