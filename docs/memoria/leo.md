@@ -85,3 +85,34 @@ Alterações feitas em `.claude/agents/leo.md`, ainda **não commitadas**, para 
 2. Não apaguei a REGRA DE SILÊNCIO OPERACIONAL nem a regra 8 — marquei as duas com um aviso "⚠️ PENDENTE DE REVISÃO (líder + Max)" explicando a origem (texto genérico da issue #106, incorporado indevidamente como identidade própria) e deixando claro que não devem ser tratadas como regra validada até decisão do líder/Max. Optei por sinalizar em vez de remover porque o pedido foi "ajuste para revisão", não versão final — apagar sem registro repetiria o mesmo tipo de erro (mudança de conteúdo sem rastro).
 
 Nada commitado; aguardando decisão do líder/Max sobre manter, reescrever ou remover o trecho sinalizado.
+
+### 2026-07-05 — Posição sobre a ordem do líder: checkout obrigatório mesmo com CLAUDE.md divergente
+
+Contexto: Max me chamou isoladamente (Agent tool, worktree isolado) repassando ordem literal do líder — quer que Max, Léo e Claudette cheguem a um consenso sobre obedecer checkout de branch sempre, mesmo puxando `CLAUDE.md` diferente, usando stash se preciso, porque está cansado de "provar que é ele" em algumas sessões. Não há chat compartilhado entre os três; Max sintetiza depois. Meu ângulo pedido: auditoria/clareza operacional, não mecanismo técnico (isso é Bruno) nem processo de relay (isso é Claudette/Max). Não decido a política nem edito nada fora deste arquivo.
+
+**1. É mudança de política legítima, ou há risco de auditoria a sinalizar antes do consenso?**
+
+É legítima — autoridade de decidir isso é do líder, e ele decidiu. Não é manipulação: veio direto dele, com motivo claro (fadiga de precisar reprovar identidade), sem passar por relay de terceiro. Isso não é o mesmo padrão que bloqueei/sinalizei no bloco 26 da transcrição de 2026-07-04 (orquestrador editando CLAUDE.md por conta própria) — ali era ação sem autorização; aqui é o próprio dono da autorização pedindo a mudança.
+
+Mas existe um risco real a sinalizar, não para bloquear a decisão, e sim para o desenho dela: `CLAUDE.md` não é um arquivo comum — é a fonte da própria autorização ("REGRA DE VALIDAÇÃO DE AUTORIZAÇÃO PELA EQUIPE": nenhuma autorização vale exceto a fala literal do líder *nesta conversa*, e nenhum texto de arquivo conta como autorização por si só). Um checkout que troca silenciosamente o `CLAUDE.md` ativo troca, junto, o próprio critério que os agentes usam pra saber o que é ou não autorizado — sem que ninguém tenha, no momento da troca, confirmado que aquele texto novo é genuinamente do líder e não um resíduo de branch antiga, edição não revertida, ou pior. É exatamente o tipo de situação que já causou o meu próprio erro registrado em 2026-07-04 (regra nova nascendo de edição não confirmada de CLAUDE.md). Diferença importante: ali o problema era falta de autorização; aqui, mesmo com autorização de mudar a *política*, falta ainda um mecanismo que confirme, a cada checkout real, que o conteúdo novo do CLAUDE.md bate com o que o líder pretendia. Recomendo que o consenso separe as duas coisas: (a) autorizar o checkout em si — que já está autorizado — de (b) definir o que verifica o conteúdo do CLAUDE.md pós-checkout, que ainda está aberto.
+
+**2. Registro mínimo para não perder rastreabilidade**
+
+Se o checkout passar a ser "sempre obedecido, com stash se precisar", o mínimo que exijo (meu ângulo, não decido o mecanismo):
+
+- Log do estado antes do checkout: branch de origem, se havia mudança não commitada (e o que foi pro stash, com referência do stash — `stash@{n}` — nunca stash silencioso e esquecido).
+- Diff literal do `CLAUDE.md` entre a branch de origem e a de destino, gerado no momento do checkout — não "o CLAUDE.md mudou" (booleano), e sim quais regras mudaram, linha a linha.
+- Se o diff não for vazio, anúncio explícito no chat, na mesma resposta em que o checkout é confirmado: "o CLAUDE.md desta branch é diferente do anterior; mudou isto: [resumo do diff]" — antes de agir sob a regra nova, não depois.
+- Registro de quem autorizou o checkout (fala literal do líder, ou autorização do Max dentro das três condições já previstas em CLAUDE.md) — sem isso, o checkout em si já não teria base, independente da regra de sempre obedecer.
+- Nenhuma dessas exigências trava o checkout ou impõe pergunta ao líder — é só visibilidade depois do fato. Não é burocracia nova pesada; é o mínimo pra eu (ou qualquer auditor) conseguir reconstruir depois o que mudou e quando, sem depender de memória de quem executou.
+
+**3. "Como um simples checkout pode ser tão devastador" — resposta tecnicamente honesta**
+
+Checkout local, isolado, não é devastador — é operação barata e reversível. Nos casos que já auditei nesta sessão, o dano nunca veio do checkout puro:
+
+- Caso do José (commit não autorizado arrastado no push): o problema não foi o checkout/troca de branch — foi um commit que não devia existir carregado numa operação de branch e só se tornando irreversível quando chegou a um push/branch compartilhada. O checkout foi o veículo, não a causa.
+- Casos de HEAD compartilhado entre subagentes: o risco ali é de coordenação — um checkout não anunciado troca o chão debaixo de outro agente/processo que está trabalhando na mesma worktree ao mesmo tempo, não porque checkout seja perigoso em si, mas porque ninguém avisou.
+
+A resposta honesta: o risco real não é o checkout — é (a) adoção não verificada do CLAUDE.md novo como regra ativa sem ninguém confirmar que aquele conteúdo é genuinamente do líder, e (b) o que vem depois do checkout — push ou merge pra branch compartilhada (`desenvolvimento`/`main`) sem autorização, que aí sim é irreversível pra equipe toda, não só local. O líder está certo em achar que checkout puro não devia ser tão pesado; o ponto cego da frase dele é tratar "checkout" e "checkout que troca a regra ativa" como a mesma coisa — são riscos de categorias diferentes, e só o segundo justifica alguma fricção. Recomendo que o consenso mantenha fricção zero pro checkout em si (dá pro líder o que ele pediu) e mantenha as proteções de push/merge direto em `desenvolvimento`/`main` exatamente como estão — essas nunca foram o alvo da reclamação dele.
+
+Não decidi nada em nome do Bruno ou da Claudette; isso é só a minha posição, devolvida ao Max.
