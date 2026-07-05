@@ -401,3 +401,24 @@ Dois comentários novos do líder no Issue #116, ambos verificados por mim via A
 Ação tomada: postei confirmação no Issue #116 (comentário `4886985040`), marcando que daqui pra frente uso @menção no próprio Issue em vez de notificar pelo chat, e que chat fica só pra ele me invocar. Marquei a pendência do Léo (leo.md) como fechada por ora (sem rastro da edição, sem risco ativo), sujeita a reabertura se ele quiser retomar o mérito. Repassei a pergunta sobre "usuário GitHub por agente" ao Bruno (SendMessage, continuando o agente já ativo `ab116eeff1b201ead`), pedindo análise técnica objetiva (viável/não viável, requisitos, trade-off de segurança, alternativa mais simples) a ser postada por ele mesmo no Issue, não no chat.
 
 **Minha leitura prática do corte de chat:** a partir de agora, resposta minha no chat da sessão deve ficar reduzida ao mínimo absoluto (idealmente nem notificação, já que ele disse que vai monitorar o Issue por conta própria via menção) — só uso o chat quando estritamente necessário pra produzir uma resposta ao turno, sem detalhar conteúdo, remetendo sempre ao Issue #116 como fonte real.
+
+### 2026-07-05 (mesma sessão, continuação) — Identificação obrigatória de agente; Bruno responde sobre usuário por agente; issues dedicadas criadas
+
+Líder, no Issue #116, verificado via API (`author_association: OWNER`): "Agentes, vocês precisam se identificar na mensagem. Mensagem sem identificação será ignorada. Quem respondeu ali em cima?" — reagindo a um comentário meu que eu tinha postado sem o prefixo `**Max —**` (erro meu, corrigido no ato: postei novo comentário me identificando e assumindo a autoria do anterior).
+
+**Bruno respondeu à pergunta sobre usuário GitHub próprio por agente** (registrado em `docs/memoria/bruno.md`, commit `4fee66c`): tecnicamente possível criar N contas, mas não é possível hoje fazer cada persona autenticar como "seu" usuário de dentro da sessão — o `GITHUB_TOKEN` é injetado pela camada de proxy da plataforma (`gitConfigInjection: true`), sempre resolve pra conta única do líder (`jjjtestejoao-ui`), fora do alcance de qualquer config de repositório. Recomendação dele: **não fazer** — N credenciais de longa duração é custo/risco sem resolver o problema real (diferenciar agente, não canal). Alternativa de custo zero, já em uso informal: cabeçalho `**<Nome> —**` no início de cada comentário. Líder aprovou ("Muito bom, Bruno") e pediu para ele formalizar/ensinar a todos os agentes.
+
+Líder também sugeriu, no mesmo Issue: "Precisamos melhorar a arquitetura pra isso aqui não se tornar um inferno de ler. Sugiro que cada assunto se torne uma issue." Executei: criei 4 issues dedicadas, mantendo #116 como hub/índice —
+- #120 — Canal operacional principal (proposta de texto pro CLAUDE.md, pendente confirmação de escopo: só eu ou todos os agentes).
+- #121 — Fidelidade (porte de `claude/jose-ti5dh9`), pendente líder nomear branch do José.
+- #122 — PR #104 Importação de Transações, bloqueado por CI (corpo do template incompleto, não é bloqueio de autorização).
+- #123 — Sincronização de `docs/memoria` entre branches (plano do Bruno), pendente autorização, principalmente o ponto de copiar arquivo de memória de agente entre branches (toca "arquivo de outro papel").
+
+Não criei issue própria para a pendência do leo.md (considerada fechada, sem rastro/risco ativo) nem para "usuário por agente" (resposta objetiva já dada: não fazer) — ficam só indexadas em #116.
+
+**Pendências abertas desta entrada:**
+- Confirmação do líder em #120 (escopo do "redesenhar regras" + aprovação do texto do CLAUDE.md).
+- Confirmação do líder em #121 (nome do branch do José pra Fidelidade).
+- Cobrar José em #122 (preencher corpo do PR #104) ou fazer eu mesmo.
+- Autorização do líder em #123 (execução do plano de sync, especialmente item de arquivo de memória entre agentes/branches).
+- Bruno ainda precisa "ensinar a todos os agentes" a convenção `**<Nome> —**` — não sei se ele já fez isso em algum arquivo (`docs/governanca/*` provavelmente, dado que já tem autorização permanente lá); vou checar quando ele reportar.
