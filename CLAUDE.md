@@ -1,4 +1,4 @@
-Mano, não altera nada, é só ver se alguma dessas alterações aí que tu tirou, tu conseguiu, eu botei ou se tá faltando alguma. # Regras do sistema — Kzera
+# Regras do sistema — Kzera
 
 Este arquivo regula a camada orquestradora real da sessão Cloud.
 
