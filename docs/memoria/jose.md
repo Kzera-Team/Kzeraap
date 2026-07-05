@@ -29,3 +29,21 @@ Ao inspecionar base/our/their de cada um dos 3 arquivos (não só a leitura do m
 Ação: aaeitei rodar o merge para confirmar tudo isso com evidência real, e depois **abortei (`git merge --abort`)** — árvore de trabalho limpa, nenhum commit, nenhum push feito no PR. Reportei tudo a Max no chat, com os 3 achados acima, para escalar ao líder antes de qualquer resolução.
 
 Status: BLOQUEADA (aguardando decisão de Max/líder sobre jose.md, settings.json e o escopo dos 62 arquivos de path).
+
+### 2026-07-05 (continuação) — decisões do líder chegaram via Max, merge finalizado localmente, sem push
+
+Max repassou decisões do líder (via orquestrador, citação com fala literal) em duas mensagens:
+
+1. `.claude/agents/jose.md` — usar a versão de `n1` (156 linhas, com frontmatter) por inteiro. Descartar a versão de `claude/dev/importacao-transacoes` (84 linhas, "Rose valida").
+2. Os 61 conflitos de path `docs/aprovado-lider` (singular) vs `docs/aprovados-lider/processo` (plural) — canônico é o plural, confirmado também pelo próprio `CLAUDE.md` ("Nomenclatura de pastas em docs/", unificação de 2026-07-03). Resolver todos usando o plural.
+3. `.claude/settings.json` — líder aprovou a sugestão do Max: manter bloqueio de criação de branch tal como já estava (sem a adição de `push origin` genérico vinda de `claude/dev/importacao-transacoes`, que travaria push autorizado de qualquer agente); manter bloqueio de push/merge/checkout direto em `desenvolvimento`; incluir `main` também na lista de branches protegidas (proteção preventiva, já que ainda não existe mas vai existir na hora de ir para produção).
+
+Refiz o merge (`git checkout n1` já feito antes; `git merge origin/claude/dev/importacao-transacoes`) e resolvi:
+- `jose.md`: `git checkout --ours` (ours = n1/HEAD nesta sessão de merge) — resultado idêntico ao pedido.
+- `CLAUDE.md`: analisei os 6 hunks de conflito antes de decidir — em 5 deles o lado `claude/dev/importacao-transacoes` estava vazio (n1 só adicionou, nada a perder do outro lado); no 6º (referência de Issue), a versão de `n1` era estritamente mais completa (URL real da issue + nota de autenticidade) que a de `claude/dev/importacao-transacoes` ("Issue fixa a criar"). Resolvido com `git checkout --ours` (= manter n1 integralmente), sem perda de conteúdo de nenhum lado.
+- `.claude/settings.json`: reescrevi a linha do hook à mão, combinando: lista de bloqueio de criação de branch igual à base (sem `push origin`); checagem de branch protegida com word-boundary (\b) cobrindo `desenvolvimento` e `main`; mensagem de erro atualizada para citar as duas. Validei com `python3 -c "json.load(...)"` — JSON válido. Diff final ficou mínimo (só essa linha muda em relação a `origin/n1`).
+- Os 61 arquivos de path: git já havia posicionado o conteúdo no caminho plural correto (heurística de rename do `git merge`/ort); só precisei `git add` em cada um pra confirmar. Nenhum arquivo ficou órfão no singular (`docs/aprovado-lider` não existe mais na árvore).
+
+Commitei localmente o merge (`d917627`, mensagem padrão "Merge remote-tracking branch 'origin/claude/dev/importacao-transacoes' into n1"). **Não fiz push.** Branch local `n1` ficou 91 commits à frente de `origin/n1` (commits vindos do merge + o commit de memória anterior `a6ce9ca`). Reportei o diff consolidado a Max para revisão antes de qualquer push, como combinado.
+
+Status: PARCIAL — merge resolvido e commitado localmente, aguardando revisão de Max e autorização de push.
