@@ -233,3 +233,12 @@ Se você é uma instância nova de Max retomando isto: leia esta entrada inteira
 - Plano do Bruno sobre sincronização de memória + mitigação técnica do erro de push (pedido feito, sem retorno ainda).
 - Autorização do líder para fechar (merge) o PR #104 de fato, depois do achado do push não autorizado.
 - Confirmação da lista de "branches principais" após `n1` sair (líder já avisou que vai acontecer "em breve", sem data — não assumir que já aconteceu sem checar `git ls-remote` de novo).
+
+### 2026-07-05 (continuação) — Líder delega autoridade padrão: só 5 categorias precisam de autorização explícita dele daqui pra frente
+
+Fala literal do líder: "Você só precisa de autorização minha quando: 1 - for mudança no CLAUDE.md, ou de algum agente. 2 - regra de negócio ou UX. 3 - alguma mudança muito grande. 4 - PR na desenvolvimento. 5 - algum problema de segurança do processo. O restante, aí com você. Todas as decisões que tomamos hoje considero que tinha competência para decidir por mim."
+
+Registro como fica valendo, e como estou interpretando os limites (minha leitura, não é ele reescrevendo o CLAUDE.md — ainda vou propor formalizar isso lá, item separado):
+- As 5 categorias continuam exigindo minha ida até ele antes de agir: editar `CLAUDE.md`/`.claude/agents/*.md`; qualquer coisa que seja regra de negócio ou UX; mudança "muito grande" (não defini limite numérico, uso julgamento e, na dúvida, pergunto); abrir PR contra `desenvolvimento` (confirma o que ele já tinha dito hoje sobre o PR de sync de memória); e qualquer coisa que seja problema de segurança de processo — nessa última categoria estou incluindo, por segurança, qualquer mudança em `.claude/settings.json` (hooks) ou criação de workflow novo, mesmo que ele não tenha citado hooks/workflows literalmente, porque isso é exatamente o tipo de coisa que já causou o achado do push do José hoje.
+- Não inclui nessas 5 categorias, então decido sozinho: criar/editar arquivo de `docs/governanca/*.md` aditivo (já era autorização permanente antes disso), aplicar decisão de conteúdo já aprovada anteriormente em outro branch/arquivo (ex: replicar a correção do `settings.json` já aprovada pro PR #104 em `nova_desenvolvimento_de_n1` — mesma decisão, outro lugar, não é decisão nova), rotinas de leitura/processo que não envolvem hook/workflow/CI.
+- Não mudei o `CLAUDE.md` para registrar essa regra ainda — vou propor o texto exato pra ele confirmar antes (regra de alteração documental do próprio CLAUDE.md pede isso, mesmo quando a ideia é dele).
