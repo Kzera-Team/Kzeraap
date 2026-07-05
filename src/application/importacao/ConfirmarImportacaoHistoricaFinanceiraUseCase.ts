@@ -180,7 +180,9 @@ function cloneArtefatos(): ArtefatosPacoteConfirmacaoHistorica {
   return { transacaoIds: [], pagamentoIds: [], movimentoIds: [] };
 }
 
-
+const ID_TRANSACAO_FIN = 'transacao-fin';
+const ID_PAGAMENTO = 'pagamento';
+const ID_MOVIMENTO_FIN = 'mov-fin';
 
 function assinaturaTransacaoOficial(transacao: TransacaoFinanceira): string {
   const inputAssinatura: {
@@ -235,9 +237,61 @@ function loteResumo(pacote: PacoteConfirmacaoHistorica): LoteConfirmacaoHistoric
   return resumo;
 }
 
-export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
-  private readonly pacotesMemoria = new Map<string, PacoteConfirmacaoHistorica>();
+interface IPacoteHistoricoStorage {
+  salvar(pacote: PacoteConfirmacaoHistorica): Promise<PacoteConfirmacaoHistorica>;
+  listar(): Promise<PacoteConfirmacaoHistorica[]>;
+  buscarPorPrevia(previaId: string): Promise<PacoteConfirmacaoHistorica | null>;
+  buscarPorLote(loteConfirmacaoId: string): Promise<PacoteConfirmacaoHistorica | null>;
+  resumos(): Promise<{ confirmados: LoteConfirmacaoHistoricaResumo[]; falhas: LoteConfirmacaoHistoricaResumo[] }>;
+  atualizar(pacote: PacoteConfirmacaoHistorica, status: PacoteConfirmacaoHistorica['status'], now: string, extra?: Partial<PacoteConfirmacaoHistorica>): Promise<PacoteConfirmacaoHistorica>;
+  atualizarAntesDoArtefato(pacote: PacoteConfirmacaoHistorica, artefatos: ArtefatosPacoteConfirmacaoHistorica, now: string): Promise<void>;
+}
 
+export class PacoteHistoricoStorage implements IPacoteHistoricoStorage {
+  private readonly memoria = new Map<string, PacoteConfirmacaoHistorica>();
+
+  constructor(private readonly repositorio?: Repository<PacoteConfirmacaoHistorica>) {}
+
+  async salvar(pacote: PacoteConfirmacaoHistorica): Promise<PacoteConfirmacaoHistorica> {
+    if (this.repositorio) return this.repositorio.save(pacote);
+    this.memoria.set(pacote.id, structuredClone(pacote));
+    return structuredClone(pacote);
+  }
+
+  async listar(): Promise<PacoteConfirmacaoHistorica[]> {
+    if (this.repositorio) return this.repositorio.list();
+    return Array.from(this.memoria.values()).map(item => structuredClone(item));
+  }
+
+  async buscarPorPrevia(previaId: string): Promise<PacoteConfirmacaoHistorica | null> {
+    if (this.repositorio) return this.repositorio.getById(previaId);
+    const pacote = this.memoria.get(previaId);
+    return pacote ? structuredClone(pacote) : null;
+  }
+
+  async buscarPorLote(loteConfirmacaoId: string): Promise<PacoteConfirmacaoHistorica | null> {
+    const pacotes = await this.listar();
+    return pacotes.find(p => p.loteConfirmacaoId === loteConfirmacaoId) || null;
+  }
+
+  async resumos(): Promise<{ confirmados: LoteConfirmacaoHistoricaResumo[]; falhas: LoteConfirmacaoHistoricaResumo[] }> {
+    const pacotes = await this.listar();
+    return {
+      confirmados: pacotes.filter(p => p.status === 'confirmado').sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map(loteResumo),
+      falhas: pacotes.filter(p => p.status === 'falha_confirmacao' || p.status === 'confirmando').sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map(loteResumo)
+    };
+  }
+
+  async atualizar(pacote: PacoteConfirmacaoHistorica, status: PacoteConfirmacaoHistorica['status'], now: string, extra: Partial<PacoteConfirmacaoHistorica> = {}): Promise<PacoteConfirmacaoHistorica> {
+    return this.salvar({ ...pacote, ...extra, status, updatedAt: now });
+  }
+
+  async atualizarAntesDoArtefato(pacote: PacoteConfirmacaoHistorica, artefatos: ArtefatosPacoteConfirmacaoHistorica, now: string): Promise<void> {
+    await this.atualizar({ ...pacote, payloadProtegido: { ...pacote.payloadProtegido!, artefatosCriados: structuredClone(artefatos) } }, 'confirmando', now);
+  }
+}
+
+export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
   constructor(
     private readonly stagingTransacoes: Repository<RegistroImportacaoTransacao>,
     private readonly stagingFinanceiros: Repository<RegistroImportacaoFinanceira>,
@@ -246,43 +300,13 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
     private readonly movimentos: Repository<MovimentoFinanceiro>,
     private readonly clock: Clock,
     private readonly idFactory: (prefix: string) => string,
-    private readonly pacotesConfirmacao?: Repository<PacoteConfirmacaoHistorica>
+    private readonly storage: IPacoteHistoricoStorage
   ) {}
 
   private exigirRemocaoSegura(): void {
     if (!this.transacoesFinanceiras.remove || !this.pagamentos.remove || !this.movimentos.remove) {
       throw new Error('Confirmação histórica bloqueada: repositórios oficiais precisam permitir remoção para rollback/desfazer lote.');
     }
-  }
-
-  private async salvarPacote(pacote: PacoteConfirmacaoHistorica): Promise<PacoteConfirmacaoHistorica> {
-    if (this.pacotesConfirmacao) return this.pacotesConfirmacao.save(pacote);
-    this.pacotesMemoria.set(pacote.id, structuredClone(pacote));
-    return structuredClone(pacote);
-  }
-
-  private async listarPacotes(): Promise<PacoteConfirmacaoHistorica[]> {
-    if (this.pacotesConfirmacao) return this.pacotesConfirmacao.list();
-    return Array.from(this.pacotesMemoria.values()).map(item => structuredClone(item));
-  }
-
-  private async buscarPacotePorPrevia(previaId: string): Promise<PacoteConfirmacaoHistorica | null> {
-    if (this.pacotesConfirmacao) return this.pacotesConfirmacao.getById(previaId);
-    const pacote = this.pacotesMemoria.get(previaId);
-    return pacote ? structuredClone(pacote) : null;
-  }
-
-  private async buscarPacotePorLote(loteConfirmacaoId: string): Promise<PacoteConfirmacaoHistorica | null> {
-    const pacotes = await this.listarPacotes();
-    return pacotes.find(pacote => pacote.loteConfirmacaoId === loteConfirmacaoId) || null;
-  }
-
-  private async resumosPacotes(): Promise<{ confirmados: LoteConfirmacaoHistoricaResumo[]; falhas: LoteConfirmacaoHistoricaResumo[] }> {
-    const pacotes = await this.listarPacotes();
-    return {
-      confirmados: pacotes.filter(pacote => pacote.status === 'confirmado').sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map(loteResumo),
-      falhas: pacotes.filter(pacote => pacote.status === 'falha_confirmacao' || pacote.status === 'confirmando').sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).map(loteResumo)
-    };
   }
 
   private async montarPlano(): Promise<ConfirmacaoPlano> {
@@ -426,7 +450,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
   }
 
   private async resultadoDoPlano(plano: ConfirmacaoPlano, modo: 'previsualizar' | 'confirmar' | 'desfazer_lote' | 'recuperar_falha' | 'listar_lotes', criados = { transacoes: 0, pagamentos: 0, movimentos: 0 }, status?: string): Promise<ConfirmarImportacaoHistoricaFinanceiraResultado> {
-    const pacotes = await this.resumosPacotes();
+    const pacotes = await this.storage.resumos();
     const resultado: ConfirmarImportacaoHistoricaFinanceiraResultado = {
       modo,
       previaId: plano.previaId,
@@ -511,7 +535,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
   // compatibilidade 1.18.2: congelarPrevia agora cria pacote persistente protegido.
   private async congelarPacote(plano: ConfirmacaoPlano): Promise<PacoteConfirmacaoHistorica> {
     const now = this.clock.now().toISOString();
-    const pacote = await this.salvarPacote(this.pacoteDoPlano(plano, now));
+    const pacote = await this.storage.salvar(this.pacoteDoPlano(plano, now));
     await Promise.all(plano.planejadas.map(item => this.stagingTransacoes.save({
       ...item.staging,
       confirmacaoPreviaId: plano.previaId,
@@ -530,7 +554,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
   // compatibilidade 1.18.2: validarPreviaCongelada agora valida o pacote persistente.
   private async validarPacoteCongelado(previaId?: string): Promise<PacoteConfirmacaoHistorica> {
     if (!previaId) throw new Error('Recalcule a prévia antes de confirmar. A confirmação definitiva exige prévia atual, congelada e visível.');
-    const pacote = await this.buscarPacotePorPrevia(previaId);
+    const pacote = await this.storage.buscarPorPrevia(previaId);
     if (!pacote || !pacote.payloadProtegido) throw new Error('Pacote congelado não encontrado. Gere a prévia novamente antes de confirmar.');
     if (pacote.status !== 'congelado') throw new Error(`Pacote não pode ser confirmado no status atual: ${pacote.status}.`);
     const assinaturaAtual = assinaturaPacoteDeItens(pacote.payloadProtegido.planejadas);
@@ -555,7 +579,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
 
   private planoDoPacote(pacote: PacoteConfirmacaoHistorica): ConfirmacaoPlano {
     const payload = pacote.payloadProtegido;
-    const planejadas = payload?.planejadas.map(item => ({
+    const planejadas = payload?.planejadas?.map(item => ({
       staging: item.stagingSnapshot,
       financeiros: item.financeirosSnapshot,
       assinatura: item.assinatura
@@ -614,14 +638,6 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
     }
   }
 
-  private async atualizarPacoteAntesDoArtefato(pacote: PacoteConfirmacaoHistorica, artefatos: ArtefatosPacoteConfirmacaoHistorica, now: string): Promise<void> {
-    await this.atualizarPacote({ ...pacote, payloadProtegido: { ...pacote.payloadProtegido!, artefatosCriados: structuredClone(artefatos) } }, 'confirmando', now);
-  }
-
-  private async atualizarPacote(pacote: PacoteConfirmacaoHistorica, status: PacoteConfirmacaoHistorica['status'], now: string, extra: Partial<PacoteConfirmacaoHistorica> = {}): Promise<PacoteConfirmacaoHistorica> {
-    return this.salvarPacote({ ...pacote, ...extra, status, updatedAt: now });
-  }
-
   private async removerArtefatos(artefatos: ArtefatosPacoteConfirmacaoHistorica): Promise<{ transacoes: number; pagamentos: number; movimentos: number }> {
     this.exigirRemocaoSegura();
     await Promise.all([...artefatos.movimentoIds].reverse().map(id => this.movimentos.remove!(id)));
@@ -634,14 +650,14 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
     this.exigirRemocaoSegura();
     if (!loteConfirmacaoId?.trim()) throw new Error('Informe o lote com falha para recuperar.');
     const loteId = loteConfirmacaoId.trim();
-    const pacote = await this.buscarPacotePorLote(loteId);
+    const pacote = await this.storage.buscarPorLote(loteId);
     if (!pacote || !pacote.payloadProtegido) throw new Error('Pacote com falha não encontrado.');
     if (pacote.status !== 'falha_confirmacao' && pacote.status !== 'confirmando') throw new Error('Somente pacote com falha/interrupção de confirmação entra na recuperação.');
     const removidos = await this.removerArtefatos(pacote.payloadProtegido.artefatosCriados);
     const now = this.clock.now().toISOString();
     await Promise.all(pacote.payloadProtegido.planejadas.map(item => this.stagingTransacoes.save({ ...item.stagingSnapshot, status: 'validado', updatedAt: now })));
     await Promise.all(pacote.payloadProtegido.planejadas.flatMap(item => item.financeirosSnapshot).map(financeiro => this.stagingFinanceiros.save({ ...financeiro, status: 'validado', updatedAt: now })));
-    const pacoteRecuperado = await this.atualizarPacote({ ...pacote, payloadProtegido: { ...pacote.payloadProtegido, artefatosCriados: cloneArtefatos() } }, 'congelado', now);
+    const pacoteRecuperado = await this.storage.atualizar({ ...pacote, payloadProtegido: { ...pacote.payloadProtegido, artefatosCriados: cloneArtefatos() } }, 'congelado', now);
     const plano = this.planoDoPacote(pacoteRecuperado);
     return { ...(await this.resultadoDoPlano(plano, 'recuperar_falha')), transacoesDesfeitas: removidos.transacoes, pagamentosDesfeitos: removidos.pagamentos, movimentosDesfeitos: removidos.movimentos };
   }
@@ -671,7 +687,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
     if (!loteConfirmacaoId?.trim()) throw new Error('Informe o lote de confirmação para desfazer.');
     const loteId = loteConfirmacaoId.trim();
     if (confirmacaoDesfazerTexto !== 'DESFAZER') throw new Error('Para evitar toque acidental, digite DESFAZER antes de desfazer o lote.');
-    const pacote = await this.buscarPacotePorLote(loteId);
+    const pacote = await this.storage.buscarPorLote(loteId);
     if (!pacote || !pacote.payloadProtegido) throw new Error('Pacote persistente do lote não encontrado. Desfazer bloqueado para não apagar dado errado.');
     if (pacote.status !== 'confirmado') throw new Error(`Lote não pode ser desfeito no status atual: ${pacote.status}.`);
     const confirmadoEm = pacote.confirmadoEm || pacote.updatedAt;
@@ -700,7 +716,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
       status: 'validado',
       updatedAt: now
     })));
-    await this.atualizarPacote(pacote, 'desfeito', now, { desfeitoEm: now });
+    await this.storage.atualizar(pacote, 'desfeito', now, { desfeitoEm: now });
 
     return {
       ...(await this.resultadoDoPlano(this.planoVazio(loteId, loteId), 'desfazer_lote')),
@@ -721,14 +737,14 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
     }
     this.exigirRemocaoSegura();
     const pacote = await this.validarPacoteCongelado(input.previaId);
-    if (!pacote.payloadProtegido?.planejadas.length) return this.resultadoDoPlano(this.planoDoPacote(pacote), 'confirmar');
+    if (!pacote.payloadProtegido?.planejadas?.length) return this.resultadoDoPlano(this.planoDoPacote(pacote), 'confirmar');
     await this.reconsultarStagingAtualAntesDeConfirmar(pacote);
 
     const now = this.clock.now().toISOString();
     const artefatos = pacote.payloadProtegido.artefatosCriados || cloneArtefatos();
-    const pacoteConfirmando = await this.atualizarPacote({ ...pacote, payloadProtegido: { ...pacote.payloadProtegido, artefatosCriados: artefatos } }, 'confirmando', now);
+    const pacoteConfirmando = await this.storage.atualizar({ ...pacote, payloadProtegido: { ...pacote.payloadProtegido, artefatosCriados: artefatos } }, 'confirmando', now);
     const rollbackConfirmacaoHistorica = async (): Promise<void> => {
-      const atual = await this.buscarPacotePorPrevia(pacoteConfirmando.previaId);
+      const atual = await this.storage.buscarPorPrevia(pacoteConfirmando.previaId);
       const criados = atual?.payloadProtegido?.artefatosCriados || artefatos;
       await this.removerArtefatos(criados);
     };
@@ -753,16 +769,16 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
           observacao: `${dados.observacao ? `${dados.observacao} | ` : ''}Histórico importado: não baixa estoque/lote. Lote de confirmação: ${pacoteConfirmando.loteConfirmacaoId}. Origem staging: ${planejada.stagingSnapshot.id}`
         };
         if (planejada.stagingSnapshot.perfilIdResolvido) Object.assign(transacaoInput, { perfilId: planejada.stagingSnapshot.perfilIdResolvido });
-        const transacaoId = this.idFactory('transacao-fin');
+        const transacaoId = this.idFactory(ID_TRANSACAO_FIN);
         const transacaoCriada = criarTransacaoFinanceira(transacaoInput, transacaoId, now);
         artefatos.transacaoIds.push(transacaoId);
-        await this.atualizarPacoteAntesDoArtefato(pacoteConfirmando, artefatos, now);
+        await this.storage.atualizarAntesDoArtefato(pacoteConfirmando, artefatos, now);
         const transacao = await this.transacoesFinanceiras.save({ ...transacaoCriada, loteConfirmacaoId: pacoteConfirmando.loteConfirmacaoId, assinaturaImportacao: planejada.assinatura, confirmadoEm: now });
 
         for (const financeiro of planejada.financeirosSnapshot) {
           const movimento = financeiro.dadosNormalizados!;
           const valorPagamento = arredondarDinheiro(movimento.valorPago || movimento.valor || 0);
-          const pagamentoId = this.idFactory('pagamento');
+          const pagamentoId = this.idFactory(ID_PAGAMENTO);
           let pagamentoCriado = criarPagamentoTransacao({
             transacaoId: transacao.id,
             clienteNome: transacao.clienteNome,
@@ -774,7 +790,7 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
             observacao: movimento.observacao || `Histórico importado vinculado à transação #${transacao.numeroOrigem || dados.numero}.`
           }, pagamentoId, now);
           artefatos.pagamentoIds.push(pagamentoId);
-          await this.atualizarPacoteAntesDoArtefato(pacoteConfirmando, artefatos, now);
+          await this.storage.atualizarAntesDoArtefato(pacoteConfirmando, artefatos, now);
           let pagamento = await this.pagamentos.save({ ...pagamentoCriado, loteConfirmacaoId: pacoteConfirmando.loteConfirmacaoId });
           const movimentoInput = {
             transacaoId: transacao.id,
@@ -789,10 +805,10 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
             origensRastreaveis: [{ transacaoId: transacao.id, pagamentoId: pagamento.id, clienteNome: transacao.clienteNome, valorOriginal: pagamento.valor, moedaOriginal: pagamento.moeda }]
           };
           if (movimento.numeroTransacaoReferenciado) Object.assign(movimentoInput, { referenciaExterna: `#${movimento.numeroTransacaoReferenciado}` });
-          const movimentoId = this.idFactory('mov-fin');
+          const movimentoId = this.idFactory(ID_MOVIMENTO_FIN);
           const movCriado = criarMovimentoFinanceiro(movimentoInput, movimentoId, now);
           artefatos.movimentoIds.push(movimentoId);
-          await this.atualizarPacoteAntesDoArtefato(pacoteConfirmando, artefatos, now);
+          await this.storage.atualizarAntesDoArtefato(pacoteConfirmando, artefatos, now);
           const mov = await this.movimentos.save({ ...movCriado, loteConfirmacaoId: pacoteConfirmando.loteConfirmacaoId });
           pagamento = await this.pagamentos.save({ ...pagamento, movimentoFinanceiroId: mov.id, updatedAt: now });
           const financeiroAtualizado: RegistroImportacaoFinanceira = { ...financeiro, status: 'confirmado', movimentoFinanceiroId: mov.id, loteConfirmacaoId: pacoteConfirmando.loteConfirmacaoId, updatedAt: now };
@@ -812,11 +828,11 @@ export class ConfirmarImportacaoHistoricaFinanceiraUseCase {
       } catch (_) {
         // pacote com falha/interrupção mantém IDs criados para recuperação persistente obrigatória.
       }
-      await this.atualizarPacote({ ...pacoteConfirmando, payloadProtegido: { ...pacoteConfirmando.payloadProtegido!, artefatosCriados: artefatos } }, 'falha_confirmacao', this.clock.now().toISOString(), { falhaMensagem: mensagem });
+      await this.storage.atualizar({ ...pacoteConfirmando, payloadProtegido: { ...pacoteConfirmando.payloadProtegido!, artefatosCriados: artefatos } }, 'falha_confirmacao', this.clock.now().toISOString(), { falhaMensagem: mensagem });
       throw error;
     }
 
-    const pacoteFinal = await this.atualizarPacote({ ...pacoteConfirmando, payloadProtegido: { ...pacoteConfirmando.payloadProtegido!, artefatosCriados: artefatos } }, 'confirmado', now, { confirmadoEm: now });
+    const pacoteFinal = await this.storage.atualizar({ ...pacoteConfirmando, payloadProtegido: { ...pacoteConfirmando.payloadProtegido!, artefatosCriados: artefatos } }, 'confirmado', now, { confirmadoEm: now });
     const planoFinal = this.planoDoPacote(pacoteFinal);
     return this.resultadoDoPlano(planoFinal, 'confirmar', { transacoes: artefatos.transacaoIds.length, pagamentos: artefatos.pagamentoIds.length, movimentos: artefatos.movimentoIds.length }, 'confirmado');
   }

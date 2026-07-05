@@ -1,0 +1,7 @@
+Data de Criação,Data de Vencimento,Data do Pagamento,Descrição,Valor,Método de Pagamento,Taxa,Valor Pago,Pago,Categoria,Cliente,Tipo,Observação,Usuário,Usuário do Pagamento
+05/06/2026,05/06/2026,05/06/2026,#501 - Pix,25,Pix,0,25,Sim,Pedido,Ricardo,Receita,,,
+05/06/2026,05/06/2026,05/06/2026,#503 - Pix,15,Pix,0,15,Sim,Pedido,Paulo,Receita,,,
+05/06/2026,05/06/2026,05/06/2026,#504 - Pix,25,Pix,0,25,Sim,Pedido,Joanderson,Receita,,,
+05/06/2026,05/06/2026,05/06/2026,Adição de Crédito,50,Pix,0,50,Sim,Outros,Guilherme,Receita,,,
+05/06/2026,05/06/2026,05/06/2026,Adição de Crédito,30,Pix,0,30,Sim,Outros,Paulo,Receita,,,
+07/06/2026,07/06/2026,07/06/2026,Pagamento adiantado,25,Pix,0,25,Sim,Pedido,Ricardo,Receita,,,

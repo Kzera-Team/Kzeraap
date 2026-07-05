@@ -4,7 +4,6 @@ import type { ItemCatalogo, ItemVariacao } from '../../domain/item/ItemCatalogo'
 import { VARIACAO_PADRAO_ITEM } from '../../domain/item/ItemCatalogo';
 import type { ItemImportacaoPreviewRegistro } from '../../domain/item/ItemImportacao';
 import { CriarCatalogoItemUseCase, type CriarCatalogoItemInput } from './CriarCatalogoItemUseCase';
-import { releaseObject } from '../../runtime/RuntimeCleanup';
 
 export interface ImportarCatalogoItensResultado {
   importados: ItemCatalogo[];
@@ -65,11 +64,7 @@ export class ImportarCatalogoItensUseCase {
     const rejeitados = preview.filter(item => !item.valido);
     const validos = preview.filter(item => item.valido);
 
-    try {
-      for (const item of validos) importados.push(await this.criar.execute(this.toInput(item)));
-      return { importados, rejeitados };
-    } finally {
-      releaseObject(validos);
-    }
+    for (const item of validos) importados.push(await this.criar.execute(this.toInput(item)));
+    return { importados, rejeitados };
   }
 }

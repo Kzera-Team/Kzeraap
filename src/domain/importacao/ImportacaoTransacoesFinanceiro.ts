@@ -330,7 +330,7 @@ export function normalizarTransacaoImportada(row: Record<string, string>, itensE
     custo,
     lucro,
     tiposPagamento: parseTiposPagamento(get(row, 'Tipos de Pagamento')),
-    clienteNome: get(row, 'Cli' + 'ente').trim(),
+    clienteNome: get(row, 'Cliente').trim(),
     observacao: get(row, 'Observação', 'Observacao'),
     itens: extrairItensDaDescricao(descricao, itensExistentes)
   };
@@ -355,7 +355,7 @@ export function normalizarMovimentoImportado(row: Record<string, string>): Dados
     valorPago: parseNumeroPtBr(get(row, 'Valor Pago')),
     pago: normalizarTextoBusca(get(row, 'Pago')).startsWith('sim'),
     categoria: get(row, 'Categoria'),
-    clienteNome: get(row, 'Cli' + 'ente').trim(),
+    clienteNome: get(row, 'Cliente').trim(),
     tipo: get(row, 'Tipo'),
     observacao: get(row, 'Observação', 'Observacao'),
     usuario: get(row, 'Usuário', 'Usuario'),

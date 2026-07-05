@@ -1,6 +1,6 @@
 # Validacao — Transacao financeiro
 
-Escopo: somente mockups HTML estaticos em `docks/mockups/transacao_financeiro/`.
+Escopo: somente mockups HTML estaticos em `docs/aprovado-lider/desenvolvimento/transacoes-financeiras/importacao/mockups/`.
 
 Nao altera app principal, regras de negocio, storage, estoque, lotes ou importacao real.
 

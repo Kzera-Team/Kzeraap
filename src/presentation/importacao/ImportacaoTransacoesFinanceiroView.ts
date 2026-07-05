@@ -1,6 +1,6 @@
 import type { PrepararImportacaoTransacoesUseCase } from '../../application/importacao/PrepararImportacaoTransacoesUseCase';
 import type { PrepararImportacaoFinanceiraUseCase } from '../../application/importacao/PrepararImportacaoFinanceiraUseCase';
-import type { ListarStagingImportacaoUseCase } from '../../application/importacao/ListarStagingImportacaoUseCase';
+import type { ListarStagingImportacaoUseCase, StagingImportacaoResumo } from '../../application/importacao/ListarStagingImportacaoUseCase';
 import type { ConciliarTransacoesFinanceiroUseCase } from '../../application/importacao/ConciliarTransacoesFinanceiroUseCase';
 import type { ResolverPendenciaImportacaoUseCase } from '../../application/importacao/ResolverPendenciaImportacaoUseCase';
 import type { ConfirmarImportacaoHistoricaFinanceiraUseCase, ConfirmarImportacaoHistoricaFinanceiraResultado } from '../../application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase';
@@ -26,6 +26,11 @@ interface UploadDraftMemoria {
   updatedAt: string;
 }
 
+const TITULOS_POR_ESTADO: Partial<Record<Estado, string>> = {
+  pendencias: 'Resolver pendências',
+};
+const TITULO_PADRAO = 'Importar histórico financeiro';
+
 const TEMPLATES: Record<Template, URL> = {
   shell: new URL('./templates/importacao-transacoes-financeiro.html', import.meta.url),
   vazio: new URL('./templates/importacao-transacoes-financeiro-vazio.html', import.meta.url),
@@ -39,10 +44,28 @@ const TEMPLATES: Record<Template, URL> = {
 };
 const CSS_URL = new URL('./templates/importacao-transacoes-financeiro.css', import.meta.url);
 const EXTENSOES_TEXTO = ['csv', 'tsv', 'txt'];
-const UPLOAD_DRAFT_MEMORIA_KEY = '__kzeraImportacaoTransacoesFinanceiroUploadDraft__';
 
-function uploadDraftMemoriaStore(): Record<string, UploadDraftMemoria | undefined> {
-  return globalThis as unknown as Record<string, UploadDraftMemoria | undefined>;
+class UploadDraftStore {
+  private static readonly KEY = '__kzeraImportacaoTransacoesFinanceiroUploadDraft__';
+  private get store(): Record<string, UploadDraftMemoria | undefined> {
+    return globalThis as unknown as Record<string, UploadDraftMemoria | undefined>;
+  }
+
+  salvar(transacoes: ArquivoImportacao | null, financeiro: ArquivoImportacao | null): void {
+    this.store[UploadDraftStore.KEY] = {
+      transacoes: transacoes ? { nomeArquivo: transacoes.nomeArquivo, conteudo: transacoes.conteudo } : null,
+      financeiro: financeiro ? { nomeArquivo: financeiro.nomeArquivo, conteudo: financeiro.conteudo } : null,
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  restaurar(): UploadDraftMemoria | null {
+    return this.store[UploadDraftStore.KEY] ?? null;
+  }
+
+  limpar(): void {
+    delete this.store[UploadDraftStore.KEY];
+  }
 }
 
 export class ImportacaoTransacoesFinanceiroView {
@@ -55,12 +78,14 @@ export class ImportacaoTransacoesFinanceiroView {
   private previa: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
   private ultima: ConfirmarImportacaoHistoricaFinanceiraResultado | null = null;
   private confirmacaoArmada = false;
+  private readonly uploadDraft = new UploadDraftStore();
 
   constructor(private readonly deps: ImportacaoTransacoesFinanceiroDeps) {}
 
   release(): void {
     releaseObject(this.previa);
     releaseObject(this.ultima);
+    this.uploadDraft.limpar();
     this.transacoes = null;
     this.financeiro = null;
     this.previa = null;
@@ -104,7 +129,15 @@ export class ImportacaoTransacoesFinanceiroView {
     alvo.innerHTML = await this.template(this.estado);
     await this.preencher();
     this.mostrarMensagem();
+    this.atualizarTitulo();
     this.bind();
+  }
+
+  private atualizarTitulo(): void {
+    const titulo = this.el('[data-titulo-tela]');
+    if (titulo) titulo.textContent = TITULOS_POR_ESTADO[this.estado] ?? TITULO_PADRAO;
+    const raiz = this.el('.importar-historico-financeiro');
+    if (raiz) raiz.dataset.estado = this.estado;
   }
 
   private async preencher(): Promise<void> {
@@ -141,6 +174,47 @@ export class ImportacaoTransacoesFinanceiroView {
     this.texto('[data-pendencias-financeiro]', String(staging.resumoTransacoes.pendentesFinanceiro));
     this.texto('[data-pendencias-valor]', String(staging.resumoFinanceiro.pendentes));
     this.texto('[data-pendencias-duplicidade]', String(staging.resumoTransacoes.pendentesPerfil + staging.resumoTransacoes.pendentesItem));
+    this.preencherListaRegistros('[data-lista-transacoes-pendentes]', '[data-secao-transacoes-pendentes]', '[data-tpl-row-transacao]', staging.registrosTransacoes, r => r.numeroOriginal);
+    this.preencherListaRegistros('[data-lista-financeiros-pendentes]', '[data-secao-financeiros-pendentes]', '[data-tpl-row-financeiro]', staging.registrosFinanceiros, r => r.numeroTransacaoReferenciado);
+  }
+
+  private preencherListaRegistros<T extends { id: string; linha: number; status: string; pendencias: unknown[] }>(
+    seletorLista: string,
+    seletorSecao: string,
+    seletorTemplate: string,
+    registros: T[],
+    obterRef: (r: T) => string | undefined
+  ): void {
+    const lista = this.el(seletorLista);
+    const tpl = this.el<HTMLTemplateElement>(seletorTemplate);
+    if (!lista || !tpl) return;
+    lista.replaceChildren();
+    for (const r of registros) {
+      const frag = tpl.content.cloneNode(true) as DocumentFragment;
+      const section = frag.querySelector<HTMLElement>('[data-registro-row]');
+      if (!section) continue;
+      const ref = obterRef(r);
+      const bloqueado = r.status === 'ignorado' || r.status === 'confirmado';
+      section.dataset.registroId = r.id;
+      const titulo = section.querySelector('[data-cell-titulo]');
+      if (titulo) titulo.textContent = `Linha ${r.linha}${ref ? ` · #${ref}` : ''}`;
+      const meta = section.querySelector('[data-cell-meta]');
+      if (meta) meta.textContent = `Status: ${r.status} · Pendências: ${r.pendencias.length}`;
+      const badge = section.querySelector('[data-cell-badge]');
+      if (badge) {
+        badge.textContent = r.status;
+        badge.classList.toggle('ok', r.status === 'validado');
+        badge.classList.toggle('warn', r.status !== 'validado');
+      }
+      section.querySelectorAll<HTMLButtonElement>('[data-ignorar-registro], [data-marcar-revisao-registro], [data-vincular-financeiro-registro]').forEach(btn => {
+        btn.dataset.registroId = r.id;
+        if (btn.hasAttribute('data-ignorar-registro') || btn.hasAttribute('data-vincular-financeiro-registro')) {
+          btn.disabled = bloqueado;
+        }
+      });
+      lista.appendChild(frag);
+    }
+    this.visivel(seletorSecao, registros.length > 0);
   }
 
   private preencherPrevia(): void {
@@ -180,6 +254,74 @@ export class ImportacaoTransacoesFinanceiroView {
     this.on('[data-abrir-confirmacao]', () => this.abrirConfirmacao());
     this.on('[data-cancelar-confirmacao]', () => this.ir('previa'));
     this.on('[data-confirmar-importacao]', () => this.confirmar());
+    this.on('[data-vincular-massa-segura]', () => this.vincularMassaSegura());
+    this.onAll('[data-ignorar-registro]', el => {
+      const id = el.dataset.registroId;
+      const tipo = el.dataset.tipo as 'transacao' | 'financeiro';
+      if (id && tipo) void this.ignorarRegistro(tipo, id);
+    });
+    this.onAll('[data-marcar-revisao-registro]', el => {
+      const id = el.dataset.registroId;
+      const tipo = el.dataset.tipo as 'transacao' | 'financeiro';
+      if (id && tipo) void this.marcarRevisaoRegistro(tipo, id);
+    });
+    this.onAll('[data-vincular-financeiro-registro]', el => {
+      const finId = el.dataset.registroId;
+      const row = el.closest('[data-registro-row]') as HTMLElement | null;
+      const txnId = row?.querySelector<HTMLInputElement>('[data-input-vincular-txn]')?.value?.trim();
+      if (finId && txnId) void this.vincularFinanceiro(finId, txnId);
+      else this.mensagem = 'Informe o ID da transação em staging para vincular.';
+    });
+  }
+
+  private async ignorarRegistro(tipo: 'transacao' | 'financeiro', id: string): Promise<void> {
+    try {
+      const resultado = await this.deps.resolverPendencia.execute({ acao: 'ignorar', tipo, registroId: id });
+      this.mensagem = resultado.mensagem;
+      await this.ir('pendencias');
+    } catch (error) {
+      await this.falha(error instanceof Error ? error.message : 'Não foi possível ignorar o registro.');
+    }
+  }
+
+  private async marcarRevisaoRegistro(tipo: 'transacao' | 'financeiro', id: string): Promise<void> {
+    try {
+      const resultado = await this.deps.resolverPendencia.execute({ acao: 'marcar_revisao', tipo, registroId: id });
+      this.mensagem = resultado.mensagem;
+      await this.ir('pendencias');
+    } catch (error) {
+      await this.falha(error instanceof Error ? error.message : 'Não foi possível marcar para revisão.');
+    }
+  }
+
+  private async vincularFinanceiro(registroFinanceiroId: string, registroTransacaoId: string): Promise<void> {
+    try {
+      const resultado = await this.deps.resolverPendencia.execute({ acao: 'vincular_financeiro', registroTransacaoId, registroFinanceiroId });
+      this.mensagem = resultado.mensagem;
+      await this.ir('pendencias');
+    } catch (error) {
+      await this.falha(error instanceof Error ? error.message : 'Não foi possível vincular o financeiro.');
+    }
+  }
+
+  private async vincularMassaSegura(): Promise<void> {
+    const container = this.el('[data-lista-registros-pendentes]');
+    if (!container) return;
+    const vinculos: { registroTransacaoId: string; registroFinanceiroId: string }[] = [];
+    container.querySelectorAll<HTMLElement>('[data-vincular-financeiro-registro]').forEach(btn => {
+      const finId = btn.dataset.registroId;
+      const row = btn.closest('[data-registro-row]') as HTMLElement | null;
+      const txnId = row?.querySelector<HTMLInputElement>('[data-input-vincular-txn]')?.value?.trim();
+      if (finId && txnId) vinculos.push({ registroTransacaoId: txnId, registroFinanceiroId: finId });
+    });
+    if (!vinculos.length) return this.falha('Nenhum vínculo informado para aprovação em massa.');
+    try {
+      const resultado = await this.deps.resolverPendencia.execute({ acao: 'vincular_financeiro_em_massa', vinculos });
+      this.mensagem = resultado.mensagem;
+      await this.ir('pendencias');
+    } catch (error) {
+      await this.falha(error instanceof Error ? error.message : 'Aprovação em massa bloqueada.');
+    }
   }
 
   private async preparar(): Promise<void> {
@@ -247,28 +389,19 @@ export class ImportacaoTransacoesFinanceiroView {
   }
 
   private restaurarUploadEmMemoria(): void {
-    const draft = uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY];
+    const draft = this.uploadDraft.restaurar();
     if (!draft) return;
-    this.transacoes = this.clonarArquivo(draft.transacoes);
-    this.financeiro = this.clonarArquivo(draft.financeiro);
+    this.transacoes = draft.transacoes || null;
+    this.financeiro = draft.financeiro || null;
     if (this.temArquivos()) this.estado = 'carregado';
   }
 
   private salvarUploadEmMemoria(): void {
-    uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY] = {
-      transacoes: this.clonarArquivo(this.transacoes),
-      financeiro: this.clonarArquivo(this.financeiro),
-      updatedAt: new Date().toISOString()
-    };
+    this.uploadDraft.salvar(this.transacoes, this.financeiro);
   }
 
   private limparUploadEmMemoria(): void {
-    delete uploadDraftMemoriaStore()[UPLOAD_DRAFT_MEMORIA_KEY];
-  }
-
-  private clonarArquivo(arquivo: ArquivoImportacao | null | undefined): ArquivoImportacao | null {
-    if (!arquivo) return null;
-    return { nomeArquivo: arquivo.nomeArquivo, conteudo: arquivo.conteudo };
+    this.uploadDraft.limpar();
   }
 
   private extensaoTexto(nomeArquivo: string): boolean {
@@ -290,6 +423,12 @@ export class ImportacaoTransacoesFinanceiroView {
     this.el(selector)?.addEventListener('click', () => void handler());
   }
 
+  private onAll(selector: string, handler: (el: HTMLElement) => void): void {
+    this.root?.querySelectorAll<HTMLElement>(selector).forEach(el => {
+      el.addEventListener('click', () => handler(el));
+    });
+  }
+
   private temArquivos(): boolean {
     return Boolean(this.transacoes?.conteudo.trim() && this.financeiro?.conteudo.trim());
   }
@@ -309,6 +448,11 @@ export class ImportacaoTransacoesFinanceiroView {
   private texto(selector: string, valor: string): void {
     const alvo = this.el(selector);
     if (alvo) alvo.textContent = valor;
+  }
+
+  private visivel(selector: string, valor: boolean): void {
+    const alvo = this.el<HTMLElement>(selector);
+    if (alvo) alvo.hidden = !valor;
   }
 
   private desabilitar(selector: string, valor: boolean): void {

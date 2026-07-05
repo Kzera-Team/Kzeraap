@@ -63,7 +63,7 @@ export class FinanceiroProtegidoRepository<T extends ContaFinanceira | Movimento
     if (!record) return null;
     const payload = await this.crypto.unpackJson<FinanceiroProtegidoPayload<T>>(record.payloadProtegido, this.context(record.id));
     try {
-      return payload;
+      return structuredClone(payload);
     } finally {
       releaseObject(payload);
     }
@@ -75,7 +75,7 @@ export class FinanceiroProtegidoRepository<T extends ContaFinanceira | Movimento
     return Promise.all(records.map(async record => {
       const payload = await this.crypto.unpackJson<FinanceiroProtegidoPayload<T>>(record.payloadProtegido, this.context(record.id));
       try {
-        return payload;
+        return structuredClone(payload);
       } finally {
         releaseObject(payload);
       }
