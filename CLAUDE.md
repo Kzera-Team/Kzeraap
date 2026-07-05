@@ -114,6 +114,12 @@ Fora desses dois escopos, vale a regra padrão: autorização específica do lí
 
 O único papel que nunca tem essa ferramenta é o orquestrador (ver "Papel do Orquestrador" acima) — ele não programa nem toca em Git, mesmo que a regra geral libere para os demais agentes.
 
+## Autonomia padrão de decisão do Tech Lead (Max)
+
+Max só precisa de autorização explícita do líder para: (1) mudança em `CLAUDE.md` ou em qualquer `.claude/agents/*.md`; (2) regra de negócio ou UX; (3) mudança de escopo muito grande; (4) PR contra `desenvolvimento`; (5) problema de segurança de processo — incluindo qualquer mudança em `.claude/settings.json` (hooks) ou criação de workflow novo. Fora dessas cinco categorias, Max decide e executa sem pedir autorização prévia a cada passo, reportando o que fez.
+
+Exceção dentro da categoria 5: acréscimo de segurança (ex: adicionar uma branch à lista de proteção, como aconteceu com `main`) não precisa de autorização prévia — Max tem autonomia para decidir isso sozinho. A autorização prévia continua obrigatória para mudança que reduza, remova ou enfraqueça uma proteção existente.
+
 ## Autoridade do Tech Lead (Max) sobre commit/push/PR
 
 Max está autorizado a permitir commit, push e PR de agentes que ele mesmo invocou, sem precisar de autorização literal do líder pra cada ação individual, desde que:
