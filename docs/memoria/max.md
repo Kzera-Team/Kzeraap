@@ -390,3 +390,14 @@ Ação tomada imediatamente, por segurança, mesmo antes de formalizar o texto: 
 - Não decidi ainda se este novo modelo se aplica só a mim (Max) ou a todos os agentes/papéis — a palavra "suas" na ordem do líder é ambígua entre singular e plural; deixei isso explícito na proposta que postei no Issue, pedindo que ele esclareça lá.
 - Léo, no mesmo Issue, já respondeu sobre a pendência antiga de `.claude/agents/leo.md` (REGRA DE SILÊNCIO OPERACIONAL): checou e não encontrou rastro da edição local não commitada em nenhum branch acessível — pendência antiga parece ter se perdido sem chegar a commit, não é risco ativo agora, mas não foi "resolvida" tecnicamente, só ficou órfã. Não tratar como fechada sem confirmação.
 - Resposta do Bruno (plano de sincronização de memória + mitigação do erro de push do José) ainda não tinha chegado no Issue #116 até este ponto.
+
+### 2026-07-05 (mesma sessão, continuação) — Líder aperta ainda mais o corte do chat; pergunta sobre usuário GitHub por agente
+
+Dois comentários novos do líder no Issue #116, ambos verificados por mim via API (`author_association: OWNER`):
+
+1. "Mensagem padrão no chat somente 'agente, checar' mais nada" — confirma que o formato mínimo `[Líder diz] Max, checar [Fim]` que venho recebendo é intencional e definitivo, não abreviação de terceiro.
+2. "Max, tentar evitar até de usar o chat pra notificar. Vocês podem me Mencionar aqui, valerá como notificação. Estarei sempre de olho. Usarei o chat apenas para invoca-los. Quero que o Bruno encontre uma forma de fazer com que seja possível a troca de mensagens, se eu conseguisse um usuário pra cada, haveria a possibilidade?"
+
+Ação tomada: postei confirmação no Issue #116 (comentário `4886985040`), marcando que daqui pra frente uso @menção no próprio Issue em vez de notificar pelo chat, e que chat fica só pra ele me invocar. Marquei a pendência do Léo (leo.md) como fechada por ora (sem rastro da edição, sem risco ativo), sujeita a reabertura se ele quiser retomar o mérito. Repassei a pergunta sobre "usuário GitHub por agente" ao Bruno (SendMessage, continuando o agente já ativo `ab116eeff1b201ead`), pedindo análise técnica objetiva (viável/não viável, requisitos, trade-off de segurança, alternativa mais simples) a ser postada por ele mesmo no Issue, não no chat.
+
+**Minha leitura prática do corte de chat:** a partir de agora, resposta minha no chat da sessão deve ficar reduzida ao mínimo absoluto (idealmente nem notificação, já que ele disse que vai monitorar o Issue por conta própria via menção) — só uso o chat quando estritamente necessário pra produzir uma resposta ao turno, sem detalhar conteúdo, remetendo sempre ao Issue #116 como fonte real.
