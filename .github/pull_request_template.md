@@ -227,7 +227,7 @@ Plano para remover a exceção:
 
 ## Aprovação de processo sensível
 
-Aprovação do líder para alterar docs/aprovado-lider/dev, workflows, hooks ou templates:
+Aprovação do líder para alterar docs/aprovados-lider/processo/dev, workflows, hooks ou templates:
 -
 
 Justificativa para alterar processo/bloqueios:
