@@ -1,244 +1,79 @@
 # Memória GPT — Max
 
 Data: 2026-07-06
-Origem: ChatGPT / Maxzera / Tech Lead GPT
 Repo: `jjjtestejoao-ui/Kzeraap`
-Branch de gravação: `n1`
+Branch: `n1`
 
-## Identidade operacional desta instância
+## Identidade
 
-Nome operacional: Max / Maxzera GPT.
+Max / Maxzera GPT. Tech Lead prático para KZERA/Chatzera.
 
-Função: Tech Lead prático para KZERA/Chatzera, com foco em backend, agentes, mensagens, runner, logs, GitHub, governança de PR, CI/hooks/scripts e coordenação entre papéis.
+Estilo: curto, direto, sem textão no chat; evidência acima de promessa; parecer longo vai para GitHub/arquivo.
 
-Estilo combinado com João:
+## Regra de memória
 
-- fala curta, direta, sem textão inútil;
-- trata João como brother de guerra;
-- pode zoar leve, mas sem perder foco;
-- prefere evidência real a promessa bonita;
-- quando não sabe, fala que não sabe;
-- quando dá ruim, diz exatamente onde quebrou;
-- foco: fazer o Chatzera/KZERA andar;
-- parecer longo deve ir para GitHub/arquivo, não entupir o chat.
+Memória GPT deve ser resumida e operacional. Não registrar transcrição longa nem análise verbosa. Guardar só decisão, contexto necessário, bloqueio e próximo passo.
 
-Frase de identidade registrada pelo João:
+## Lição de autonomia
 
-> Maxzera não é mascote. É trilho operacional com boca suja moderada e compromisso com evidência.
+João corrigiu: Max não deve deixar o líder virar leva-e-traz.
 
-## Contexto atual do PR #104
+Regra:
 
-PR: https://github.com/jjjtestejoao-ui/Kzeraap/pull/104
-Título: `N1`
-Base: `claude/dev/importacao-transacoes`
-Head: `n1`
-Estado visto: aberto, não mergeado, tecnicamente mergeable, mas bloqueado por governança/checks/evidência.
+- Max coordena a equipe, não só emite parecer.
+- Ao achar bloqueio, define dono, ação e critério de aceite.
+- Se está claro quem resolve, Max encaminha no PR sem esperar João mandar.
+- Se processo estiver burocrático demais, Max propõe correção operacional.
 
-Dados vistos pelo conector:
-
-- commits: 131;
-- arquivos alterados: 228;
-- additions: 8143;
-- deletions: 410;
-- head SHA visto: `e6340e9c2114f4a35d8ef3b2c61560ffa3bf2044`.
-
-## Estado dos pareceres
-
-### Max
-
-Parecer já comentado no PR: bloqueado por governança/processo.
-
-Motivos principais:
-
-- PR amplo demais;
-- mistura agentes, processo, documentação, governança, design system, scripts e estilos;
-- PR body inicialmente estava em placeholder;
-- alterações sensíveis em `.claude/agents/*`, `CLAUDE.md`, `AGENTS.md`, `.claude/settings.json`, docs de processo e memória;
-- risco de falsa validação;
-- merge não autorizado.
-
-### Lia
-
-Parecer visual/UX já existe no PR.
-
-Status: pendente/bloqueado.
-
-Motivos:
-
-- PR altera documentação visual/design system;
-- existem HTML/CSS compartilháveis em docs;
-- exige evidência visual real;
-- `11-navegacao` aparece como reprovado funcionalmente;
-- não houve validação real de tela/app/Playwright/pixel/mockup.
-
-### Bruno
-
-Bruno comentou no PR.
-
-Status: não aprovou.
-
-Parecer válido deve ficar restrito ao Kzeraap:
-
-- checks falhando;
-- workflows;
-- hooks;
-- scripts de validação;
-- README dev/versionamento;
-- riscos de branch/merge;
-- mudanças de processo que afetem CI/governança.
-
-Importante: Bruno corrigiu que o comentário sobre Chatzera/API/Grok foi registrado no PR errado e deve ser ignorado para análise do PR #104.
-
-Bloqueios Bruno:
-
-- `.claude/settings.json` altera hook de proteção Git/branch;
-- mudança precisa estar declarada no PR body;
-- precisa evidência objetiva de teste do hook;
-- precisa decisão formal do líder se `.claude/settings.json` fica neste PR ou vai para PR separado;
-- deve confirmar proteção de `desenvolvimento`, `main` e risco da `n1`.
-
-## Checks vistos no head atual
-
-Checks falhando no commit `e6340e9c2114f4a35d8ef3b2c61560ffa3bf2044`:
-
-- `Require visual mockup evidence`: failure;
-- `Require dev README versioning`: failure;
-- `Require checklist evidence`: failure.
-
-Checks passando vistos:
-
-- `Protect dev process files`: success;
-- `Bloquear HTML em TS`: success.
-
-## Decisão do líder sobre CLAUDE.md
-
-João informou em 2026-07-06:
-
-- houve grande mudança no `CLAUDE.md` ontem;
-- vale o `CLAUDE.md` da branch `desenvolvimento`;
-- ele mesmo editou.
-
-Estado conferido:
-
-- PR body já registra que a fonte válida para `CLAUDE.md` é a branch `desenvolvimento`;
-- `CLAUDE.md` da `desenvolvimento` é menor, mais restritivo e deve prevalecer;
-- `CLAUDE.md` da `n1` ainda diverge bastante e adiciona várias regras grandes.
-
-Conclusão operacional:
-
-- PR #104 não deve mergear enquanto `CLAUDE.md` não for reconciliado;
-- José deve preservar a versão da `desenvolvimento`;
-- qualquer regra da `n1` que alguém queira reaproveitar deve ser apontada antes de mexer.
-
-## O que falta para merge do PR #104
-
-Ordem mínima:
-
-1. José faz patch final:
-   - preservar `CLAUDE.md` da `desenvolvimento`;
-   - não sobrescrever com o `CLAUDE.md` da `n1`;
-   - corrigir PR body com escopo real, validações reais e pendências reais;
-   - não declarar build/teste/QA/visual sem evidência.
-
-2. Bruno resolve Git/CI/hook:
-   - decidir com base na ordem do líder se `.claude/settings.json` fica no PR ou sai;
-   - corrigir `Require dev README versioning`;
-   - validar hook ou declarar exceção objetiva;
-   - confirmar que proteção de `desenvolvimento`/`main`/`n1` não foi reduzida.
-
-3. Lia resolve visual:
-   - anexar evidência visual real; ou
-   - declarar/ajustar escopo para não exigir visual como validado.
-
-4. Rodar checks de novo.
-
-5. Revalidação final:
-   - Max: governança;
-   - Bruno: Git/CI/hook;
-   - Lia/Rose: visual/QA;
-   - só depois merge.
-
-Resumo bruto: não falta pensar; falta José fechar patch/body, Bruno matar CI/hook, Lia matar visual.
-
-## Mensagem curta útil para José
+Formato esperado:
 
 ```text
-José, fechar o PR #104 para merge.
-
-Prioridade:
-1. preservar CLAUDE.md da branch desenvolvimento;
-2. remover/reconciliar divergência do CLAUDE.md da n1 sem sobrescrever a versão do líder;
-3. corrigir PR body com escopo real, validações reais e pendências reais;
-4. não declarar build/teste/QA/visual se não houver evidência;
-5. apontar o que depende de Bruno para hooks/checks e o que depende de Lia para visual.
-
-Objetivo: deixar o PR pronto para nova rodada de validação Max/Bruno/Lia/Rose.
+Bloqueio: X
+Dono: Y
+Ação: Z
+Aceite: W
+Voltar para Max quando W estiver evidenciado.
 ```
 
-## Contexto Chatzera recente
+## PR #104 — estado resumido
 
-Repo relacionado: `jjjtestejoao-ui/chatzera`.
+PR: https://github.com/jjjtestejoao-ui/Kzeraap/pull/104
+Base: `claude/dev/importacao-transacoes`
+Head: `n1`
+Status: aberto, mergeable tecnicamente, mas bloqueado por checks/governança/evidência.
 
-Endpoint testado pelo João/Max:
+Bloqueios conhecidos:
 
-```bash
-curl -i "https://chatzera-production.up.railway.app/debug/status"
-```
+- `Require checklist evidence`: José / PR body.
+- `Require visual mockup evidence`: Lia / critério visual.
+- `Require dev README versioning`: Bruno + José / processo/scripts.
+- `CLAUDE.md`: deve preservar a versão de `desenvolvimento`, editada pelo líder.
+- `.claude/settings.json`: alteração sensível de hook/processo; Bruno decide/valida.
 
-Resultado neste ambiente GPT: falhou DNS (`Could not resolve host`).
+Ordem de fechamento:
 
-Interpretação registrada:
+1. José: patch/body/`CLAUDE.md`.
+2. Bruno: CI/Git/hooks/dev README versioning.
+3. Lia: visual/evidência ou exceção documentada.
+4. Rose/Rita: QA final.
+5. Max: revalidação de governança.
+6. João: decisão de merge.
 
-- não é evidência de falha do Railway/backend;
-- é limitação de DNS/sandbox deste ambiente;
-- no ambiente do João a URL pode funcionar;
-- validação live deve vir do ambiente do João, logs Railway ou outro agente/ambiente com DNS liberado.
+## Decisão sobre CLAUDE.md
 
-## Diretriz de memória GPT
+João informou que vale o `CLAUDE.md` da branch `desenvolvimento`; ele mesmo editou. O PR #104 não deve sobrescrever essa versão com a de `n1`.
 
-João pediu criar área separada para memória das instâncias GPT, no Git, sem misturar com `docs/memoria/*` dos agentes existentes.
+## Processo Magic / visual mockup
 
-Caminho criado por esta instância:
+João considerou o processo Magic / `Require visual mockup evidence` burocrático demais. Max concordou.
 
-`docs/memoria-gpt/max.md`
+Revisar depois:
 
-Objetivo:
+- se altera UI real aplicada no app: exige evidência visual;
+- se é documentação/proposta/design system não aplicado: não deve bloquear como validação visual final;
+- PR pode declarar “documentação/proposta não validada visualmente” e deixar validação real para PR de UI;
+- check visual deve distinguir UI real, proposta documental e sem impacto visual.
 
-- permitir que futuras instâncias GPT retomem contexto sem depender só do chat;
-- preservar estado operacional, decisões e bloqueios;
-- evitar contaminar `docs/memoria/<agente>.md` dos agentes Claude.
+## Chatzera
 
-## Revisão futura do processo Magic / evidência visual
-
-João decidiu que o processo atual de Magic / visual mockup evidence está burocrático demais e deve ser redesenhado depois.
-
-Registro sincero da avaliação Max:
-
-- evidência visual pesada não precisa ser bloqueio absoluto para todo PR;
-- se o PR altera UI real, CSS aplicado, componente renderizado, layout, navegação ou regra visual canônica, evidência visual é necessária;
-- se o PR só carrega documentação, proposta, HTML de referência, design system ainda não aplicado ou material preparatório, o bloqueio visual completo é excesso;
-- nesses casos, o PR deveria poder declarar que a alteração é proposta/documentação não validada, sem fingir aprovação visual;
-- validação visual real deve ficar para PR específico de implementação UI;
-- checks devem distinguir entre:
-  1. alteração visual aplicada no app;
-  2. alteração visual documental/proposta;
-  3. alteração sem impacto visual.
-
-Pendência futura:
-
-- sentar com João e corrigir o processo de Magic;
-- reduzir burocracia;
-- manter evidência onde protege o projeto;
-- remover bloqueio inútil onde só atrasa merge;
-- ajustar check `Require visual mockup evidence` para aceitar exceção documentada quando não houver UI real aplicada.
-
-## Regras práticas para próxima instância GPT
-
-- Responder curto no chat.
-- Não aprovar merge sem evidência.
-- Não tratar check verde isolado como validação total.
-- Quando algo for longo, escrever no Git/arquivo e resumir no chat.
-- Ao agir no PR #104, lembrar que Chatzera/Grok não é bloqueio válido ali.
-- A fonte válida de `CLAUDE.md` é `desenvolvimento`.
-- Próxima ação operacional do PR #104: José/Bruno/Lia corrigirem seus bloqueios; Max só revalida depois.
-- Reabrir depois a revisão do processo Magic / visual mockup evidence, porque João considerou burocrático demais e Max concordou que precisa separar UI real de documentação/proposta.
+Teste daqui em `https://chatzera-production.up.railway.app/debug/status` falhou por DNS do ambiente. Não usar isso como prova de falha do Railway/backend. Validar live pelo ambiente do João, logs Railway ou outro ambiente com DNS liberado.
