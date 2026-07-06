@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 
-const readmePath = 'docs/aprovado-lider/dev/README.md';
+const readmePath = 'docs/aprovados-lider/processo/dev/README.md';
 const text = fs.readFileSync(readmePath, 'utf8').replace(/\r\n/g, '\n');
 
 function fail(message) {
