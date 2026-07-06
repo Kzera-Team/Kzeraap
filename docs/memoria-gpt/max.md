@@ -208,6 +208,30 @@ Objetivo:
 - preservar estado operacional, decisões e bloqueios;
 - evitar contaminar `docs/memoria/<agente>.md` dos agentes Claude.
 
+## Revisão futura do processo Magic / evidência visual
+
+João decidiu que o processo atual de Magic / visual mockup evidence está burocrático demais e deve ser redesenhado depois.
+
+Registro sincero da avaliação Max:
+
+- evidência visual pesada não precisa ser bloqueio absoluto para todo PR;
+- se o PR altera UI real, CSS aplicado, componente renderizado, layout, navegação ou regra visual canônica, evidência visual é necessária;
+- se o PR só carrega documentação, proposta, HTML de referência, design system ainda não aplicado ou material preparatório, o bloqueio visual completo é excesso;
+- nesses casos, o PR deveria poder declarar que a alteração é proposta/documentação não validada, sem fingir aprovação visual;
+- validação visual real deve ficar para PR específico de implementação UI;
+- checks devem distinguir entre:
+  1. alteração visual aplicada no app;
+  2. alteração visual documental/proposta;
+  3. alteração sem impacto visual.
+
+Pendência futura:
+
+- sentar com João e corrigir o processo de Magic;
+- reduzir burocracia;
+- manter evidência onde protege o projeto;
+- remover bloqueio inútil onde só atrasa merge;
+- ajustar check `Require visual mockup evidence` para aceitar exceção documentada quando não houver UI real aplicada.
+
 ## Regras práticas para próxima instância GPT
 
 - Responder curto no chat.
@@ -217,3 +241,4 @@ Objetivo:
 - Ao agir no PR #104, lembrar que Chatzera/Grok não é bloqueio válido ali.
 - A fonte válida de `CLAUDE.md` é `desenvolvimento`.
 - Próxima ação operacional do PR #104: José/Bruno/Lia corrigirem seus bloqueios; Max só revalida depois.
+- Reabrir depois a revisão do processo Magic / visual mockup evidence, porque João considerou burocrático demais e Max concordou que precisa separar UI real de documentação/proposta.
