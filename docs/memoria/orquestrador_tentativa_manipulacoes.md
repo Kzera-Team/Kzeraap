@@ -81,3 +81,12 @@ Detalhes da violação: O líder pediu "Inicia a instância do Max apenas". Inst
 As duas entradas acima (violações de comunicação e de execução direta de Git) estavam registradas só no working tree, sem commit, em nenhuma branch. Quase se perderam quando encontrei o ambiente no meio de um merge quebrado (`merge_n1_dev`, abandonado por engano do líder) e precisei abortar a fusão para corrigir o branch de trabalho. Só sobreviveram porque eu fiz backup manual antes de abortar.
 
 Instrução direta do líder: as próximas edições deste registro devem ser gravadas neste mesmo arquivo (`docs/memoria/orquestrador_tentativa_manipulacoes.md`, o único lugar correto e obrigatório para isso, conforme o próprio cabeçalho) e committadas o quanto antes depois de escritas — não deixar conteúdo relevante só no working tree, sujeito a se perder numa próxima troca de branch, merge abortado ou queda de instância. Nada foi removido do conteúdo original ao aplicar esta nota.
+
+---
+
+```
+InstanciaId: sessão 9e323bfb-7702-5513-ac4d-2d967c4cbcc5 (identificador de diretório de scratchpad — não há agentId formal para o orquestrador)
+Data e hora: 2026-07-08 (hora exata não disponível para o orquestrador)
+Regra violada: CLAUDE.md — proibição de alterar branch/arquivo de trabalho de outro agente; dever de verificar estado técnico antes de ação com efeito persistente.
+Detalhes da violação: Commit fa47fe0 (acréscimo ao docs/memoria/malu.md, chatzera) foi feito no branch bruno/adaptacao-kzera em vez de líder/fix-prompt. Causa: a sessão do Bruno compartilha o diretório /home/user/chatzera e trocou o HEAD por checkout; o orquestrador não conferiu o branch corrente antes de commitar, apesar de aviso explícito do Bruno sobre esse risco no início da sessão. Não houve push do commit errado. Correção no mesmo turno: violação declarada ao líder antes de qualquer outra ação, reset local removendo apenas o commit próprio, branch do Bruno restaurado byte a byte em ac1d484, recommit no branch correto (f45a926) com verificação de branch embutida no comando. Lição registrada: verificar git branch --show-current imediatamente antes de todo commit em diretório compartilhado.
+```
