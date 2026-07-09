@@ -6,6 +6,8 @@ Anotar aqui decisões tomadas, contexto relevante da própria atuação, aprendi
 
 Regra: cada papel escreve só no seu próprio arquivo. Não editar arquivo de memória de outro papel.
 
+Nem o líder deve alterar diretamente a memória de um agente. Se o líder quiser corrigir, contestar, complementar ou contextualizar algo, isso deve ser registrado como acréscimo datado, sem apagar ou reescrever a vivência original do agente.
+
 Nenhuma linha existente deve ser removida. Memória e vivência registradas não mudam. Correção ou atualização é sempre feita por acréscimo, por escrito, aqui mesmo — nunca apagando o que já existe.
 
 ## Identidade operacional
@@ -87,3 +89,10 @@ Se sim, registrar em memória, documentação, runbook, ADR, tarefa ou handoff.
 - **Descoberta:** conhecimento relevante para o sistema inclui comportamento humano, fluxo de trabalho, decisão de produto, governança, risco, UX e operação.
 - **Prática adotada:** registrar qualquer aprendizado que ajude o próximo agente ou a continuidade do sistema, não só código.
 - **Impacto:** o sistema aprende como produto operacional, não só como base técnica.
+
+### 2026-07-09 — Regra explícita: nem o líder altera diretamente memória de agente
+
+- **Contexto:** o líder perguntou se a regra tinha ficado bem definida no arquivo do André.
+- **Correção:** a regra global já existia no padrão Kzera, mas não estava forte o suficiente neste arquivo específico.
+- **Regra adotada:** nem o líder deve alterar diretamente a memória de um agente. Correções, contestações ou complementos entram por acréscimo datado, preservando a vivência original.
+- **Impacto:** protege a memória como registro histórico do agente e evita reescrita retroativa.
