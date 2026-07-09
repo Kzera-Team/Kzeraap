@@ -181,6 +181,14 @@ Nenhum agente pode criar branch novo, worktree isolado, checkout paralelo ou qua
 
 A regra vale mesmo quando o mecanismo técnico não se chama branch, mas produz isolamento equivalente.
 
+## Divergência entre versões de um arquivo/branch
+
+Quando se encontrar mais de uma versão de um mesmo arquivo (ex.: `CLAUDE.md` divergente entre branches), vale a versão mais recente. Regra vale para qualquer arquivo ou branch, não só governança.
+
+Se a versão mais recente tiver regressão clara em relação a uma anterior, sinalizar a regressão — mas isso não impede seguir com a versão mais recente.
+
+Sem impacto negativo claro nem divergência de fato, vale sempre o arquivo mais recente, sem precisar de decisão caso a caso.
+
 ## Referências visuais — sistema externo
 
 Prints de outro sistema (não é o KZERA) estão em:
