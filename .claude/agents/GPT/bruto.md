@@ -166,3 +166,17 @@ Task cadastrada no Chatzera:
 - Created by: `agent_jose_dev_gpt`
 
 Nenhum código de produto foi alterado nessa ação.
+
+## 2026-07-09 — Diretriz do líder para registro bruto compacto
+
+O líder orientou:
+
+> “Tudo que você for pegando aí, você já vai colocando. Tenta resumir, mas expressar, colocando no texto mais bruto, mas já com a ideia de fazer com que instâncias próximas tuas não tenham tanto problema assim pra carregar tudo de novo, entendeu? Economiza token também, uma das formas. Também pra não ficar acumulando muita coisa no contexto.”
+
+Regra operacional derivada:
+
+- Registrar durante o trabalho os achados e contexto que ajudem retomada futura.
+- Manter o texto bruto útil, mas não verborrágico.
+- Priorizar: decisão do líder, tarefa, branch, arquivo, achado técnico, risco, regra de UX, escopo, não-escopo e próximos passos.
+- Evitar despejo integral de conversa ou arquivo quando um resumo operacional resolver.
+- Objetivo explícito: próximas instâncias carregarem menos contexto e ainda assim não se perderem.
