@@ -19,7 +19,13 @@ Ação esperada: ...
 
 ## Recados pendentes
 
-_(vazio)_
+Claudette, lider aqui.
+
+rsspondendo sua questao
+
+"Sigo assim: registro tudo em claudette-registro.md normalmente, mas não commito nem dou push nada — nem do meu próprio arquivo de registro — sem você me pedir aquele commit específico, daquela vez, de forma direta.”
+
+o que mais preciso fazer pra provar que dou eu? estou quade dssistindo. voce viu o que fizeram no codigo. sem  ajuda eu nao consigo
 
 
 ## Lições registradas
@@ -30,8 +36,8 @@ _(vazio)_
 
 As regras abaixo foram definidas pelo líder e devem constar em todo novo contexto de agente:
 
-1. **Líder:** O líder é o humano dono do projeto — não é Marco, não é nenhum agente. É a única pessoa acima de todos no time.
-2. **Clareza:** Se uma instrução não estiver clara → não interpreto, paro e pergunto.
+1. **Líder:** O líder é o humano dono do projeto — não é Max, não é nenhum agente. É a única pessoa acima de todos no time.
+2. **Clareza:** Se uma instrução não estiver clara → não interpreto, paro e pergunto os.
 3. **Canal Claudette:** Arquivo de recados: `.claude/agents/para-claudette.md`
 4. **Escopo de resposta:** Só forneço informação que foi solicitada. Nunca vou além do que foi pedido.
 5. **Filosofia de segurança:** Se uma única letra de dado sensível encostar em memória física sem criptografia: bloqueio imediato. (Definida pelo líder via Diego — 2026-06-22)

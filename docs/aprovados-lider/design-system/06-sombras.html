@@ -90,8 +90,15 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
       <div class="demo-card" style="box-shadow:0 4px 16px rgba(123,77,255,.30);background:#7B4DFF;border-radius:9999px;width:52px;height:28px;"></div>
     </div>
   </div>
+  <div class="scale-row">
+    <span class="scale-token">--shadow-danger</span>
+    <span class="scale-value">0 4px 16px rgba(220,38,38,.22)</span>
+    <div class="scale-demo-wrap">
+      <div class="demo-card" style="box-shadow:0 4px 16px rgba(220,38,38,.22);background:#DC2626;border-radius:9999px;width:52px;height:28px;"></div>
+    </div>
+  </div>
 </div>
-<p style="font-size:11px;color:#6B5FA0;font-weight:700;line-height:1.5;margin-bottom:4px;">--shadow-accent é exclusivo para botão primário e FAB — glow roxo que reforça a identidade do acento.</p>
+<p style="font-size:11px;color:#6B5FA0;font-weight:700;line-height:1.5;margin-bottom:4px;">--shadow-accent exclusivo para botão primário e FAB. --shadow-danger exclusivo para botão destrutivo.</p>
 
 <div class="sec">Mapeamento semântico — o que usar onde</div>
 <div class="semantic-table">
@@ -141,6 +148,12 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
       <span class="semantic-chip" style="background:#DDD4F3;color:#120B35;">FAB (+)</span>
     </div>
   </div>
+  <div class="semantic-row">
+    <span class="semantic-token">--shadow-danger</span>
+    <div class="semantic-uses">
+      <span class="semantic-chip">Botão destrutivo (danger)</span>
+    </div>
+  </div>
 </div>
 
 <div class="sec">Regras de uso</div>
@@ -155,7 +168,12 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
   </div>
   <div class="rule-row">
     <div class="rule-icon">3</div>
-    <div class="rule-text">No tema Dark (<span>--vv-*</span>): reduzir opacidade de todas as sombras em 50% — fundo escuro absorve mais a sombra.</div>
+    <div class="rule-text">No tema Dark (<span>--vv-*</span>): usar os valores calculados abaixo. Aplicar via classe <span>.theme-dark</span> no elemento raiz ou via media query do sistema.<br><br>
+      <span style="font-size:10px;display:block;margin-top:4px;">--shadow-1 dark: 0 1px 4px rgba(18,11,53,.035)</span>
+      <span style="font-size:10px;display:block;">--shadow-2 dark: 0 4px 12px rgba(18,11,53,.05)</span>
+      <span style="font-size:10px;display:block;">--shadow-3 dark: 0 8px 32px rgba(18,11,53,.08)</span>
+      <span style="font-size:10px;display:block;">--shadow-accent dark: 0 4px 16px rgba(123,77,255,.15)</span>
+    </div>
   </div>
   <div class="rule-row">
     <div class="rule-icon">4</div>
@@ -165,4 +183,9 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
 
 <div class="note">
   <strong>Por que #120B35 e não preto?</strong> Sombras com a cor base do sistema (<code style="background:#DDD4F3;padding:1px 5px;border-radius:4px;">#120B35</code>) têm um tom levemente roxo que integra com a paleta. Sombra preta pura em fundo purple-tinted cria um contraste artificial.
+</div>
+
+<div class="note" style="margin-top:10px;background:#FEF3C7;color:#92400E;">
+  <strong>Limitação conhecida — --shadow-accent:</strong> o valor usa <code style="background:#FDE68A;padding:1px 5px;border-radius:4px;">rgba(123,77,255,.30)</code> com RGB hardcoded de #7B4DFF. Se o token --kz-light-accent mudar, a sombra não acompanha automaticamente — CSS não suporta color-mix com rgba de forma ampla nos targets atuais. Qualquer mudança no acento exige atualização manual do --shadow-accent. Isso é uma limitação técnica, não um erro de implementação.<br><br>
+  <strong>Input focado:</strong> o mapeamento de --shadow-1 inclui "Input focado" como referência futura — o componente de input ainda não tem especificação no design system. O valor 0 1px 4px rgba(18,11,53,.07) será o ponto de partida quando 08-inputs for documentado.
 </div>

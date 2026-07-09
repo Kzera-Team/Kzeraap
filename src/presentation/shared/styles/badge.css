@@ -1,39 +1,53 @@
-.badge {
+/* ══════════════════════════════════════════
+   10 — Badges · badge.css
+   Fonte do design system — docs/aprovados-lider/design-system/componentes/10-badges/componente.css
+══════════════════════════════════════════ */
+
+.kz-badge {
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: .82rem;
-  font-weight: 700;
+  gap: 4px;
+  border-radius: var(--radius-full);
+  padding: 3px 9px;
+  font-size: var(--t-xs);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  line-height: 1;
+  white-space: nowrap;
 }
 
-.badge-success,
-.badge-ativo,
-.badge-stock-ok {
-  background: #DCFCE7;
-  color: #166534;
+.kz-badge--success {
+  background: var(--kz-status-success-bg);
+  color: var(--kz-status-success-text);
 }
 
-.badge-warning,
-.badge-pendente,
-.badge-stock-low {
-  background: #FEF3C7;
-  color: #92400E;
+.kz-badge--warning {
+  background: var(--kz-status-warning-bg);
+  color: var(--kz-status-warning-text);
 }
 
-.badge-danger,
-.badge-stock-empty {
-  background: #FECACA;
-  color: #991B1B;
+.kz-badge--danger {
+  background: var(--kz-status-danger-bg);
+  color: var(--kz-status-danger-text);
 }
 
-.badge-info {
-  background: #DBEAFE;
-  color: #1E40AF;
+.kz-badge--info {
+  background: var(--kz-status-info-bg);
+  color: var(--kz-status-info-text);
 }
 
-.badge-neutral,
-.badge-arquivado {
-  background: #E5E7EB;
-  color: #374151;
+.kz-badge--neutral {
+  background: var(--kz-status-neutral-bg);
+  color: var(--kz-status-neutral-text);
+}
+
+.kz-badge--count {
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  justify-content: center;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: none;
 }

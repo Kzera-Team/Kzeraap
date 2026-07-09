@@ -1,6 +1,6 @@
 /* KZERA · Botões — componente.css */
 
-.kzera-btn {
+.kz-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -22,118 +22,118 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.kzera-btn:active {
+.kz-btn:active {
   transform: scale(0.97);
   opacity: 0.88;
 }
 
-.kzera-btn:disabled,
-.kzera-btn[aria-disabled="true"] {
+.kz-btn:disabled,
+.kz-btn[aria-disabled="true"] {
   opacity: 0.4;
   pointer-events: none;
   cursor: not-allowed;
 }
 
 /* Tamanho automático (não full-width) */
-.kzera-btn--auto {
+.kz-btn--auto {
   width: auto;
 }
 
 /* ─── Variantes ─────────────────────────────── */
 
-.kzera-btn--primary {
+.kz-btn--primary {
   background: var(--kz-light-accent, #7B4DFF);
   color: #fff;
   box-shadow: var(--shadow-accent, 0 4px 16px rgba(123,77,255,.30));
 }
 
-.kzera-btn--secondary {
+.kz-btn--secondary {
   background: transparent;
   color: var(--kz-light-accent, #7B4DFF);
   border: 1.5px solid var(--kz-light-accent, #7B4DFF);
   box-shadow: none;
 }
 
-.kzera-btn--ghost {
+.kz-btn--ghost {
   background: transparent;
   color: var(--kz-light-accent, #7B4DFF);
   border: none;
   box-shadow: none;
-  height: 40px;
+  height: 44px;
   min-width: unset;
 }
 
 /* Ação crítica — 56px, vermelho */
-.kzera-btn--danger {
+.kz-btn--danger {
   background: #DC2626;
   color: #fff;
-  box-shadow: 0 4px 16px rgba(220,38,38,.22);
+  box-shadow: var(--shadow-danger, 0 4px 16px rgba(220,38,38,.22));
   height: 56px;
 }
 
 /* ─── Botão ícone (sem texto) ────────────────── */
 
-.kzera-btn--icon {
+.kz-btn--icon {
   width: 48px;
   min-width: 48px;
   padding: 0;
 }
 
-/* Ícone pequeno — fechar, voltar (40×40px) */
-.kzera-btn--icon.kzera-btn--sm {
-  width: 40px;
-  min-width: 40px;
-  height: 40px;
+/* Ícone pequeno — fechar, voltar (44×44px) */
+.kz-btn--icon.kz-btn--sm {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
 }
 
 /* ─── Grupo de botões ────────────────────────── */
 
-.kzera-btn-group {
+.kz-btn-group {
   display: flex;
   gap: var(--space-3, 12px);
 }
 
-.kzera-btn-group .kzera-btn {
+.kz-btn-group .kz-btn {
   flex: 1;
 }
 
 /* ─── Hover (apenas pointer devices) ─────────── */
 
 @media (hover: hover) {
-  .kzera-btn--primary:not(:disabled):not([aria-disabled="true"]):hover {
+  .kz-btn--primary:not(:disabled):not([aria-disabled="true"]):hover {
     opacity: 0.88;
   }
-  .kzera-btn--secondary:not(:disabled):not([aria-disabled="true"]):hover,
-  .kzera-btn--ghost:not(:disabled):not([aria-disabled="true"]):hover {
+  .kz-btn--secondary:not(:disabled):not([aria-disabled="true"]):hover,
+  .kz-btn--ghost:not(:disabled):not([aria-disabled="true"]):hover {
     background: rgba(123,77,255,.06);
   }
-  .kzera-btn--danger:not(:disabled):not([aria-disabled="true"]):hover {
+  .kz-btn--danger:not(:disabled):not([aria-disabled="true"]):hover {
     opacity: 0.88;
   }
 }
 
 /* ─── Focus (teclado / acessibilidade) ──────── */
 
-.kzera-btn:focus-visible {
+.kz-btn:focus-visible {
   outline: 2px solid var(--kz-light-accent, #7B4DFF);
   outline-offset: 3px;
 }
 
-.kzera-btn--danger:focus-visible {
+.kz-btn--danger:focus-visible {
   outline-color: #DC2626;
 }
 
 /* ─── Estado loading ─────────────────────────── */
 
-.kzera-btn--loading {
+.kz-btn--loading {
   pointer-events: none;
 }
 
-.kzera-btn--loading .kzera-btn__text {
+.kz-btn--loading .kz-btn__text {
   opacity: 0;
 }
 
-.kzera-btn--loading::after {
+.kz-btn--loading::after {
   content: '';
   position: absolute;
   width: 18px;
@@ -141,14 +141,14 @@
   border: 2px solid rgba(255,255,255,.30);
   border-top-color: #fff;
   border-radius: 50%;
-  animation: kzera-spin .7s linear infinite;
+  animation: kz-spin .7s linear infinite;
 }
 
-.kzera-btn--secondary.kzera-btn--loading::after {
+.kz-btn--secondary.kz-btn--loading::after {
   border-color: rgba(123,77,255,.20);
   border-top-color: var(--kz-light-accent, #7B4DFF);
 }
 
-@keyframes kzera-spin {
+@keyframes kz-spin {
   to { transform: rotate(360deg); }
 }
