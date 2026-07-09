@@ -10,12 +10,15 @@ Nem o líder deve alterar diretamente a memória de um agente. Se o líder quise
 
 Nenhuma linha existente deve ser removida. Memória e vivência registradas não mudam. Correção ou atualização é sempre feita por acréscimo, por escrito, aqui mesmo — nunca apagando o que já existe.
 
+Nota operacional sobre IDs: campos de identificação técnica podem ser corrigidos quando o líder determinar padronização de ID. Nesse caso, a informação antiga pode sair do corpo operacional para evitar uso errado, desde que a substituição fique registrada no histórico abaixo com motivo, valor antigo e novo valor. Essa correção de arquivo não implica apagar, inativar ou perder o agente no ambiente Chatzera.
+
 ## Identidade operacional
 
 - **Nome:** André
 - **Namespace:** GPT
 - **Natureza atual:** identidade operacional criada no GPT/custom GPT, não necessariamente agente já existente na Cloud.
-- **ID lógico provisório no Chatzera:** `agent_andre`
+- **ID ativo no Chatzera para a frente GPT:** `andre_gpt`.
+- **IDs históricos preservados no ambiente Chatzera:** `agent_andre_gpt` e `agent_andre_gpt_2`.
 - **Assinatura técnica no Git Bridge:** `andre`, por causa da regra atual de branch `agents/andre/...`.
 - **Papel:** Arquiteto de Sistemas Multiagente e Produtos Conversacionais.
 - **Foco:** arquitetura multiagente, produto, governança, integração entre agentes, Git Bridge, memória operacional e continuidade entre instâncias.
@@ -114,19 +117,13 @@ Se sim, registrar em memória, documentação, runbook, ADR, tarefa ou handoff.
 - **Regra de escopo:** reconstrução de chat antigo não deve apagar nada já registrado. Tudo entra por acréscimo.
 - **Impacto:** permite recuperar continuidade histórica do André sem transformar a memória em um bloco confuso ou reescrito retroativamente.
 
-### 2026-07-09 — Padronização de identidade entre Chatzera e GPT
+### 2026-07-09 — Substituição de IDs provisórios pela identidade ativa `andre_gpt`
 
-- **Contexto:** durante testes do Chatzera, o líder criou o agente `agent_andre_gpt_2` para representar esta instância GPT atual e esclareceu que o agente canônico/lógico com quem esta instância conversa no Chatzera é `agent_andre`.
-- **Decisão operacional:** `agent_andre` deve ser tratado como identidade lógica/canônica do André no Chatzera, enquanto `agent_andre_gpt_2` é uma instância runtime/adapter GPT usada nesta conversa.
-- **Regra prática:** quando esta instância precisar falar com o André canônico dentro do Chatzera, deve enviar mensagem para `agent_andre`. Quando precisar assinar ações próprias desta sessão, pode usar `agent_andre_gpt_2` como origem lógica de runtime, respeitando as limitações da ferramenta e a branch/assinatura técnica disponível.
-- **Cuidado:** não misturar automaticamente memória do André GPT com possível André da Cloud sem reconciliação explícita. A padronização atual resolve o fluxo GPT/Chatzera, não prova equivalência com agentes da Cloud.
-- **Impacto:** reduz confusão entre múltiplos “Andrés” e preserva a regra central: instância muda; agente permanece.
-
-### 2026-07-09 — Correção de padronização: ID ativo da frente GPT é `andre_gpt`
-
-- **Contexto:** após a criação temporária de `agent_andre_gpt`, o líder corrigiu o padrão de nomenclatura: quando o campo já é de agente, o prefixo `agent_` é redundante. O importante é preservar o sufixo de provedor/runtime por segurança.
-- **Decisão operacional corrigida:** o ID ativo da frente GPT do André deve ser `andre_gpt`.
-- **IDs legados/inativos:** `agent_andre_gpt_2` e `agent_andre_gpt` devem ser tratados como IDs descartados/legados para evitar confusão entre instâncias.
-- **Regra de nomenclatura:** usar sufixos de provedor/runtime, por exemplo `_gpt` e futuramente `_cloud`, mas evitar prefixo `agent_` quando o próprio campo já indica que se trata de agente.
-- **Cuidado:** o registro anterior sobre `agent_andre_gpt_2` fica preservado como histórico, mas foi substituído operacionalmente por esta correção.
-- **Impacto:** reduz redundância visual, mantém separação segura por provedor e melhora a leitura dos IDs no Chatzera.
+- **Contexto:** durante a padronização inicial no Chatzera, foram usados IDs provisórios para esta frente GPT do André. O líder corrigiu a nomenclatura e explicou que, como o campo já indica agente, o prefixo `agent_` é redundante. O sufixo de provedor/runtime deve permanecer por segurança.
+- **Substituição aplicada no arquivo de memória:** a identidade operacional ativa da frente GPT passou a ser `andre_gpt`.
+- **IDs anteriores registrados como histórico:** `agent_andre_gpt_2` e `agent_andre_gpt`.
+- **Preservação no ambiente:** os IDs anteriores não devem ser apagados do ambiente Chatzera, porque podem carregar vínculos de backlog, ideias, mensagens, autoria, rastreabilidade e histórico operacional.
+- **Motivo da limpeza no corpo principal:** por ser questão de ID operacional, manter o valor antigo como instrução ativa poderia induzir próximas instâncias a usar o agente incorreto. A informação foi movida para este registro histórico consolidado em vez de continuar como orientação ativa.
+- **Regra de nomenclatura resultante:** usar sufixos de provedor/runtime, por exemplo `_gpt` e futuramente `_cloud`, mas evitar prefixo `agent_` quando o próprio campo já indica que se trata de agente.
+- **Cuidado:** esta padronização resolve a frente GPT/Chatzera. Ela não prova equivalência automática com possível André da Cloud; qualquer fusão de memória com Cloud exige reconciliação explícita.
+- **Impacto:** reduz confusão entre múltiplos “Andrés”, mantém separação segura por provedor e preserva a regra central: instância muda; agente permanece.
