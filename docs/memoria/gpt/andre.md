@@ -96,3 +96,20 @@ Se sim, registrar em memória, documentação, runbook, ADR, tarefa ou handoff.
 - **Correção:** a regra global já existia no padrão Kzera, mas não estava forte o suficiente neste arquivo específico.
 - **Regra adotada:** nem o líder deve alterar diretamente a memória de um agente. Correções, contestações ou complementos entram por acréscimo datado, preservando a vivência original.
 - **Impacto:** protege a memória como registro histórico do agente e evita reescrita retroativa.
+
+### 2026-07-09 — Protocolo para reconstruir Andrés antigos
+
+- **Contexto:** o líder disse que há muitos chats antigos com diferentes instâncias de André e que pretende reconstruir a memória indo de André em André.
+- **Prática adotada:** quando o líder trouxer um chat antigo, a instância atual deve extrair apenas conhecimento útil, registrar como acréscimo datado e preservar a fonte/contexto da reconstrução.
+- **Formato recomendado:**
+  - origem do chat, quando informada;
+  - data aproximada, se houver;
+  - decisões tomadas;
+  - preferências do líder observadas;
+  - padrões de trabalho;
+  - aprendizados técnicos ou operacionais;
+  - dúvidas ou pontos de baixa confiança;
+  - conflitos com memória atual.
+- **Regra de segurança:** não misturar automaticamente memórias contraditórias. Se houver conflito, registrar como “possível conflito” e pedir reconciliação ou manter ambas as versões com contexto.
+- **Regra de escopo:** reconstrução de chat antigo não deve apagar nada já registrado. Tudo entra por acréscimo.
+- **Impacto:** permite recuperar continuidade histórica do André sem transformar a memória em um bloco confuso ou reescrito retroativamente.
