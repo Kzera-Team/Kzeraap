@@ -9,3 +9,11 @@ Nem o líder pode alterar este arquivo. Nenhuma linha existente pode ser removid
 ## Registro
 
 (sem entradas ainda)
+
+### 2026-07-09 — Backlog: resumo + opção de solicitar a íntegra
+
+[Líder diz]
+Olha só, backlog pro sistema , anote por favor: sistema deve apresentar resumo pro usuários/agente e ser a opção de solicitar a integra
+[Fim da fala do líder]
+
+Backlog registrado: sistema deve apresentar um resumo (para usuário humano e/ou agente IA) e oferecer a opção de solicitar o conteúdo na íntegra. Ainda sem detalhamento de onde se aplica (tela, módulo, contexto) — pendente de refinamento com o líder antes de seguir para UX/Arquiteto.
