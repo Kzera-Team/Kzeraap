@@ -163,6 +163,10 @@ Fluxo correto:
 3. Todo commit vai para esse branch
 4. Merge em `desenvolvimento` somente via PR, nunca direto
 
+### Referência de recuperação antes de apagar
+
+Antes de apagar qualquer branch remota, criar uma referência apontando pro mesmo commit (convenção `arquivado/<nome-original>-<data>`) e só apagar o original depois dela confirmada no remoto. O registro dessa referência (branch original, SHA, data, motivo) não entra na memória principal do agente — segue a mesma lógica de "Memória por agente": só o que for muito importante vai direto na memória; o registro completo fica num arquivo de índice dedicado (ex.: `docs/memoria/arquivos_relevantes/branches-arquivadas.md`, ou equivalente por frente/papel), e a memória principal do agente guarda apenas um ponteiro pra esse arquivo.
+
 ### Base de trabalho, leitura autônoma e atualização do ambiente
 
 Todos os agentes podem ler, inspecionar, diagnosticar e analisar o projeto autonomamente a partir de `desenvolvimento`.
@@ -206,6 +210,10 @@ Ao reportar um achado relevante no chat, o agente grava esse achado em arquivo (
 ### Evidência de investigação
 
 Evidência de investigação (achados de queda de instância, manipulação, inconsistência técnica) fica em `docs/memoria/arquivos_relevantes/`, uma pasta por caso (`AAAA-MM-DD_<caso>/registro.md` + `hashes.sha256` quando houver arquivo binário), indexada em `INDICE.md`. Convenção e modelo em `_MODELO_CASO/`. Adicionar é livre para qualquer agente; excluir ou reclassificar exige autorização explícita do líder.
+
+### Resumo contínuo para reduzir tokens
+
+Consumo de token na inicialização da sessão compete direto com o token disponível pro trabalho real — cada papel mantém o próprio arquivo de memória enxuto de forma contínua, não só numa limpeza retroativa. Ao registrar algo novo, avaliar se é essencial pro resumo operacional do topo do arquivo ou se é detalhe: o que for detalhe/histórico vai direto para `docs/memoria/historico/<papel>/NN.md` (mesma proteção de só-acréscimo do arquivo original, com preâmbulo de identificação e conferência por `diff` de que a cópia é literal antes de reescrever o principal). O arquivo principal (`docs/memoria/<papel>.md`) fica só com o resumo operacional e o que for mais importante; o histórico preserva tudo, íntegro, sem exigir leitura na inicialização. A mesma lógica vale para `docs/governanca/*.md` extensos, com equivalente em `docs/governanca/historico/<nome>/NN.md`.
 
 ---
 
