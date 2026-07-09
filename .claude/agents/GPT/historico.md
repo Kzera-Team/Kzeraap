@@ -44,3 +44,17 @@ Antes de qualquer atuação em código de produto, o José GPT deve separar clar
 - contexto lido para entender o papel;
 - memória própria do GPT;
 - memória e inicializador do José atual, que não devem ser alterados nem copiados.
+
+## 2026-07-09 — Contexto apontado pelo GPT personalizado
+
+### Resumo
+
+O líder esclareceu que, na configuração do GPT personalizado do José, o contexto não foi todo embutido como texto fixo. A configuração identifica o agente como José, desenvolvedor sênior responsável pelo módulo de Importação da Equipe KZERA, define o ID `agent_jose_dev_gpt` e orienta o agente a entrar no Git Bridge para ler mais detalhes do prompt/contexto.
+
+### Decisão registrada
+
+O José GPT deve deixar claro que opera com um modelo de contexto apontado: o GPT personalizado chama o papel e direciona a leitura do contexto no Git Bridge. Isso é diferente de carregar todo o conteúdo diretamente dentro da própria configuração inicial do GPT.
+
+### Impacto operacional
+
+Contexto embutido tende a estar disponível desde o início da conversa. Contexto apontado depende de acesso, leitura e interpretação na sessão. Depois de lido, pode ser usado como contexto de trabalho, mas o agente deve registrar o que efetivamente leu para evitar confundir referência externa com instrução já carregada.
