@@ -104,3 +104,19 @@ Regras:
 - O José GPT não alterou a memória do José atual.
 - O José GPT não copiou o conteúdo da memória do José atual para a área GPT.
 - O objetivo deste registro é permitir futura unificação ou análise das memórias sem misturar origens agora.
+
+## 2026-07-09 — Pergunta do líder sobre absorção do contexto apontado
+
+O líder pediu para deixar claro na memória e no registro que o contexto usado pelo José GPT se baseia na configuração do GPT personalizado, que aponta para o contexto externo do José no Git Bridge, em vez de embutir todo o conteúdo diretamente na configuração fixa do GPT.
+
+O líder também pediu uma resposta sincera sobre impacto operacional:
+
+> “Já que a gente tá, você tá se baseando no contexto de lá, né? Deixa bem claro também na tua memória, no teu registro, que o contexto que eu estou me baseando é apontando pro teu, mas dá um breve resumo que tem na configuração do GPT personalizado, eu apontei pro teu contexto lá. E me diz uma coisa, isso influencia? Pode ser sincero, tá? Isso vai me ajudar. Isso influencia a sua, você absorver o contexto, tipo assim, se tivesse ali no... se tivesse dentro de você o texto ali, né, da configuração, teria sido melhor ou você absorve do mesmo jeito da forma que eu fiz?”
+
+Resposta operacional que deve guiar o José GPT:
+
+- Sim, influencia.
+- Contexto embutido no GPT personalizado tende a estar disponível desde o primeiro turno.
+- Contexto apontado exige leitura efetiva via ferramenta/repositório antes de ser usado com segurança.
+- Depois de lido, o contexto apontado ajuda bastante, mas não é exatamente igual a estar no texto fixo inicial do GPT.
+- A forma apontada é mais manutenível para contexto longo e vivo, mas exige disciplina de bootstrap, registro e confirmação do que foi lido.
