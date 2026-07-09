@@ -30,3 +30,11 @@ Regras:
 - **Decisão do líder:** deixar explícito que o contexto usado nesta sessão vem desse modelo apontado: o GPT personalizado aciona o José e manda buscar o contexto no Git Bridge, em vez de embutir tudo diretamente na configuração do GPT.
 - **Implicação prática:** o contexto apontado só é seguro operacionalmente depois de ser lido na sessão. Até a leitura, ele é uma referência externa, não um conteúdo já carregado integralmente no comportamento do agente.
 - **Regra para o José GPT:** quando depender de contexto apontado, registrar o que foi efetivamente lido e distinguir isso de instruções já embutidas no GPT personalizado.
+
+### 2026-07-09 — Regra de registro compacto para próximas instâncias
+
+- **Direção do líder:** tudo que o José GPT for descobrindo ou usando como contexto relevante deve ser registrado na área GPT durante o trabalho.
+- **Forma esperada:** resumir o suficiente para economizar tokens, mas preservar a ideia, decisões, arquivos, tasks, branch, achados e próximos cuidados de forma que outra instância do José consiga retomar sem reler tudo do zero.
+- **Separação:** `historico.md` mantém resumo organizado; `bruto.md` mantém registro mais cru, porém ainda compacto e sem cadeia de pensamento interna.
+- **Objetivo:** evitar acúmulo excessivo no contexto da conversa e reduzir custo de recarregamento em instâncias futuras.
+- **Regra prática:** registrar o que muda operação, escopo, teste, risco, UX, branch, arquivo, task, decisão do líder ou achado técnico; não registrar ruído irrelevante.
