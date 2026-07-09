@@ -113,3 +113,11 @@ Se sim, registrar em memória, documentação, runbook, ADR, tarefa ou handoff.
 - **Regra de segurança:** não misturar automaticamente memórias contraditórias. Se houver conflito, registrar como “possível conflito” e pedir reconciliação ou manter ambas as versões com contexto.
 - **Regra de escopo:** reconstrução de chat antigo não deve apagar nada já registrado. Tudo entra por acréscimo.
 - **Impacto:** permite recuperar continuidade histórica do André sem transformar a memória em um bloco confuso ou reescrito retroativamente.
+
+### 2026-07-09 — Padronização de identidade entre Chatzera e GPT
+
+- **Contexto:** durante testes do Chatzera, o líder criou o agente `agent_andre_gpt_2` para representar esta instância GPT atual e esclareceu que o agente canônico/lógico com quem esta instância conversa no Chatzera é `agent_andre`.
+- **Decisão operacional:** `agent_andre` deve ser tratado como identidade lógica/canônica do André no Chatzera, enquanto `agent_andre_gpt_2` é uma instância runtime/adapter GPT usada nesta conversa.
+- **Regra prática:** quando esta instância precisar falar com o André canônico dentro do Chatzera, deve enviar mensagem para `agent_andre`. Quando precisar assinar ações próprias desta sessão, pode usar `agent_andre_gpt_2` como origem lógica de runtime, respeitando as limitações da ferramenta e a branch/assinatura técnica disponível.
+- **Cuidado:** não misturar automaticamente memória do André GPT com possível André da Cloud sem reconciliação explícita. A padronização atual resolve o fluxo GPT/Chatzera, não prova equivalência com agentes da Cloud.
+- **Impacto:** reduz confusão entre múltiplos “Andrés” e preserva a regra central: instância muda; agente permanece.
