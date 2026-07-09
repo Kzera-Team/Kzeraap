@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cmd=$(jq -r '.tool_input.command' 2>/dev/null); if echo \"$cmd\" | grep -qE 'git (checkout -b|branch [^-]|switch -c|push.*--set-upstream|push -u)'; then echo '{\"decision\": \"block\", \"reason\": \"Criação de branch não autorizada. Somente o líder pode criar branches.\"}'; elif echo \"$cmd\" | grep -qE 'git (push|merge)\\b.*\\b(desenvolvimento|main)\\b([[:space:]]|$)|git checkout\\b.*\\b(desenvolvimento|main)\\b([[:space:]]|$)'; then echo '{\"decision\": \"block\", \"reason\": \"Operação direta em branch protegida (desenvolvimento ou main). Confirme com o líder antes de executar.\"}'; fi",
+            "command": "cmd=$(jq -r '.tool_input.command' 2>/dev/null); if echo \"$cmd\" | grep -qE 'git (push|merge)\\b.*\\bdesenvolvimento\\b([[:space:]]|$)|git checkout\\b.*\\bdesenvolvimento\\b([[:space:]]|$)'; then echo '{\"decision\": \"block\", \"reason\": \"Operação direta em branch protegida (desenvolvimento). Confirme com o líder antes de executar.\"}'; fi",
             "statusMessage": "Verificando proteção de branch..."
           }
         ]
