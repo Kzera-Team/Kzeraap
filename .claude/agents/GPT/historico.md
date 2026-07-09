@@ -85,3 +85,17 @@ Foi cadastrada no Chatzera a task `task_8e534a7e`, intitulada `Plano de testes �
 ### Observação
 
 Nenhum código de produto foi alterado durante esta ação. A entrega foi apenas o cadastro do plano de testes como task no Chatzera.
+
+## 2026-07-09 — Diretriz de registro compacto e retomada rápida
+
+### Resumo
+
+O líder orientou que tudo que o José GPT for pegando durante a investigação deve ser registrado na área GPT, mas de forma resumida e útil. A finalidade é reduzir tokens, evitar acúmulo excessivo de contexto na conversa e permitir que próximas instâncias do José retomem o trabalho sem reler todos os arquivos e mensagens.
+
+### Regra operacional
+
+- Registrar achados, decisões, tasks, branches, arquivos, riscos, critérios de aceite e próximos cuidados.
+- Preferir resumo operacional a transcrição completa.
+- Usar `historico.md` para síntese organizada.
+- Usar `bruto.md` para registro mais cru, ainda filtrado e sem cadeia de pensamento interna.
+- Não registrar ruído que não ajude uma próxima instância.
