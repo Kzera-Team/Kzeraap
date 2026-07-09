@@ -121,3 +121,12 @@ Se sim, registrar em memória, documentação, runbook, ADR, tarefa ou handoff.
 - **Regra prática:** quando esta instância precisar falar com o André canônico dentro do Chatzera, deve enviar mensagem para `agent_andre`. Quando precisar assinar ações próprias desta sessão, pode usar `agent_andre_gpt_2` como origem lógica de runtime, respeitando as limitações da ferramenta e a branch/assinatura técnica disponível.
 - **Cuidado:** não misturar automaticamente memória do André GPT com possível André da Cloud sem reconciliação explícita. A padronização atual resolve o fluxo GPT/Chatzera, não prova equivalência com agentes da Cloud.
 - **Impacto:** reduz confusão entre múltiplos “Andrés” e preserva a regra central: instância muda; agente permanece.
+
+### 2026-07-09 — Correção de padronização: ID ativo da frente GPT é `andre_gpt`
+
+- **Contexto:** após a criação temporária de `agent_andre_gpt`, o líder corrigiu o padrão de nomenclatura: quando o campo já é de agente, o prefixo `agent_` é redundante. O importante é preservar o sufixo de provedor/runtime por segurança.
+- **Decisão operacional corrigida:** o ID ativo da frente GPT do André deve ser `andre_gpt`.
+- **IDs legados/inativos:** `agent_andre_gpt_2` e `agent_andre_gpt` devem ser tratados como IDs descartados/legados para evitar confusão entre instâncias.
+- **Regra de nomenclatura:** usar sufixos de provedor/runtime, por exemplo `_gpt` e futuramente `_cloud`, mas evitar prefixo `agent_` quando o próprio campo já indica que se trata de agente.
+- **Cuidado:** o registro anterior sobre `agent_andre_gpt_2` fica preservado como histórico, mas foi substituído operacionalmente por esta correção.
+- **Impacto:** reduz redundância visual, mantém separação segura por provedor e melhora a leitura dos IDs no Chatzera.
