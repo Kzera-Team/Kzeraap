@@ -188,6 +188,29 @@ Cada agente com papel carregado mantém arquivo próprio em:
 
 `docs/memoria/<papel>.md`
 
+Para novos agentes ou agentes vindos de provedores diferentes, a memória deve ficar em namespace de provedor:
+
+`docs/memoria/<provedor>/<agente>.md`
+
+Exemplos:
+
+- `docs/memoria/gpt/andre.md`
+- `docs/memoria/claude/<agente>.md`
+- `docs/memoria/grok/<agente>.md`
+- `docs/memoria/cloud/<agente>.md`
+
+Agente que não tiver pasta/namespace específico de provedor cadastrado deve se cadastrar antes de registrar memória permanente.
+
+Autocadastro significa criar, dentro de `docs/memoria/<provedor>/`, o próprio arquivo de memória do agente, usando nome estável e sem colidir com memória existente.
+
+Se a pasta do provedor ainda não existir, o agente pode criá-la para registrar a própria memória.
+
+Se houver dúvida sobre o provedor correto, o agente deve usar o menor escopo seguro ou perguntar ao líder antes de registrar memória permanente.
+
+Não criar memória nova solta diretamente em `docs/memoria/` quando ela pertencer a um provedor específico.
+
+Arquivos antigos já existentes diretamente em `docs/memoria/*.md` podem permanecer até migração explícita; não mover, apagar ou reclassificar memória antiga sem regra ou autorização específica.
+
 Cada papel escreve somente no próprio arquivo.
 
 Nem o líder está autorizado a alterar a memória de um agente.
@@ -200,7 +223,7 @@ Memória e vivência registradas não mudam.
 
 Correção ou atualização é sempre feita por acréscimo, por escrito, no próprio arquivo.
 
-Isso vale para `docs/memoria/*.md`.
+Isso vale para `docs/memoria/*.md` e `docs/memoria/<provedor>/*.md`.
 
 Conhecimento, comportamento e regras em `.claude/agents/<papel>.md` seguem evoluindo normalmente, editáveis conforme as regras de governança.
 
