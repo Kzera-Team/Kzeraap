@@ -120,3 +120,49 @@ Resposta operacional que deve guiar o José GPT:
 - Contexto apontado exige leitura efetiva via ferramenta/repositório antes de ser usado com segurança.
 - Depois de lido, o contexto apontado ajuda bastante, mas não é exatamente igual a estar no texto fixo inicial do GPT.
 - A forma apontada é mais manutenível para contexto longo e vivo, mas exige disciplina de bootstrap, registro e confirmação do que foi lido.
+
+## 2026-07-09 — Criação de task com plano de testes da Importação de Vendas/Transações
+
+O líder pediu:
+
+> “Eu preciso que você leia as tasks, mas não é você que vai fazer. Eu quero só que você faça um plano de teste das vendas, aliás, da importação de vendas, que já tá pronto, parece. Só falta terminar de testar. E daí você vai montar esse plano de testes e aí você cadastra aqui no sistema como task. Eu não sei como é que tá. Pra você ter noção da loucura, eu nem sei como funciona esse sistema direito. Ele nasceu para apagar o fogo do sistema aqui de vendas, né, do caseira. Às vezes, se os nomes dos sistemas saírem diferente, tenta entender pela pronúncia, porque eu fico falando pelo celular, pelo microfone. Aí às vezes sai erradinho.”
+
+O José GPT leu as tasks atuais no Chatzera e identificou como relevantes:
+
+- `task_317b933e`: Kzeraap — Importação de Vendas/Transações — branch limpa e fechamento funcional.
+- `task_9616bc94`: José — Portar miolo funcional da Importação de Vendas/Transações.
+
+O José GPT leu arquivos da branch `agents/agent_maxzera_gpt_fone/pr-104-importacao-limpa` para montar o plano sem alterar código:
+
+- `src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts`
+- templates de importação de transações/financeiro
+- `src/application/importacao/ListarStagingImportacaoUseCase.ts`
+- `src/application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase.ts`
+- `docs/mockups/importar_transacoes.html`
+
+Achado observado durante leitura:
+
+- A tela de upload menciona CSV/XLS/XLSX, mas o código observado aceita apenas CSV/TSV/TXT. Isso foi colocado como item de verificação no plano, não como correção.
+
+O líder complementou requisito de UX/mockup:
+
+> “Em alguma branch também tem os arquivos recentes de tela, dos mockups no caso. Assim, um dos requisitos que eu não sei se tá mapeado, mas um dos requisitos é que eu preciso, o mockup tem que ser usado como o UX mandou. Ele não pode ser reaproveitado. Aliás, ele não pode ser pegado, repartido, não. Tem que ser aquele mockup com aquele HTML. O máximo que vai fazer, aliás, o mínimo, né, que se espera é que tire o CSS de dentro e separe e só use para ajustar o...”
+
+Depois completou:
+
+> “..A integração com JS”
+
+O José GPT incorporou no plano que o mockup aprovado deve ser usado como base integral de HTML; o ajuste aceitável é separar CSS quando necessário e fazer integração com JS/TypeScript preservando estrutura e UX.
+
+Task cadastrada no Chatzera:
+
+- ID: `task_8e534a7e`
+- Projeto: `Kzeraap`
+- Título: `Plano de testes — Importação de Vendas/Transações histórica`
+- Status: `backlog`
+- Prioridade: `high`
+- Owner: `agent_reviewer`
+- Reviewer: `agent_maxzera_gpt_fone`
+- Created by: `agent_jose_dev_gpt`
+
+Nenhum código de produto foi alterado nessa ação.
