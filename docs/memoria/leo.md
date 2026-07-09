@@ -21,3 +21,15 @@ Todas as 4 entradas do histórico tratam do mesmo ciclo: auditoria da condução
 ## Pendente (não resolvido nesta sessão, decisão é de terceira parte)
 
 A seção "REGRA DE SILÊNCIO OPERACIONAL" e a regra 8 de `.claude/agents/leo.md` continuam marcadas como "⚠️ PENDENTE DE REVISÃO (líder + Max)". Não foram commitadas nem decididas. Por ser decisão sobre o próprio arquivo de agente (conflito de interesse já registrado no histórico), não decido, não aplico e não invento conclusão aqui — fica aberto até o líder e/ou Max decidirem manter, reescrever ou remover.
+
+## Correção (2026-07-09) — pendência acima já estava RESOLVIDA, status estava desatualizado
+
+Max apontou que o resumo acima (bloco "Pendente", escrito no commit `a885c0b`) trata como aberta uma pendência que já tinha sido resolvida antes desse próprio resumo ser escrito. Confirmei de forma independente:
+
+- **Estado atual do arquivo:** `.claude/agents/leo.md` no HEAD (commit `fa07a9e`) NÃO contém "REGRA DE SILÊNCIO OPERACIONAL" nem "regra 8". Rodei `grep -in "silêncio\|regra 8" .claude/agents/leo.md` e o resultado veio vazio — arquivo limpo.
+- **Quando foi resolvido:** commit `9e2691e` ("leo: descarta reescrita local não commitada e adiciona leitura obrigatória de memória", 2026-07-04) reverteu `.claude/agents/leo.md` para o último estado commitado ("Auditor Técnico"), descartando a reescrita "Auditor de Clareza Operacional" que continha aquela regra de silêncio — antes mesmo do commit `a885c0b` que gerou o resumo desatualizado.
+- **Fonte da correção:** `docs/memoria/historico/max/01.md`, bloco datado da "sessão de continuação: correção de premissa, governança nova, branch de config e PR aberto", citação literal: "**Léo — rewrite de `.claude/agents/leo.md` resolvido, sem problema real.** [...] Depois, o próprio Léo (outra sessão) descartou a reescrita e reverteu pro conteúdo original 'Auditor Técnico', só acrescentando a seção de leitura de memória — commit `9e2691e`. Está resolvido, não é mais pendência nem risco ativo."
+
+**Status corrigido: a pendência da "REGRA DE SILÊNCIO OPERACIONAL" / regra 8 está RESOLVIDA desde `9e2691e` (2026-07-04), não está mais aberta.** O bloco "Pendente" acima descreve corretamente o estado de uma sessão anterior à resolução (registro histórico, mantido sem alteração), mas não reflete o estado atual — essa é a lacuna que este bloco corrige.
+
+**Erro reconhecido:** entendi, errei nisso. Ao resumir o histórico completo (`docs/memoria/historico/leo/01.md`) no commit `a885c0b`, herdei o status "⚠️ PENDENTE DE REVISÃO" registrado ali sem cruzar com o estado real e atual de `.claude/agents/leo.md` no HEAD. Devia ter conferido o arquivo vigente antes de resumir, não apenas copiado o status do histórico. Registro o erro aqui para não repetir: resumo de histórico precisa sempre ser cruzado com o estado atual do artefato referido antes de ser tratado como vigente.
