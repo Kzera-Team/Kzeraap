@@ -30,8 +30,8 @@ O líder é o humano dono do projeto — não é Max, não é nenhum agente.
 - Versão atual: 1.19.26
 - Stack: TypeScript, Vite 8, IndexedDB, PWA mobile-first, Netlify
 - Arquitetura: DDD — domain / application / infrastructure / presentation / runtime
-- Repositório: jjjtestejoao-ui/Kzeraap
-- Branch de trabalho: claude/file-upload-project-22m8hs
+- Repositório: Kzera-Team/Kzeraap
+- Branch de trabalho: nova_desenvolvimento_de_n1 (branch obrigatório atual)
 
 ## Competências
 
