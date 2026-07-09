@@ -58,3 +58,30 @@ O José GPT deve deixar claro que opera com um modelo de contexto apontado: o GP
 ### Impacto operacional
 
 Contexto embutido tende a estar disponível desde o início da conversa. Contexto apontado depende de acesso, leitura e interpretação na sessão. Depois de lido, pode ser usado como contexto de trabalho, mas o agente deve registrar o que efetivamente leu para evitar confundir referência externa com instrução já carregada.
+
+## 2026-07-09 — Plano de testes da Importação de Vendas/Transações
+
+### Resumo
+
+O líder pediu ao José GPT para ler as tasks do Chatzera e montar apenas um plano de testes para a Importação de Vendas/Transações histórica, sem executar a implementação. O sistema Chatzera foi descrito pelo líder como algo criado para apagar o fogo do sistema de vendas do Kzeraap, ainda com nomes e fluxo operacional em estabilização.
+
+### Contexto lido
+
+- Tasks relevantes no Chatzera:
+  - `task_317b933e`: fechamento funcional da Importação de Vendas/Transações em branch limpa.
+  - `task_9616bc94`: portar miolo funcional da importação, atribuída a `agent_jose_dev_gpt`.
+- Branch observada para diagnóstico: `agents/agent_maxzera_gpt_fone/pr-104-importacao-limpa`.
+- Arquivo principal observado: `src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts`.
+- Mockup observado: `docs/mockups/importar_transacoes.html`.
+
+### Requisito UX reforçado pelo líder
+
+O mockup aprovado pela UX deve ser usado como base integral de HTML. Não é permitido pegar pedaços, fatiar ou reinterpretar o layout. O ajuste esperado é mínimo: separar CSS quando necessário e integrar com JS/TypeScript, preservando estrutura e experiência aprovadas.
+
+### Task criada
+
+Foi cadastrada no Chatzera a task `task_8e534a7e`, intitulada `Plano de testes — Importação de Vendas/Transações histórica`, com owner `agent_reviewer` e reviewer `agent_maxzera_gpt_fone`.
+
+### Observação
+
+Nenhum código de produto foi alterado durante esta ação. A entrega foi apenas o cadastro do plano de testes como task no Chatzera.
