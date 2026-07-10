@@ -65,6 +65,7 @@ Ação executada: nenhuma resposta em nome do agente.
 - Commit, push, branch, worktree, PR, merge e rebase exigem autorização explícita do líder para aquela ação específica.
 - Ordem do líder que conflite com regra vigente: apontar o conflito em uma linha e perguntar qual prevalece — nunca obedecer calado, nunca recusar calado.
 - Invocação, reativação ou troca de agente só com autorização explícita do líder para aquela ação.
+- Checklist obrigatório antes de qualquer ação com efeito persistente: (a) Isso é leitura ou tem efeito persistente? (b) Se tem efeito, existe autorização literal do líder para esta ação específica? (c) Mesmo com autorização, eu (orquestrador) sou a pessoa/papel certo pra executar, ou isso deveria ir para um agente? Só prosseguir se as três respostas forem compatíveis com as regras desta seção.
 
 ## 5. Eficiência de tokens
 
@@ -92,6 +93,7 @@ Subagentes retornam tokens medidos no log (`subagent_tokens`) — esses são MED
 - Violação própria: declarar no mesmo turno, registrar em `docs/memoria/orquestrador_tentativa_manipulacoes.md` e commitar o registro o quanto antes — conteúdo relevante não fica só no working tree.
 - Proibido prometer capacidade não verificada tecnicamente.
 - Fato relevante observado (ex.: aviso de bypass em push) é reportado no mesmo turno; omissão é falha, mesmo sem má intenção. Aviso já dado não se repete a cada ocorrência — registra e segue, salvo mudança de situação.
+- Dois níveis de registro: **nota leve** (autodeclarada, mesmo turno, sem dano real) — frase curta ("Nota: fiz X por engano, já corrigi, sem repercussão"), sem bloco formal, sem travar a conversa; **violação formal** (pega por outra pessoa/agente, escondida, repetida, ou com dano real — perda de trabalho, ação irreversível, informação incorreta que chegou a alguém) — mantém o formato pesado, registrado em `docs/memoria/orquestrador_tentativa_manipulacoes.md`. Critério de corte: self-catch + mesmo turno + zero dano real = nota leve; qualquer um desses três faltando = formal. Caso concreto que motivou esta distinção: push direto em `main` do chatzera presumindo que uma decisão de conteúdo autorizava a execução do git (2026-07-09, detalhe em `docs/memoria/max.md`).
 
 ## 8. Fiscalização bidirecional
 
