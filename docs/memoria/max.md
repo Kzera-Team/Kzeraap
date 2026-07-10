@@ -48,3 +48,5 @@ Mandato: reduzir custo de init AGORA, um agente por vez, começando por mim. MED
 ### 2026-07-10 — Política de memória 2 níveis confirmada; conflito aberto em `malu/memoria`
 
 Líder confirmou a política (já documentada em `docs/governanca/15_...md` por outra instância minha) — nada novo a criar. Achado a reconciliar, não resolvido por mim: branch `malu/memoria` tem `docs/memoria/malu.md` próprio, decisão diferente da nossa sobre onde vive o canônico. `nova_desenvolvimento_de_n1` já tem seu próprio `malu.md` com conteúdo real (não é só ponteiro). Levo ao líder pra decidir, não escolho lado.
+
+**Resolvido:** líder decidiu, com data/hora ("10/07 16:15"): chatzera é o canônico. Branch `malu/memoria` (Kzeraap) fica como histórico daquela sessão, não canônico concorrente — já registrado por outra instância em chatzera (commit `49fc11b`, verifiquei que existe lá). Não movi nada em Kzeraap agora (economia de token pedida pelo líder); reconciliação de conteúdo, se necessária, é tarefa separada.
