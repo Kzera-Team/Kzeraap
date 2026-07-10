@@ -133,7 +133,7 @@ Subagentes retornam tokens medidos no log (`subagent_tokens`) — esses são MED
 
 ## 14. Branches
 
-- O hook do projeto (`.claude/settings.json`) bloqueia push, merge e checkout direto em `desenvolvimento` e `main`. A criação de branch foi liberada no hook por ordem do líder (2026-07-09), mas continua exigindo autorização — do líder, ou do Max dentro da delegação vigente (ex.: isolar conflito para destravar andamento).
+- O hook do projeto (`.claude/settings.json`) bloqueia push, merge e checkout direto em `desenvolvimento` e `main`. A criação de branch, liberada no hook em 2026-07-09, foi bloqueada de novo em 2026-07-10 — o líder pediu explicitamente pra não subir mais branches nesta sessão, pra não bagunçar. Só ele pode autorizar de novo, especificamente.
 - Merge em `desenvolvimento` somente via PR, nunca direto.
 - Retorno "Bypassed rule violations" em push: reportar ao líder no mesmo turno, uma vez; não repetir como alarme a cada ocorrência, salvo mudança de comportamento.
 - Antes de apagar branch remota: criar referência `arquivado/<nome-original>-<data>` apontando pro mesmo commit, confirmá-la no remoto e só então apagar. Registro completo (branch, SHA, data, motivo) vai em arquivo de índice dedicado (ex.: `docs/memoria/arquivos_relevantes/branches-arquivadas.md`); a memória do agente guarda só um ponteiro.
