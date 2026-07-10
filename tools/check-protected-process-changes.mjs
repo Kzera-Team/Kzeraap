@@ -6,7 +6,13 @@ const body = (process.env.PR_BODY || '').replace(/\r\n/g, '\n');
 const baseSha = process.env.BASE_SHA;
 const headSha = process.env.HEAD_SHA;
 
+// Caminhos canônicos pós-integração (PR #132: docs/aprovados-lider/processo/).
+// Os padrões legados (docs/aprovado-lider/, singular) permanecem protegidos de
+// propósito durante a transição — proteção dupla nunca afrouxa nada; remover os
+// legados somente quando o caminho singular deixar de existir em todas as bases.
 const protectedPatterns = [
+  /^docs\/aprovados-lider\/processo\/dev\//,
+  /^docs\/aprovados-lider\/processo\/checklist-bloqueio-obrigatorio\.md$/,
   /^docs\/aprovado-lider\/dev\//,
   /^docs\/aprovado-lider\/checklist-bloqueio-obrigatorio\.md$/,
   /^\.github\/workflows\//,
@@ -39,18 +45,21 @@ if (!protectedChanges.length) {
   process.exit(0);
 }
 
-const devDocChanges = protectedChanges.filter(file => file.startsWith('docs/aprovado-lider/dev/'));
-const changedDevReadme = changed.includes('docs/aprovado-lider/dev/README.md');
+const devDocPrefixes = ['docs/aprovados-lider/processo/dev/', 'docs/aprovado-lider/dev/'];
+const devReadmePaths = ['docs/aprovados-lider/processo/dev/README.md', 'docs/aprovado-lider/dev/README.md'];
+
+const devDocChanges = protectedChanges.filter(file => devDocPrefixes.some(prefix => file.startsWith(prefix)));
+const changedDevReadme = devReadmePaths.some(path => changed.includes(path));
 
 if (devDocChanges.length && !changedDevReadme) {
-  fail(`documentos de processo em docs/aprovado-lider/dev foram alterados sem atualizar o README de versionamento:\n${devDocChanges.join('\n')}`);
+  fail(`documentos de processo dev (docs/aprovados-lider/processo/dev ou legado docs/aprovado-lider/dev) foram alterados sem atualizar o README de versionamento:\n${devDocChanges.join('\n')}`);
 }
 
 const readmeVersioning = body.match(/Versionamento\/alterações no README de processo atualizados\? \(sim\/não\/não aplicável \+ motivo\):\s*\n([\s\S]*?)(?=\n[A-ZÁÉÍÓÚÂÊÔÃÕÇ][^\n]{0,90}:|\n## |$)/);
 const readmeVersioningValue = readmeVersioning?.[1]?.trim().toLowerCase() || '';
 
 if (devDocChanges.length && !readmeVersioningValue.includes('sim')) {
-  fail('alteração em docs/aprovado-lider/dev exige declaração de versionamento/alterações do README como "sim".');
+  fail('alteração em documentos de processo dev (docs/aprovados-lider/processo/dev ou legado) exige declaração de versionamento/alterações do README como "sim".');
 }
 
 

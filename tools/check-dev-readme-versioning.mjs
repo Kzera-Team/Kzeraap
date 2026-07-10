@@ -1,7 +1,21 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 
-const readmePath = 'docs/aprovado-lider/dev/README.md';
+// Caminho canônico pós-integração (PR #132: docs/aprovados-lider/processo/).
+// O caminho legado (docs/aprovado-lider/, singular) fica como fallback TEMPORÁRIO
+// para a janela de transição até o #132 estar mesclado em todas as bases ativas;
+// remover o fallback depois disso (não é caminho válido para conteúdo novo).
+const readmeCandidates = [
+  'docs/aprovados-lider/processo/dev/README.md',
+  'docs/aprovado-lider/dev/README.md'
+];
+const readmePath = readmeCandidates.find(candidate => fs.existsSync(candidate));
+
+if (!readmePath) {
+  console.error(`Versionamento do README inválido: README de processo não encontrado. Caminhos verificados: ${readmeCandidates.join(', ')}`);
+  process.exit(1);
+}
+
 const text = fs.readFileSync(readmePath, 'utf8').replace(/\r\n/g, '\n');
 
 function fail(message) {
