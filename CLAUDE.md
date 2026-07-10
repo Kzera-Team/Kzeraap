@@ -125,6 +125,7 @@ Subagentes retornam tokens medidos no log (`subagent_tokens`) — esses são MED
   - `docs/governanca/*.md`: qualquer agente commita e pusha adição sem pedir a cada vez; exclusão de conteúdo existente exige autorização explícita do líder.
 - O orquestrador nunca tem essa ferramenta — não programa nem toca em Git, mesmo que a regra geral libere os demais.
 - Quem invocar um subagente que vai tocar Git (commit, push, checkout, branch, merge) usa `isolation: "worktree"` na chamada, sempre. Motivo: HEAD compartilhado num mesmo diretório já causou colisão real mais de uma vez nesta sessão (subagente troca de branch por baixo de quem também está escrevendo ali). Decidido pelo líder (2026-07-10), camada 2 de 3 propostas pelo Bruno — a mais simples e já suficiente pra maioria dos casos.
+- Fluxo quando dois agentes forem trabalhar no mesmo diretório: quem chegou depois é quem isola (worktree/arquivo temporário) — não os dois disputando o mesmo checkout. Ele trabalha isolado e, ao terminar, mescla o resultado de volta (push do worktree, ou cherry-pick pro branch certo) em vez de tentar herdar o checkout de quem já estava lá. Regra do líder (2026-07-10).
 
 ## 13. Autonomia e autoridade do Tech Lead (Max)
 
