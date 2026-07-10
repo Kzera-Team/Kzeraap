@@ -1,0 +1,30 @@
+<!-- KZERA · 08 — Inputs · componente.html -->
+<!-- Requer: componente.css -->
+
+<label class="kz-field">
+  <span class="kz-field-label">Nome do perfil</span>
+  <input class="kz-field-input" type="text" placeholder="Digite o nome do perfil" autocomplete="off">
+</label>
+
+<label class="kz-field">
+  <span class="kz-field-label">Valor recebido</span>
+  <input class="kz-field-input" type="text" inputmode="decimal" placeholder="0,00">
+</label>
+
+<label class="kz-field">
+  <span class="kz-field-label">Quantidade</span>
+  <input class="kz-field-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0">
+  <span class="kz-field-help">Informe a quantidade que será vendida.</span>
+</label>
+
+<label class="kz-field kz-field--error">
+  <span class="kz-field-label">Quantidade</span>
+  <input class="kz-field-input" type="number" inputmode="decimal" value="20" aria-invalid="true" aria-describedby="erro-quantidade">
+  <span class="kz-field-error" id="erro-quantidade">Você informou 20 un, mas só existem 3 un em estoque.</span>
+</label>
+
+<label class="kz-field kz-field--success">
+  <span class="kz-field-label">Código do item</span>
+  <input class="kz-field-input" type="text" value="PSY-60G" aria-describedby="ok-codigo">
+  <span class="kz-field-success" id="ok-codigo">Item encontrado.</span>
+</label>

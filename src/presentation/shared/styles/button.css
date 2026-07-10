@@ -1,0 +1,154 @@
+/* KZERA · Botões — button.css */
+
+.kz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 8px);
+  padding: 0 var(--space-4, 16px);
+  height: 48px;
+  min-width: 120px;
+  border-radius: var(--radius-full, 9999px);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: var(--t-base, 0.875rem);
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity .12s, transform .08s, background .12s;
+  white-space: nowrap;
+  width: 100%;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kz-btn:active {
+  transform: scale(0.97);
+  opacity: 0.88;
+}
+
+.kz-btn:disabled,
+.kz-btn[aria-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* Tamanho automático (não full-width) */
+.kz-btn--auto {
+  width: auto;
+}
+
+/* ─── Variantes ─────────────────────────────── */
+
+.kz-btn--primary {
+  background: var(--kz-light-accent, #7B4DFF);
+  color: #fff;
+  box-shadow: var(--shadow-accent, 0 4px 16px rgba(123,77,255,.30));
+}
+
+.kz-btn--secondary {
+  background: transparent;
+  color: var(--kz-light-accent, #7B4DFF);
+  border: 1.5px solid var(--kz-light-accent, #7B4DFF);
+  box-shadow: none;
+}
+
+.kz-btn--ghost {
+  background: transparent;
+  color: var(--kz-light-accent, #7B4DFF);
+  border: none;
+  box-shadow: none;
+  height: 44px;
+  min-width: unset;
+}
+
+/* Ação crítica — 56px, vermelho */
+.kz-btn--danger {
+  background: #DC2626;
+  color: #fff;
+  box-shadow: var(--shadow-danger, 0 4px 16px rgba(220,38,38,.22));
+  height: 56px;
+}
+
+/* ─── Botão ícone (sem texto) ────────────────── */
+
+.kz-btn--icon {
+  width: 48px;
+  min-width: 48px;
+  padding: 0;
+}
+
+/* Ícone pequeno — fechar, voltar (44×44px) */
+.kz-btn--icon.kz-btn--sm {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+}
+
+/* ─── Grupo de botões ────────────────────────── */
+
+.kz-btn-group {
+  display: flex;
+  gap: var(--space-3, 12px);
+}
+
+.kz-btn-group .kz-btn {
+  flex: 1;
+}
+
+/* ─── Hover (apenas pointer devices) ─────────── */
+
+@media (hover: hover) {
+  .kz-btn--primary:not(:disabled):not([aria-disabled="true"]):hover {
+    opacity: 0.88;
+  }
+  .kz-btn--secondary:not(:disabled):not([aria-disabled="true"]):hover,
+  .kz-btn--ghost:not(:disabled):not([aria-disabled="true"]):hover {
+    background: rgba(123,77,255,.06);
+  }
+  .kz-btn--danger:not(:disabled):not([aria-disabled="true"]):hover {
+    opacity: 0.88;
+  }
+}
+
+/* ─── Focus (teclado / acessibilidade) ──────── */
+
+.kz-btn:focus-visible {
+  outline: 2px solid var(--kz-light-accent, #7B4DFF);
+  outline-offset: 3px;
+}
+
+.kz-btn--danger:focus-visible {
+  outline-color: #DC2626;
+}
+
+/* ─── Estado loading ─────────────────────────── */
+
+.kz-btn--loading {
+  pointer-events: none;
+}
+
+.kz-btn--loading .kz-btn__text {
+  opacity: 0;
+}
+
+.kz-btn--loading::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,.30);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: kz-spin .7s linear infinite;
+}
+
+.kz-btn--secondary.kz-btn--loading::after {
+  border-color: rgba(123,77,255,.20);
+  border-top-color: var(--kz-light-accent, #7B4DFF);
+}
+
+@keyframes kz-spin {
+  to { transform: rotate(360deg); }
+}

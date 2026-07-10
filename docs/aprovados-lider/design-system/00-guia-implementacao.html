@@ -1,0 +1,497 @@
+<meta charset="UTF-8">
+<title>KZERA · 00 — Guia de Implementação CSS</title>
+<meta name="description" content="Mapa completo entre decisões de design e arquivos CSS reais. Onde alterar cada coisa, como adicionar tokens, regras de ouro.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F4F0FC;
+  color: #120B35;
+  padding: 28px 16px 80px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; text-wrap: balance; margin-bottom: 4px; }
+.eyebrow { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .14em; color: #7B4DFF; margin-bottom: 8px; }
+.intro { font-size: 13px; color: #6B5FA0; font-weight: 700; line-height: 1.6; margin-bottom: 32px; }
+.sec { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .14em; color: #7B4DFF; margin-bottom: 12px; margin-top: 36px; }
+
+/* ── File map table ── */
+.tbl { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.tbl-head {
+  background: #EDE8F8;
+  padding: 9px 16px;
+  font-size: 10px; font-weight: 900; color: #5B2ECC;
+  text-transform: uppercase; letter-spacing: .07em;
+  display: grid; gap: 10px; align-items: center;
+}
+.tbl-row {
+  display: grid; gap: 10px; align-items: start;
+  padding: 13px 16px;
+  border-bottom: 1px solid #F0EBF9;
+}
+.tbl-row:last-child { border-bottom: none; }
+
+.filemap .tbl-head,
+.filemap .tbl-row { grid-template-columns: 1fr 1fr; }
+
+.path {
+  font-family: ui-monospace, monospace;
+  font-size: 11px; font-weight: 900; color: #7B4DFF;
+  word-break: break-all; line-height: 1.5;
+}
+.path.root { color: #5B2ECC; font-size: 12px; }
+.path-desc { font-size: 11px; font-weight: 800; color: #120B35; line-height: 1.5; }
+.path-sub { font-size: 10.5px; font-weight: 700; color: #6B5FA0; margin-top: 3px; line-height: 1.45; }
+
+/* ── Decision table ── */
+.decision .tbl-head,
+.decision .tbl-row { grid-template-columns: 1fr 140px; }
+
+.q { font-size: 12px; font-weight: 800; color: #120B35; line-height: 1.45; }
+.q code {
+  font-family: ui-monospace, monospace; font-size: 10.5px;
+  background: #EDE8F8; padding: 1px 5px; border-radius: 4px; color: #5B2ECC;
+}
+.a {
+  font-family: ui-monospace, monospace;
+  font-size: 11px; font-weight: 900; color: #7B4DFF;
+  line-height: 1.45; word-break: break-word;
+}
+
+/* ── Code block ── */
+.cb {
+  background: #0F0A1E; border-radius: 14px;
+  padding: 16px; overflow-x: auto; margin-bottom: 10px;
+}
+.cb pre { margin: 0; }
+.cb code {
+  font-family: ui-monospace, "Cascadia Code", "SF Mono", monospace;
+  font-size: 12px; line-height: 1.8; color: #D4C9F0;
+  white-space: pre;
+}
+.ct { color: #C4A7FF; }
+.cv { color: #86EFAC; }
+.cc { color: #64748B; font-style: italic; }
+.cn { color: #93C5FD; }
+
+/* ── Rules ── */
+.rules { background: #fff; border: 1.5px solid #DDD4F3; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.rule-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #F0EBF9; }
+.rule-row:last-child { border-bottom: none; }
+.rule-n {
+  width: 24px; height: 24px; border-radius: 9999px;
+  background: #7B4DFF; color: #fff;
+  font-size: 10px; font-weight: 900;
+  display: grid; place-items: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.rule-n.no { background: #DC2626; }
+.rule-body { flex: 1; }
+.rule-title { font-size: 13px; font-weight: 900; color: #120B35; margin-bottom: 4px; line-height: 1.3; }
+.rule-desc { font-size: 12px; font-weight: 700; color: #6B5FA0; line-height: 1.5; }
+.rule-desc code {
+  font-family: ui-monospace, monospace; font-size: 10.5px;
+  background: #EDE8F8; padding: 1px 5px; border-radius: 4px; color: #5B2ECC;
+}
+
+/* ── Note ── */
+.note {
+  padding: 14px 16px; background: #EDE8F8; border-radius: 14px;
+  font-size: 12px; font-weight: 700; color: #5B2ECC; line-height: 1.55;
+  margin-bottom: 10px;
+}
+.note strong { color: #120B35; }
+.note code {
+  font-family: ui-monospace, monospace; font-size: 10.5px;
+  background: rgba(91,46,204,.12); padding: 1px 5px; border-radius: 4px;
+}
+.warn {
+  padding: 14px 16px; background: #FEF3C7; border-radius: 14px;
+  font-size: 12px; font-weight: 700; color: #92400E; line-height: 1.55;
+  margin-bottom: 10px;
+}
+.warn strong { color: #120B35; }
+.warn code {
+  font-family: ui-monospace, monospace; font-size: 10.5px;
+  background: rgba(217,119,6,.12); padding: 1px 5px; border-radius: 4px;
+}
+</style>
+
+<a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#9B8FC8;text-decoration:none;margin-bottom:20px;padding:5px 10px;border:1.5px solid #DDD4F3;border-radius:9999px;background:#fff;" onmouseover="this.style.background='#F0EBF9'" onmouseout="this.style.background='#fff'">← Design System</a>
+
+<div class="eyebrow">00 — Implementação</div>
+<h1>Guia de Implementação CSS</h1>
+<p class="intro">Onde fica cada coisa no código. Antes de alterar qualquer valor visual — cor, tamanho, sombra, radius — leia este guia. Alterar no lugar errado cria divergência silenciosa entre o design system e o código vivo.</p>
+
+<!-- ══════════════════════════
+     MAPA DE ARQUIVOS
+══════════════════════════ -->
+<div class="sec">Mapa de arquivos — o que é cada coisa</div>
+
+<div class="tbl filemap">
+  <div class="tbl-head"><span>Arquivo</span><span>Responsabilidade</span></div>
+
+  <div class="tbl-row" style="background:#F7F3FF;">
+    <span class="path root">src/presentation/shared/<br>styles/tokens.css</span>
+    <div>
+      <div class="path-desc">Fonte única de todos os tokens</div>
+      <div class="path-sub">TODA variável CSS do sistema vive aqui: --kz-light-*, --vv-*, --kz-status-*, --space-*, --radius-*, --shadow-*, --t-*. Nenhum outro arquivo declara variáveis do sistema.</div>
+    </div>
+  </div>
+
+  <div class="tbl-row">
+    <span class="path">src/presentation/shared/<br>styles/index.css</span>
+    <div>
+      <div class="path-desc">Agregador de imports — não contém CSS</div>
+      <div class="path-sub">Importa todos os arquivos na ordem correta. tokens.css sempre primeiro. Não adicionar CSS aqui.</div>
+    </div>
+  </div>
+
+  <div class="tbl-row">
+    <span class="path">src/presentation/shared/<br>styles/badge.css</span>
+    <div>
+      <div class="path-desc">Classes de badge e tag de status</div>
+      <div class="path-sub">.badge, .badge-success, .badge-warning, .badge-danger, .badge-info, .badge-neutral, .badge-ativo, .badge-pendente, .badge-arquivado e aliasses de estoque.</div>
+    </div>
+  </div>
+
+  <div class="tbl-row">
+    <span class="path">src/presentation/shared/<br>styles/card.css</span>
+    <div>
+      <div class="path-desc">Classes de card base</div>
+      <div class="path-sub">.kzera-card e .card — container genérico com border-radius e borda. Não inclui layout interno (padding, gap): isso é responsabilidade do componente específico.</div>
+    </div>
+  </div>
+
+  <div class="tbl-row">
+    <span class="path">src/presentation/shared/<br>styles/metric.css</span>
+    <div>
+      <div class="path-desc">Card de métrica e info-item</div>
+      <div class="path-sub">.metric-card, .item-metric-card, .info-item. Usado em cards de Entradas/Saídas e dados de resumo.</div>
+    </div>
+  </div>
+
+  <div class="tbl-row">
+    <span class="path">src/presentation/shared/<br>styles/form.css</span>
+    <div>
+      <div class="path-desc">Container de seção de formulário</div>
+      <div class="path-sub">.form-section, .item-form-section. O container que agrupa campos. O campo em si (input) virá em componentes/08-inputs.</div>
+    </div>
+  </div>
+
+  <div class="tbl-row">
+    <span class="path">src/presentation/shared/<br>styles/feedback.css</span>
+    <div>
+      <div class="path-desc">Toast, empty state, loading state</div>
+      <div class="path-sub">.toast, .feedback-message, .loading-state, .empty-state e variantes de cor (success, error, info). Especificação completa virá em componentes/13-feedback.</div>
+    </div>
+  </div>
+
+  <div class="tbl-row" style="background:#FFF7ED;">
+    <span class="path" style="color:#D97706;">src/presentation/shared/<br>styles.css</span>
+    <div>
+      <div class="path-desc" style="color:#92400E;">Legado — em migração</div>
+      <div class="path-sub" style="color:#92400E;">Contém .kzera-modal-backdrop, .kzera-modal-card e .icon-text-button (botão paralelo não canonizado). Usar apenas para leitura. Não adicionar nada aqui. Migrar para componentes específicos quando cada um for documentado.</div>
+    </div>
+  </div>
+
+  <div class="tbl-row">
+    <span class="path">docs/aprovados-lider/<br>design-system/</span>
+    <div>
+      <div class="path-desc">Documentação — decisões de design</div>
+      <div class="path-sub">Os arquivos 00–17 e a pasta componentes/ explicam o porquê de cada valor. Alterar uma regra aqui sem refletir em tokens.css (ou vice-versa) cria divergência.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════
+     ONDE ALTERAR CADA COISA
+══════════════════════════ -->
+<div class="sec">Se quero alterar… onde vou?</div>
+
+<div class="tbl decision">
+  <div class="tbl-head"><span>O que alterar</span><span>Arquivo</span></div>
+
+  <div class="tbl-row">
+    <div class="q">Cor principal do sistema (accent <code>#7B4DFF</code>)</div>
+    <div class="a">tokens.css<br>--kz-light-accent</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Cor de texto, fundo, borda do tema Light</div>
+    <div class="a">tokens.css<br>--kz-light-*</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Qualquer token do tema Dark</div>
+    <div class="a">tokens.css<br>.theme-dark { --vv-* }</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Cor de fundo ou texto de badge de sucesso</div>
+    <div class="a">tokens.css<br>--kz-status-success-*</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Padding lateral de toda tela</div>
+    <div class="a">tokens.css<br>--space-4</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Border-radius de card de seção</div>
+    <div class="a">tokens.css<br>--radius-4</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Sombra do botão primário ou FAB</div>
+    <div class="a">tokens.css<br>--shadow-accent</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Tamanho de fonte do texto funcional mínimo</div>
+    <div class="a">tokens.css<br>--t-base</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Como um badge aparece visualmente</div>
+    <div class="a">badge.css<br>+ tokens.css para os valores</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Um botão — qualquer variante, loading, disabled</div>
+    <div class="a">componentes/<br>07-botoes/componente.css</div>
+  </div>
+  <div class="tbl-row">
+    <div class="q">Adicionar uma nova cor de status</div>
+    <div class="a">tokens.css primeiro,<br>depois badge.css e feedback.css</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     COMO ADICIONAR UM TOKEN
+══════════════════════════ -->
+<div class="sec">Como adicionar um novo token em tokens.css</div>
+
+<div class="note">
+  <strong>Antes de adicionar:</strong> verifique se o valor que precisa já não existe. 98% dos casos o token certo já está na escala. Adicionar token novo sem necessidade fragmenta o sistema.
+</div>
+
+<div class="cb"><pre><code><span class="cc">/* 1. Abra tokens.css */</span>
+<span class="cc">/* src/presentation/shared/styles/tokens.css */</span>
+
+<span class="ct">:root</span> {
+  <span class="cc">/* Encontre a seção correta e adicione o token */</span>
+  <span class="cc">/* Exemplo: novo token de espaçamento */</span>
+  <span class="cv">--space-14</span>: <span class="cn">56px</span>;  <span class="cc">/* ações críticas — altura danger button */</span>
+}</code></pre></div>
+
+<div class="note">
+  <strong>Regra de nomenclatura:</strong><br>
+  · Cor Light: <code>--kz-light-[papel]</code><br>
+  · Cor Dark: <code>--vv-[papel]</code><br>
+  · Status: <code>--kz-status-[variante]-[bg|text]</code><br>
+  · Espaçamento: <code>--space-[número na grade de 4px]</code><br>
+  · Radius: <code>--radius-[1-6|full]</code><br>
+  · Sombra: <code>--shadow-[0-3|accent|danger]</code><br>
+  · Tipografia: <code>--t-[xs|sm|base|md|lg|xl|2xl|3xl]</code>
+</div>
+
+<!-- ══════════════════════════
+     COMO ADICIONAR UM COMPONENTE
+══════════════════════════ -->
+<div class="sec">Como adicionar um novo componente ao sistema</div>
+
+<div class="cb"><pre><code><span class="cc">/* Estrutura obrigatória para todo componente */</span>
+
+docs/aprovados-lider/design-system/componentes/
+  <span class="cv">XX-nome-do-componente/</span>
+    <span class="cn">doc.html</span>         <span class="cc">← especificação: anatomia, variantes, regras, tokens usados</span>
+    <span class="cn">componente.html</span>  <span class="cc">← preview visual com phone frame</span>
+    <span class="cn">componente.css</span>   <span class="cc">← CSS usando APENAS tokens, sem valores hardcoded</span>
+    <span class="cn">componente.tsx</span>   <span class="cc">← se React (opcional, depende do módulo)</span>
+    <span class="cn">ComponenteText.ts</span> <span class="cc">← se Vanilla JS (opcional)</span>
+    <span class="cn">ComponenteText.html</span> <span class="cc">← preview da versão Vanilla (opcional)</span>
+
+src/presentation/shared/styles/
+  <span class="cc">↑ Se o CSS do componente for compartilhado entre módulos,</span>
+  <span class="cc">  criar arquivo aqui e importar em index.css</span>
+  <span class="cc">  Se for exclusivo de um módulo, colocar ao lado do módulo</span></code></pre></div>
+
+<div class="note">
+  <strong>doc.html sempre inclui:</strong> seção "Arquivos do componente" com os caminhos reais no projeto, e seção "Tokens utilizados" listando cada <code>--variável</code> que o CSS do componente referencia. Sem isso, quem vai manter não sabe onde olhar.
+</div>
+
+<!-- ══════════════════════════
+     FLUXO OBRIGATÓRIO
+══════════════════════════ -->
+<div class="sec">Fluxo obrigatório — doc → tokens.css → src/</div>
+
+<div class="note">
+  <strong>Regra de Causa:</strong> Sem nomear a causa do sistema e a causa do processo, não se começa nenhuma correção ou criação. O fluxo abaixo é a porta de entrada obrigatória.
+</div>
+
+<div class="cb"><pre><code>PROBLEMA IDENTIFICADO / NOVO COMPONENTE NECESSÁRIO
+         ↓
+<span class="cv">1. NOMEAR A CAUSA</span>
+   O que no sistema permitiu que este problema existisse?
+   O que no processo permitiu que este componente não existisse?
+   (Se não conseguir nomear → investigar antes de continuar)
+         ↓
+<span class="cv">2. VERIFICAR DOC</span>
+   docs/aprovados-lider/design-system/componentes/XX-nome/doc.html
+   (Se não existe → criar o doc primeiro)
+         ↓
+<span class="cv">3. VERIFICAR TOKENS</span>
+   src/presentation/shared/styles/tokens.css
+   (Se o token necessário não existe → adicionar em tokens.css primeiro)
+         ↓
+<span class="cv">4. IMPLEMENTAR EM SRC/</span>
+   src/presentation/shared/styles/[arquivo].css
+   ou src/presentation/[módulo]/styles/[componente].css
+         ↓
+<span class="cv">5. ATUALIZAR INDEX.CSS</span>
+   Se o arquivo CSS for compartilhado → importar em index.css
+         ↓
+<span class="cv">6. CONFERIR CHECKLIST</span> (seção abaixo)</code></pre></div>
+
+<!-- ══════════════════════════
+     CHECKLIST POR COMPONENTE
+══════════════════════════ -->
+<div class="sec">Checklist obrigatório — antes de criar ou corrigir qualquer componente</div>
+
+<div class="note">
+  <strong>Regra de Causa (Helena):</strong> Sem nomear a causa do processo, não corrija o sintoma. Sem responder cada item abaixo, não se começa.
+</div>
+
+<div class="rules">
+
+  <div class="rule-row">
+    <div class="rule-n">1</div>
+    <div class="rule-body">
+      <div class="rule-title">A causa sistêmica foi nomeada?</div>
+      <div class="rule-desc">Escrever em uma frase: o que no sistema ou processo permitiu que este problema existisse. Se não conseguir nomear, investigar antes de avançar.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">2</div>
+    <div class="rule-body">
+      <div class="rule-title">O doc do componente existe?</div>
+      <div class="rule-desc"><code>docs/aprovados-lider/design-system/componentes/XX-nome/doc.html</code> — se não existe, criar o doc primeiro. A implementação segue o doc, nunca o contrário.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">3</div>
+    <div class="rule-body">
+      <div class="rule-title">Os tokens que o componente usa estão em tokens.css?</div>
+      <div class="rule-desc">Listar cada <code>--variável</code> que o CSS vai referenciar. Se alguma não existe → adicionar em <code>tokens.css</code> primeiro, com nomenclatura correta.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">4</div>
+    <div class="rule-body">
+      <div class="rule-title">O toque mínimo foi verificado?</div>
+      <div class="rule-desc">Padrão KZERA: 48px. Ações críticas: 56px. Apple HIG mínimo: 44px. Nenhum elemento interativo abaixo disso.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">5</div>
+    <div class="rule-body">
+      <div class="rule-title">A senhora cansada passa sem confusão?</div>
+      <div class="rule-desc">Ação principal é única e visível? Ela consegue desfazer erro? O estado vazio está claro? Ela não precisa pensar para agir?</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">6</div>
+    <div class="rule-body">
+      <div class="rule-title">O CSS usa apenas var(), zero valores hardcoded?</div>
+      <div class="rule-desc">Nenhum <code>#</code> de cor, nenhum <code>px</code> isolado que não venha de token. Se existir um sequer → corrigir antes de considerar pronto.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">7</div>
+    <div class="rule-body">
+      <div class="rule-title">O doc inclui "Como chega ao src/"?</div>
+      <div class="rule-desc">Seção com caminho exato do arquivo em <code>src/</code>, o que importar em <code>index.css</code>, e quais classes usar no HTML. Sem isso, o doc não é implementável.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════
+     REGRA DE OURO
+══════════════════════════ -->
+<div class="sec">Regras de ouro — nunca violar</div>
+
+<div class="rules">
+
+  <div class="rule-row">
+    <div class="rule-n no">✗</div>
+    <div class="rule-body">
+      <div class="rule-title">Nunca valor hardcoded em CSS de componente</div>
+      <div class="rule-desc">
+        Errado: <code>border-radius: 16px</code> — correto: <code>border-radius: var(--radius-4)</code><br>
+        Errado: <code>color: #7B4DFF</code> — correto: <code>color: var(--kz-light-accent)</code><br>
+        Errado: <code>padding: 12px</code> — correto: <code>padding: var(--space-3)</code><br>
+        Único lugar onde valor aparece diretamente é dentro de <code>tokens.css</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n no">✗</div>
+    <div class="rule-body">
+      <div class="rule-title">Nunca declarar variável de token fora de tokens.css</div>
+      <div class="rule-desc">Se um componente precisa de um valor novo, o token vai em <code>tokens.css</code> primeiro. Variáveis CSS declaradas em arquivos de componente são invisíveis para o resto do sistema.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n no">✗</div>
+    <div class="rule-body">
+      <div class="rule-title">Nunca alterar um valor sem atualizar o doc correspondente</div>
+      <div class="rule-desc">Mudar <code>--radius-4</code> de 16px para 18px sem atualizar <code>05-border-radius.html</code> cria divergência entre o doc e o código. As duas fontes ficam erradas ao mesmo tempo.</div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">✓</div>
+    <div class="rule-body">
+      <div class="rule-title">Sempre usar fallback no var()</div>
+      <div class="rule-desc">
+        Escrever <code>var(--radius-4, 16px)</code> em vez de só <code>var(--radius-4)</code>. Se o arquivo tokens.css não for importado por algum motivo, o componente ainda renderiza com o valor correto e o problema fica visível sem quebrar.
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div class="rule-n">✓</div>
+    <div class="rule-body">
+      <div class="rule-title">Todo arquivo CSS começa com comentário de contexto</div>
+      <div class="rule-desc">
+        Primeira linha: <code>/* KZERA · [Nome] — [arquivo].css */</code><br>
+        Segunda linha (se componente): <code>/* Requer: tokens.css importado via styles/index.css */</code><br>
+        Isso deixa claro de onde vêm os tokens e qual o escopo do arquivo.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════
+     ORDEM DE IMPORTS
+══════════════════════════ -->
+<div class="sec">Ordem de imports em index.css</div>
+
+<div class="cb"><pre><code><span class="cc">/* src/presentation/shared/styles/index.css */</span>
+<span class="cc">/* Ordem obrigatória — não alterar */</span>
+
+<span class="ct">@import</span> <span class="cv">'./tokens.css'</span>;   <span class="cc">/* 1º sempre — define as variáveis */</span>
+<span class="ct">@import</span> <span class="cv">'./card.css'</span>;     <span class="cc">/* containers genéricos */</span>
+<span class="ct">@import</span> <span class="cv">'./badge.css'</span>;    <span class="cc">/* status e tags */</span>
+<span class="ct">@import</span> <span class="cv">'./metric.css'</span>;   <span class="cc">/* cards de métrica */</span>
+<span class="ct">@import</span> <span class="cv">'./form.css'</span>;     <span class="cc">/* containers de formulário */</span>
+<span class="ct">@import</span> <span class="cv">'./feedback.css'</span>; <span class="cc">/* toast, empty state, loading */</span>
+<span class="cc">/* novos arquivos de componente compartilhado abaixo */</span></code></pre></div>
+
+<div class="warn">
+  <strong>styles.css está fora desta ordem:</strong> o arquivo <code>src/presentation/shared/styles.css</code> (um nível acima da pasta styles/) é legado e não importa tokens.css. Qualquer coisa lá usa valores hardcoded. Não adicionar código novo ali. Migrar para componentes específicos conforme cada componente for documentado.
+</div>
