@@ -44,3 +44,7 @@ Arquivo de registro pessoal do papel **max**. Nem o líder pode alterar este arq
 ### 2026-07-10 — Rotação e convenção de memória enxuta (ordem do líder, aplicada em mim como exemplo)
 
 Mandato: reduzir custo de init AGORA, um agente por vez, começando por mim. MEDIDO antes: max.md 56.119 chars ≈ 14.029 tokens (224 linhas). Aplicado: cópia literal integral pra `historico/max/02.md` (verificada por comparação byte a byte), `historico/max/INDICE.md` gerado com 71 seções e faixas de linha (acesso pontual, nunca leitura integral), este arquivo reescrito com teto de entrada (~6 linhas) e gatilho de rotação (~120 linhas). MEDIDO depois: ver commit. Próximo da fila: Bruno (mesma receita), depois Léo/Malu se couber no orçamento.
+
+### 2026-07-10 — Política de memória 2 níveis confirmada; conflito aberto em `malu/memoria`
+
+Líder confirmou a política (já documentada em `docs/governanca/15_...md` por outra instância minha) — nada novo a criar. Achado a reconciliar, não resolvido por mim: branch `malu/memoria` tem `docs/memoria/malu.md` próprio, decisão diferente da nossa sobre onde vive o canônico. `nova_desenvolvimento_de_n1` já tem seu próprio `malu.md` com conteúdo real (não é só ponteiro). Levo ao líder pra decidir, não escolho lado.
