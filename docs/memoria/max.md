@@ -66,3 +66,9 @@ Decisões que tomei (mínimas, reversíveis): (1) task_11445a9f — skip do runn
 Regra operacional desta rodada: checkout `/home/user/chatzera` está em `claude/new-session-i043af` e é de OUTRA frente — proibido trocar branch/commitar ali; trabalho só em worktree (regra 12 do CLAUDE.md do chatzera). Mesmo cuidado apliquei no Kzeraap pra este registro (worktree → `nova_desenvolvimento_de_n1`). Aviso da Malu: NÃO sabemos se o serviço claude_dev do Railway redeploya a partir da `dev_claude` — José vai verificar; se não confirmar, reportar em vez de prometer "está no ar".
 
 QA (Rita) não foi autorizada nesta rodada (delegação autorizada: José ou Bruno) — status máximo desta entrega é PARCIAL até QA ou aceite do líder. Evidência mínima exigida do José: diff, comandos+saída de teste local, verificação de deploy. Resultado do José entra por acréscimo aqui quando ele reportar.
+
+### 2026-07-11 — Desfecho da rodada chatzera (acréscimo ao registro anterior)
+
+José entregou com resposta própria (relatório foi direto ao canal da Malu, que validou; eu fiz verificação independente barata no remoto). Commits confirmados por mim em `origin/dev_claude`: `d5678cc` (feat: RUNNER_SKIP_AGENTS via env + intervalo 0 desliga auto-tick — config.py +15/−2, services/scheduler_service.py +5), `43a7582` e `8c8fb8a` (docs/runner-setup.md — passo a passo do líder; validação exige login admin, verificado no deploy). Obs.: existia um `scheduler_service.py` no repo — o auto-tick entrou aí, não como loop novo no startup como eu tinha desenhado; resultado equivalente, mais enxuto.
+
+Status que declarei: PARCIAL — implementação e docs no ar na `dev_claude` com evidência, mas sem QA (Rita não autorizada nesta rodada) e com passos do líder pendentes (OPENAI_API_KEY no Railway, RUNNER_INTERVAL_SECONDS, cadastro do agente GPT na tela — roteiro em docs/runner-setup.md na dev_claude). Fechamento do ciclo assumido pela Malu; sem retrabalho da minha parte por ordem dela (contenção de tokens).
