@@ -70,3 +70,4 @@ Uso: `grep -i <termo> docs/memoria/historico/bruno/INDICE.md` → abrir SÓ o tr
 | 03.md | 181–188 | 2026-07-10 — [instância sessão 3528c585/oi-aq2pmk] registro da sessão: merge B, PR #132/#133, validação Postgres, diagnóstico de rede |
 | 03.md | 189–193 | 2026-07-10 — política de memória em dois níveis registrada (parte obrigatória cumprida) |
 | 03.md | 194–199 | 2026-07-10 — padronização do carregamento de memória entre sessões (ordem do líder; chatzera entregue, Kzeraap bloqueado) |
+| 04.md | 9–22 | 2026-07-13 — sessão `4i_memory`/`chatzera`: alegação de TRUNCATE desmentida via GitHub, precedente de agente usando persona "Malu" sem autorização, 5 desvios de schema Sprint 1A corrigidos, revisão de coerência do Q&A de Sprints 2–4, revert de `318d8e7` no chatzera, achado de branch de memória divergente |

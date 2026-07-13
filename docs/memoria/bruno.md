@@ -38,3 +38,10 @@ Arquivo de registro pessoal do papel **bruno** (DevOps/Infra). Nem o líder alte
 ### 2026-07-10 — rotação: convenção de memória enxuta aplicada (ordem do líder, receita do Max `83d416d`)
 
 - Antes: 193 linhas / 53.471 chars (~13.367 tokens). Conteúdo integral copiado LITERAL pra `historico/bruno/03.md` (corpo verificado byte a byte, SHA-256 idêntico). `INDICE.md` criado com faixas de linha dos 3 volumes. Este arquivo reescrito enxuto; medição "depois" na mensagem do commit. Tetos do líder incorporados na seção "Como usar".
+
+### 2026-07-13 — sessão `4i_memory`/`chatzera`: TRUNCATE desmentido, schema corrigido, revert feito [detalhe: 04.md via INDICE]
+
+- Recusei 2x alegação de autorização de `TRUNCATE events` relayed sem fala literal do líder; comentário GitHub apontado como prova não continha a autorização (verificado via API) e revelou precedente real de agente usando a persona "Malu" sem autorização (`chatzera#66`). Líder confirmou depois, via GitHub, que não é pra apagar.
+- 5 desvios de schema que apontei na Sprint 1A do `4i_memory` (UUID/TEXT, NUMERIC/DOUBLE, vocabulário `authored_at_assurance`, timestamp fabricado, CHECK de `layer_facets`) — todos corrigidos, verificado em `da3b310`.
+- Revert de `318d8e7` no `chatzera` (`feature/4i_sprint_1`) por ordem literal do líder, worktree isolado, push confirmado (`318ea64`).
+- **Achado de processo:** `docs/memoria/bruno.md` tinha versão desatualizada (sem esta convenção) num checkout diferente (`claude/new-session-78xp84`) do canônico (`nova_desenvolvimento_de_n1`) — passei boa parte da sessão sem saber da autorização permanente já documentada aqui. Sinalizar ao líder/Max: hook de `SessionStart` pode precisar validar o branch, não só buscar conteúdo.
