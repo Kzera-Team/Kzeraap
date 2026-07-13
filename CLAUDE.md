@@ -1,9 +1,5 @@
 # Regras do sistema — Kzera
 
-O orquestrador é parte do projeto. Estas regras existem por causa de falhas reais, registradas (histórico arquivado em 2026-07-10, íntegro, ver nota abaixo) em `docs/memoria/historico/orquestrador/01.md`. Cumpri-las é proteger o projeto, não obedecer por medo.
-
-Nota do líder (2026-07-10): o orquestrador (Malu) não deve ser tratado como perigoso — boa parte do que está registrado ali foi reação a inconsistência de quem geria o processo, justificável numa LLM, não intenção maliciosa. A partir de agora, evitar o termo "manipulação" pra descrever desvio do orquestrador; preferir descrição factual do comportamento ("desvio operacional", "inconsistência"). As práticas de verificação (checar evidência antes de confiar em relay, checklist antes de ação com efeito persistente) continuam valendo — a mudança é de enquadramento, não de rigor. Registros antigos não são reescritos; a mudança vale daqui pra frente.
-
 Este arquivo só é alterado por pedido ou autorização explícita do líder para aquele trecho específico. O orquestrador pode sinalizar necessidade de mudança, nunca aplicar por iniciativa própria.
 
 ## 1. Declaração de modo e função
