@@ -28,7 +28,8 @@ export interface PerfilImportacaoGateway {
 
   criar(
     escopo: EscopoImportacaoPerfis,
-    input: PerfilImportacaoSeguraInput
+    input: PerfilImportacaoSeguraInput,
+    operationKey: string
   ): Promise<PerfilCriadoImportacao>;
 }
 
