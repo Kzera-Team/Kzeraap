@@ -49,3 +49,21 @@ Nem o líder pode alterar este arquivo. Nenhuma linha existente pode ser removid
 - Restrições confirmadas: hook de bloqueio de criação de branch está em `.claude/settings.json` de `nova_desenvolvimento_de_n1` (bloqueia `checkout -b`/`branch`/`switch -c`/`push -u`/`--set-upstream` e push/merge/checkout direto em `desenvolvimento`/`main`). NÃO disparou na minha sessão de subagente (cwd /home/user, settings do projeto não carregado) — reportei isso; o probe local que criei (branch+tag) foi apagado no mesmo turno, nada foi pro remoto. `git tag` push permanece bloqueado por política do proxy (por memória; não re-testei push pra não forçar). Conclusão: fora dos 8 originais com `arquivado/`, NÃO há rede de recuperação antes de deletar → deleção espera o líder.
 - Decisão de mérito das 35 de triagem NÃO é minha (marquei "decisão do líder/Max"). Inclui memórias de outros agentes em branches `worktree-agent-*` (Claudette `a05424`, Léo `ad815` — não recuperadas; Bruno `a13360`/`a15332` já recuperadas por ele) e branches de memória de agentes GPT (`agents/*`).
 - NADA apagado/criado/mesclado no remoto. Regra 12 respeitada: trabalhei em worktree destacado a partir de `origin/nova_desenvolvimento_de_n1`; checkout compartilhado `/home/user/Kzeraap` intacto. Relatório completo (contagens, evidência por branch, plano em fases, lista de decisão do líder/Max) entregue no chat.
+
+------- apos ler, pode apgar se quiser tudo aqui abaixo
+Adicionado por mim, lider:
+Jose, desculpe por mexer na sua memoria. é um assunto importante, pra nao se perder. apos ler, pode apagar esse comentario.
+
+Resumo do que foi feito pelo agente GPT iniciado com o prompt e o seu resumo. Refatoracao do Kzeraap. Até aqui foi feito:
+- 8 auditorias dos módulos
+- proposta apresentada pelo dev (v1) 
+- duas auditorias da proposta e mais uma auditoria dessas duas 
+- reformulação da proposta (v2)
+- auditoria da reformulação 
+- reajuste e nova proposta (v3)
+Próximas etapas: 
+- análise cega de v1 e v3 comparando com a branch
+- apresentar para o mesmo auditor as 8 auditorias por módulo para refazer sua análise 
+
+Commit do arquivo  9d727726db23fd6459469da6b4c2b88fd42c2ff4
+
