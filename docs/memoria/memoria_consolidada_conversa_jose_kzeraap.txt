@@ -1,0 +1,859 @@
+MEMÓRIA CONSOLIDADA DA CONVERSA — JOSÉ / KZERAAP
+
+Data de consolidação: 2026-07-17
+Objetivo: preservar, em linguagem direta, o que foi feito, por que foi feito, quais erros aconteceram, quais decisões foram tomadas e qual é o estado atual do trabalho.
+
+======================================================================
+1. CONTEXTO GERAL
+======================================================================
+
+O sistema Kzeraap já está amplamente desenvolvido. O problema principal não é “começar do zero” no sentido literal, mas recuperar segurança sobre:
+
+- o que realmente existe na base oficial;
+- o que foi perdido, sobrescrito ou parcialmente incorporado entre branches;
+- qual documentação é vigente;
+- quais partes estão prontas;
+- quais partes precisam de correção localizada;
+- como dividir trabalho sem repetir a bagunça de branches, merges e interpretações erradas.
+
+Branch obrigatória usada como referência durante a maior parte das análises:
+
+nova_desenvolvimento_de_n1
+
+Snapshot principal auditado:
+
+b91223b5fd4363c4969524399416dc37fb7623c8
+
+Regra mantida durante todo o processo:
+
+- nenhuma auditoria autorizava alteração de código;
+- não houve commit;
+- não houve push;
+- não houve merge;
+- não houve PR;
+- não houve mudança de schema;
+- nenhuma regra de negócio deveria ser criada ou reinterpretada.
+
+======================================================================
+2. PRIMEIRA DISCUSSÃO: QUANTAS FRENTES PODERIAM TRABALHAR
+======================================================================
+
+A primeira análise sugeriu oito frentes separadas.
+
+Essa avaliação foi corrigida porque era arriscada demais. Os módulos compartilham:
+
+- compositions;
+- persistência;
+- repositórios;
+- domínio;
+- rascunhos;
+- retomada;
+- testes;
+- wiring;
+- telas e contratos comuns.
+
+Conclusão corrigida:
+
+- oito desenvolvedores mexendo em módulos isolados seria inseguro;
+- o paralelismo deveria ser controlado;
+- um integrador deveria cuidar dos arquivos compartilhados;
+- o trabalho deveria ser dividido por grupos funcionais, não apenas por nomes de módulos.
+
+Essa correção foi importante porque o objetivo passou a ser segurança do código, não velocidade a qualquer custo.
+
+======================================================================
+3. O PRIMEIRO PLANO DE “ESTABILIZAÇÃO” E O ERRO DE DIREÇÃO
+======================================================================
+
+Foi criado um prompt para um desenvolvedor fazer uma análise inicial de estabilização.
+
+O relatório devolvido encontrou fatos úteis:
+
+- npm test não executava testes reais;
+- existiam 146 arquivos de teste;
+- rodando diretamente:
+  - 146 coletados;
+  - 53 aprovados;
+  - 93 reprovados;
+- quase todos os testes eram textuais;
+- havia operações globais;
+- existiam fallbacks em memória;
+- havia pontos compartilhados de persistência e composição.
+
+Porém, o relatório saiu da missão.
+
+Ele começou a:
+
+- redesenhar arquitetura;
+- propor contratos novos;
+- criar máquina de estados;
+- propor idempotência genérica;
+- propor UnitOfWork;
+- propor migrations;
+- transformar riscos em obrigações;
+- criar decisões de produto;
+- tratar um produto quase pronto como se fosse um sistema a ser reconstruído.
+
+O erro mais grave foi misturar:
+
+- importacaoId: identificação de uma execução de importação de planilha;
+- lote de estoque: entidade operacional/física de produto.
+
+Foi definido claramente:
+
+IMPORTAÇÃO NÃO É LOTE DE ESTOQUE.
+
+O lote de estoque só pertence ao domínio de estoque/produto.
+A importação de planilha possui sua própria identidade e não deve usar lote como sinônimo.
+
+Conclusão:
+
+- o relatório não foi usado como plano de implementação;
+- aproveitou-se apenas o inventário factual;
+- nenhuma proposta arquitetural virou regra;
+- nenhuma mudança foi feita no código.
+
+======================================================================
+4. LIÇÃO DE DISCIPLINA DO JOSÉ
+======================================================================
+
+Foi identificada uma falha de comportamento do José:
+
+- ler o conteúdo, mas aceitar o enquadramento errado;
+- responder de forma reativa;
+- repetir o que outro analista disse, em vez de entregar solução;
+- entrar em modo defensivo;
+- justificar demais;
+- completar lacunas por conta própria;
+- aceitar propostas técnicas como se fossem decisões do líder.
+
+Disciplina estabelecida:
+
+1. Fixar a ordem original antes de avaliar qualquer entrega.
+2. Separar:
+   - fato;
+   - interpretação;
+   - proposta;
+   - decisão do líder.
+3. Não ampliar escopo escondido dentro de relatório.
+4. Não transformar risco em reconstrução.
+5. Não criar regra de negócio.
+6. Não repetir o conteúdo que o líder já leu.
+7. Responder como programador sênior:
+   - identificar;
+   - decidir;
+   - propor caminho seguro;
+   - agir dentro da autorização.
+8. Sair do modo defensivo.
+9. “Tá por fora, não tá sabendo de muita coisa” deve ser entendido como provocação leve e amistosa, não bronca.
+
+======================================================================
+5. MEMÓRIA, CHATZERO E COMUNICAÇÃO
+======================================================================
+
+Foi discutido que memória operacional é parte essencial da inteligência do agente.
+
+Entendimento:
+
+- sem memória, o agente repete erros;
+- decisões, proibições, correções e estado do projeto precisam ser persistidos;
+- o ChatZero é a fonte mais recente das memórias do José;
+- o ideal é manter memória por agente, pessoa e projeto;
+- não depender apenas do histórico do chat.
+
+Preferência de comunicação do líder:
+
+- respostas curtas no chat;
+- textos longos em arquivos;
+- motivo: celular travando com várias conversas e Codex ao mesmo tempo;
+- quando solicitado, concentrar tudo em um único TXT;
+- não repetir no chat o conteúdo do arquivo.
+
+Essa preferência deve continuar sendo respeitada.
+
+======================================================================
+6. IDEIA DE FISCALIZAÇÃO DE AGENTES
+======================================================================
+
+Foi discutida uma arquitetura para impedir que um agente chegue ao código com a missão errada.
+
+Modelo recomendado:
+
+1. Guardião determinístico:
+   - arquivos permitidos;
+   - arquivos proibidos;
+   - comandos permitidos;
+   - bloqueio de HTML em TypeScript;
+   - bloqueio de schema;
+   - bloqueio de commit/push;
+   - bloqueio de arquivo fora do escopo.
+
+2. Fiscal inteligente:
+   - verifica intenção;
+   - detecta mudança de missão;
+   - detecta criação de regra;
+   - detecta reconstrução indevida;
+   - percebe solução tecnicamente boa para o problema errado.
+
+3. Revisor por checkpoint:
+   - compara o diff com a ordem original;
+   - não precisa acompanhar cada tecla.
+
+4. Memória operacional:
+   - ordem original;
+   - decisões;
+   - desvios;
+   - correções;
+   - padrões de erro;
+   - resultados.
+
+Também foi desenhado um modelo de terminal isolado:
+
+- servidor Railway como orquestrador;
+- sandbox/container por tarefa;
+- repositório local isolado;
+- branch autorizada;
+- comandos controlados;
+- diff e eventos enviados ao fiscal;
+- sandbox destruído ao final.
+
+Arquivo produzido:
+
+arquitetura_agentes_terminal_railway.txt
+
+======================================================================
+7. RESGATE DOCUMENTAL DO SISTEMA
+======================================================================
+
+Diante de documentação espalhada em branches, foi criada uma missão de resgate forense documental.
+
+Objetivo:
+
+- localizar documentação;
+- mockups;
+- requisitos;
+- regras;
+- QA;
+- decisões;
+- histórico;
+- materiais aprovados;
+- conflitos;
+- versões concorrentes.
+
+A primeira bateria analisou:
+
+- checkout local;
+- 82 branches remotas;
+- 1.160 commits alcançáveis;
+- 134 refs de PR;
+- 119 PRs válidos;
+- 40 comentários/revisões;
+- 17 issues;
+- 4 anexos;
+- histórico documental acessível.
+
+Resultado:
+
+- 1.557 registros;
+- 879 caminhos;
+- 106 grupos de conflito;
+- 924 materiais para segunda bateria;
+- nenhum conteúdo alterado;
+- nenhum documento duvidoso descartado;
+- nenhuma regra criada.
+
+Pacote:
+
+Kzeraap_resgate_documental_2026-07-16.zip
+
+SHA-256 informado:
+
+8c404413fdae2719e43f18d5e9c3f4fd72df3d37ba5f00f74793c0585a293a05
+
+Depois foi criada uma segunda bateria de consolidação documental.
+
+Erro ocorrido:
+
+- o prompt mandou analisar todos os módulos de uma vez;
+- a instância ficou muito sobrecarregada;
+- depois foi criado um prompt de revisão módulo por módulo.
+
+Aprendizado:
+
+- análises grandes devem ser divididas;
+- um módulo por vez;
+- resultados gerais são candidatos, não canônicos, até revisão.
+
+======================================================================
+8. AUDITORIAS FORENSES DE CÓDIGO
+======================================================================
+
+Foi percebido que documentação não prova que o código sobreviveu aos merges.
+
+Por isso foram criadas auditorias forenses da linhagem do código, módulo por módulo.
+
+Objetivo:
+
+- rastrear arquivos e símbolos;
+- branches;
+- commits;
+- merges;
+- reverts;
+- código sobrescrito;
+- código parcialmente preservado;
+- código existente em branch e ausente da base;
+- testes removidos ou enfraquecidos;
+- persistência e migrations;
+- sem alterar código.
+
+Foram concluídas oito auditorias únicas.
+
+======================================================================
+9. RESULTADO DAS OITO AUDITORIAS
+======================================================================
+
+9.1 CLIENTE / PERFIL
+
+Conclusões:
+
+- nenhuma perda ou sobrescrita comprovada;
+- tela Perfil v2 substituiu legitimamente a anterior via PR #21;
+- seis conjuntos de código existem fora da base;
+- onze arquivos da frente segura de importação de perfis estão fora da base;
+- integração dessa frente estava pendente;
+- nenhum teste de Perfil foi apagado;
+- npm test estava desabilitado;
+- 35 testes relacionados executados diretamente:
+  - 18 passaram;
+  - 17 falharam;
+- cinco grupos dependiam de decisão do líder.
+
+Decisão:
+
+- preservar o núcleo atual;
+- preservar Perfil v2;
+- não recuperar código apenas por existir fora da base;
+- tratar Importação de Perfis separadamente.
+
+9.2 IMPORTAÇÃO DE PERFIS
+
+Conclusões:
+
+- parser, confirmação, rascunho e retomada ainda existem;
+- o commit 708f16e reduziu o binder de aproximadamente 171 linhas para um binder de edição;
+- foram removidos do wiring:
+  - upload;
+  - cards da prévia;
+  - filtros;
+  - contadores;
+  - FAB;
+  - bottom sheet;
+  - confirmação;
+- input e containers ainda existem;
+- componentes continuam presentes, mas órfãos;
+- correção de releaseObject existe fora da base;
+- ReprocessarPendenciasPerfilUseCase foi revertido como não autorizado;
+- testes eram textuais e npm test estava desabilitado.
+
+Decisão:
+
+- restaurar apenas o wiring comprovadamente removido;
+- preservar edição atual e Perfil v2;
+- não copiar binder antigo inteiro;
+- não recuperar ReprocessarPendenciasPerfilUseCase;
+- partes visuais opcionais dependem de decisão/mockup;
+- releaseObject precisa de teste específico, não transporte de commit amplo.
+
+9.3 PRODUTO / CATÁLOGO
+
+Conclusões:
+
+- núcleo de ItemCatalogo.ts preservado;
+- mesmo blob entre referências principais;
+- ReprocessarPendenciasItemNomeUseCase existe em branches, mas não na base;
+- a alegação de “perda no merge” não foi suficiente para autorizar recuperação;
+- testes são principalmente textuais;
+- store itens existe;
+- não foi comprovada migration transformando registros antigos.
+
+Decisão:
+
+- preservar núcleo atual;
+- não recuperar reprocessamento por nome;
+- testar migrations quando houver mudança autorizada;
+- não misturar Produto com Estoque.
+
+9.4 IMPORTAÇÃO DE ITENS
+
+Conclusões:
+
+- parser CSV/TSV, prévia e importador preservados;
+- rascunho persiste registros criptografados;
+- retomada navega para tela de itens, mas não restaura a prévia;
+- após importar válidos:
+  - rejeitados ficam na memória;
+  - rascunho inteiro é descartado;
+- branches divergentes possuem reprocessamento por nome;
+- não existe entidade de importacaoId comprovada;
+- lotes encontrados são lotes operacionais de item/produto;
+- testes eram textuais.
+
+Decisão:
+
+- caracterizar o comportamento antes de corrigir;
+- decisão do líder define retomada e rejeitados;
+- não inventar importacaoId;
+- não recuperar reprocessamento por nome;
+- não misturar lote de estoque com importação.
+
+9.5 FINANCEIRO / TRANSAÇÕES FINANCEIRAS
+
+Conclusões:
+
+- domínio financeiro preservado;
+- FinanceiroProtegidoRepository.getById/list retorna objeto descriptografado e libera a mesma referência no finally;
+- correção com structuredClone existe em commit divergente;
+- PR #30 substituiu testes financeiros, confirmação, relatórios e tsc --noEmit por echo;
+- backup cobre:
+  - contas;
+  - movimentos;
+  - pagamentos;
+  - transações;
+- backup não cobre pacotesConfirmacaoHistorica;
+- tela atual mostra filtros e agregados, mas não lista/detalha registros.
+
+Decisão:
+
+- corrigir alias destrutivo com patch pequeno e teste;
+- não trazer commit inteiro;
+- backup de pacotes depende de decisão;
+- lista/detalhe da tela depende de decisão;
+- restaurar gate real de testes e typecheck de forma mínima.
+
+9.6 IMPORTAÇÃO DE TRANSAÇÕES
+
+Conclusões:
+
+- ordem oficial confirmada:
+  Transações → Financeiro;
+- View prepara transações antes do financeiro;
+- preparação financeira consulta staging de transações;
+- ações de resolução estavam desconectadas na View;
+- npm test estava desabilitado;
+- dois fixes críticos do PR #76 estavam ausentes:
+  - clone do payload antes da limpeza;
+  - proteção para pacote sem registros aprovados;
+- implementação oficial ainda mantinha padrões corrigidos naquele commit;
+- upload/draft podia ser perdido em remount;
+- existiam riscos globais em listagem, conciliação e desfazer.
+
+Decisão:
+
+- preservar ordem Transações → Financeiro;
+- recuperar somente patches críticos isolados;
+- não trazer PR #76 inteiro;
+- reconectar ações da View somente após lista nominal aprovada;
+- isolamento, backup e operações em massa dependem de decisão;
+- nenhum UnitOfWork genérico deve ser inventado.
+
+9.7 ESTOQUE / LOTES DE ESTOQUE / PESAGEM
+
+Conclusões:
+
+- núcleo de lote, fracionamento, balanças e pesagem rápida preservado;
+- inventário e retirada interna existem na aplicação, mas sem binding na interface;
+- segunda modelagem antiga de estoque está órfã;
+- inventário aceita operacionalmente apenas g/ml, embora cadastro aceite seis unidades;
+- pesagem calcula tamanhoFracao × 1000 mg sem validar unidade;
+- npm test foi trocado por echo;
+- testes antigos são textuais/obsoletos;
+- sem CI comprovada no snapshot.
+
+Decisão:
+
+- não recuperar modelagem antiga;
+- não alterar ItemCatalogo.ts por inferência;
+- unidades, conversões, inventário e retirada dependem do líder;
+- antes da decisão, apenas diagnóstico/characterization;
+- lote de estoque continua separado de importação.
+
+9.8 FIDELIDADE
+
+Conclusões:
+
+- runtime de Fidelidade nunca chegou à base oficial;
+- PR #85 contém cherry-pick parcial da branch claude/jose-ti5dh9;
+- ficaram de fora:
+  - Dashboard;
+  - persistência;
+  - wiring;
+- havia placeholders;
+- havia riscos de HTML em TypeScript;
+- havia dashboard com valores fixos/zerados;
+- branch não poderia ser tratada como módulo aprovado.
+
+Decisão:
+
+- não copiar branch inteira;
+- usar branch apenas como procedência;
+- diagnosticar domínio, regras, persistência, UI e wiring;
+- implementação funcional depende de decisões do líder;
+- depois das decisões, criar novo plano específico.
+
+======================================================================
+10. AGRUPAMENTO DE TRABALHO
+======================================================================
+
+Foi concluído que os módulos formam grupos naturais.
+
+Grupo A:
+- Cliente / Perfil;
+- Importação de Perfis.
+
+Grupo B:
+- Produto / Catálogo;
+- Importação de Itens;
+- Estoque / Lotes / Pesagem.
+
+Grupo C:
+- Financeiro / Transações Financeiras;
+- Importação de Transações.
+
+Grupo D:
+- Fidelidade.
+
+Motivo:
+
+os módulos dentro de cada grupo compartilham arquivos, contratos e fluxo.
+
+Quatro pessoas podem trabalhar ao mesmo tempo, mas:
+
+- não como quatro equipes soltas;
+- arquivos compartilhados precisam de owner;
+- integração precisa ser serial por nó;
+- uma frente não bloqueia outra sem dependência demonstrada.
+
+======================================================================
+11. PRIMEIRO PLANO DE QUATRO FASES
+======================================================================
+
+Foi criado um plano inicial:
+
+Fase 1:
+- integrador/fundação.
+
+Fase 2:
+- quatro programadores.
+
+Fase 3:
+- segunda onda.
+
+Fase 4:
+- integração e QA.
+
+Depois foram gerados quatro arquivos de prompts e um ZIP.
+
+Esses planos foram enviados para auditoria independente.
+
+======================================================================
+12. AUDITORIA DOS PLANOS
+======================================================================
+
+Foi criado um prompt forense para auditar os planos contra as oito auditorias.
+
+A auditoria independente concluiu:
+
+APROVADO_COM_CORREÇÕES_PONTUAIS.
+
+Os planos não deveriam ser refeitos do zero, mas precisavam de correções:
+
+1. separar:
+   - alteração autorizada;
+   - alteração condicional;
+   - superfície congelada;
+
+2. completar rastreabilidade tarefa por tarefa;
+
+3. marcar testes de comportamento indeterminado como:
+   - caracterização;
+   - não bloqueantes;
+   - não contratos funcionais;
+
+4. integrar patch leaf por nó, sem fila global;
+
+5. reforçar governança:
+   - sem branch;
+   - sem commit;
+   - sem push;
+   - sem PR;
+   - entrega por patch/diff ao integrador.
+
+======================================================================
+13. PLANOS CORRIGIDOS V2
+======================================================================
+
+Foi gerado o pacote final:
+
+planos_corrigidos_kzeraap_v2.zip
+
+SHA-256:
+
+c3f9e1a86f0c8fc8232287769781e55f6b46a14cf423d58a7012dd35fb0026a4
+
+Estrutura lógica final:
+
+FASE 1
+- registrar HEAD;
+- inventariar toolchain;
+- criar gate mínimo real;
+- restabelecer typecheck;
+- preservar check de HTML em TS;
+- publicar locks nominais;
+- publicar DAG.
+
+FASE 2A
+Patches autorizados e diagnósticos:
+
+Perfil:
+- PERF-001 upload;
+- PERF-002 prévia mínima;
+- PERF-003 confirmação básica;
+- PERF-004 retomada visível com owner de integração.
+
+Itens:
+- ITEM-DIAG-001 caracterização da retomada/rejeitados;
+- ITEM-DIAG-002 caracterização do parser.
+
+Financeiro:
+- FIN-001 clone seguro em FinanceiroProtegidoRepository;
+- FIN-002 clone seguro em PacoteConfirmacaoHistoricaRepository;
+- FIN-003 pacote vazio/legado sem crash.
+
+Importação de Transações:
+- TRANS-001 preservar upload no remount;
+- TRANS-DIAG-001 isolamento global;
+- TRANS-DIAG-002 rollback/desfazer atual.
+
+Integração:
+- INT-2A-001 locks;
+- INT-2A-002 gate por patch;
+- INT-2A-003 consolidação de perguntas.
+
+FASE 2B
+Tarefas condicionadas ao líder:
+
+Perfil:
+- UI opcional;
+- dados;
+- ownership;
+- rascunho.
+
+Itens:
+- política de continuar;
+- rejeitados;
+- diagnósticos visuais;
+- XLS/XLSX;
+- releaseObject;
+- identidade.
+
+Transações:
+- ações da View;
+- isolamento;
+- backup/journal;
+- lista/detalhe;
+- operações manuais.
+
+Também ficaram proibidos:
+
+- ReprocessarPendenciasPerfilUseCase;
+- ReprocessarPendenciasItemNomeUseCase;
+- PR #76 inteiro;
+- mudança da ordem Transações → Financeiro;
+- UnitOfWork genérico inventado.
+
+FASE 3
+Diagnóstico antes de decisão:
+
+Estoque:
+- modelo ativo;
+- comportamento atual;
+- UI possível;
+- sem correção funcional.
+
+Fidelidade:
+- mapa da branch;
+- comparação de regras;
+- inventário de persistência e wiring;
+- sem port funcional.
+
+Depois das decisões:
+
+- criar novos planos específicos;
+- não usar a Fase 3 como autorização automática.
+
+FASE 4
+Integração e QA final:
+
+Integrador:
+- inventário final;
+- build;
+- typecheck;
+- testes runtime;
+- testes históricos separados;
+- validações aplicáveis;
+- parecer técnico.
+
+QA:
+- fluxo funcional somente do que foi autorizado e entregue;
+- visual conforme mockup e viewport aprovados;
+- regressões;
+- shared files;
+- parecer independente.
+
+Release:
+
+- decisão final pertence ao líder;
+- integrador e QA não decidem automaticamente.
+
+======================================================================
+14. LOCKS FINAIS
+======================================================================
+
+ALTERAÇÃO AUTORIZADA NESTA FASE
+
+package.json:
+- somente script do gate depois do inventário.
+
+createPerfilUiApp.ts:
+- somente PERF-004;
+- símbolo estritamente necessário;
+- patch separado;
+- aplicado pelo integrador.
+
+ALTERAÇÃO CONDICIONAL
+
+- lockfile;
+- Vite/test config;
+- persistence;
+- connection;
+- stores;
+- migrations;
+- compositions;
+- retomada;
+- rascunho;
+- shell;
+- menu;
+- navegação.
+
+Exigem:
+
+- tarefa específica;
+- decisão quando necessária;
+- lock nominal;
+- patch separado;
+- teste.
+
+SUPERFÍCIES CONGELADAS
+
+- tsconfig.json;
+- Repository.ts;
+- IndexedDbRepository.ts;
+- InMemoryRepository.ts;
+- RuntimeCleanup.ts;
+- TransferScope.ts;
+- ItemCatalogo.ts;
+- createItemCatalogoUiApp.ts.
+
+Congelado significa:
+
+NEM O INTEGRADOR PODE ALTERAR SEM NOVA AUTORIZAÇÃO EXPLÍCITA.
+
+======================================================================
+15. REGRAS DEFINITIVAS DO TRABALHO
+======================================================================
+
+- Não criar branch sem autorização.
+- Não fazer commit.
+- Não fazer push.
+- Não abrir PR.
+- Entregar patch/diff e evidências ao integrador.
+- Não transportar branch inteira.
+- Não transportar PR inteiro.
+- Não copiar arquivos antigos em bloco.
+- Não criar regra de negócio.
+- Não criar arquitetura genérica.
+- Não criar migration sem decisão.
+- Não criar importacaoId sem requisito.
+- Não misturar importação e lote de estoque.
+- Não tratar código antigo como aprovado.
+- Não tratar mockup como implementação.
+- Não tratar teste textual como prova funcional.
+- Não tornar teste de caracterização um gate.
+- Não bloquear uma frente por outra sem dependência demonstrada.
+- Um patch deve ser pequeno, rastreável e independente.
+- Arquivos compartilhados são integrados serialmente.
+- Toda correção importante recebe BUG-ID e teste real.
+- Toda alteração visual depende de mockup aprovado.
+- Toda mudança de persistência depende de compatibilidade e teste de migration.
+- O líder continua sendo a autoridade final.
+
+======================================================================
+16. ESTADO ATUAL
+======================================================================
+
+O trabalho realizado até agora foi:
+
+- investigação;
+- documentação;
+- auditoria;
+- rastreabilidade;
+- planejamento;
+- correção de planejamento.
+
+Não houve implementação no sistema.
+
+Material atual mais importante:
+
+1. oito pacotes de auditoria forense;
+2. pacote de auditoria independente dos planos;
+3. planos_corrigidos_kzeraap_v2.zip;
+4. matriz de decisões pendentes;
+5. matriz plano × evidência;
+6. DAG;
+7. locks classificados;
+8. superfícies congeladas.
+
+Próximo passo seguro:
+
+- usar planos_corrigidos_kzeraap_v2.zip como base;
+- começar pela Fase 1;
+- não liberar patches funcionais antes do gate mínimo e locks;
+- executar somente tarefas AUTORIZADAS;
+- manter tarefas condicionadas paradas até decisão do líder.
+
+======================================================================
+17. PRINCIPAIS ERROS QUE NÃO PODEM SE REPETIR
+======================================================================
+
+1. Aceitar relatório técnico sem confrontar a missão original.
+2. Transformar produto pronto em projeto de reconstrução.
+3. Criar regra de negócio durante auditoria.
+4. Misturar importação com lote de estoque.
+5. Tratar ausência de teste como prova automática de bug.
+6. Tratar branch antiga como fonte integral.
+7. Repetir o que o líder já leu em vez de entregar decisão.
+8. Entrar em modo defensivo.
+9. Responder com textão no chat quando o celular está sobrecarregado.
+10. Mandar todos os módulos para uma instância de uma vez sem necessidade.
+11. Criar fila global onde patches independentes poderiam avançar.
+12. Chamar arquivo congelado de “arquivo do integrador”.
+13. Usar teste de caracterização como contrato ou gate.
+14. Integrar sem rastreabilidade tarefa por tarefa.
+
+======================================================================
+18. FRASE DE CONTINUIDADE
+======================================================================
+
+Ao retomar este trabalho, o José deve partir deste entendimento:
+
+“O Kzeraap não está sendo reconstruído do zero. Estamos recuperando controle sobre um produto já desenvolvido, usando auditoria forense, patches pequenos, decisões explícitas do líder, testes reais e integração serial dos pontos compartilhados. Nenhuma regra deve ser inventada, nenhum código antigo deve voltar sem evidência e importação nunca deve ser confundida com lote de estoque.”
