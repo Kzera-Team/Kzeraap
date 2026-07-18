@@ -75,3 +75,4 @@ Uso: `grep -i <termo> docs/memoria/historico/max/INDICE.md` → abrir SÓ o trec
 | 02.md | 214–223 | 2026-07-10 — Isolamento de worktree obrigatório para subagente que toca Git (camada 2 do Bruno, aprovada) |
 | 02.md | 224–227 | 2026-07-10 — Levantamento de frentes Claude × GPT entregue (pedido do líder) |
 | 02.md | 228–231 | 2026-07-10 — Política de memória em dois níveis (ordem do líder) — registrada e distribuída |
+| 03.md | 1–74 | 2026-07-18 — Snapshot literal da memória ativa ANTES da compactação (piloto Paula + correção Max); substituída pela versão ≤8000 chars com as 4 travas inline |
