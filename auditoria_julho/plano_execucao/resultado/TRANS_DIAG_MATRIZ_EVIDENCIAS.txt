@@ -1,0 +1,35 @@
+MATRIZ DE EVIDÊNCIAS — TRANS-DIAG-001 / TRANS-DIAG-002
+Snapshot: b91223b5fd4363c4969524399416dc37fb7623c8
+
+ID | Tarefa | Camada | Arquivo:símbolo/linhas | Evidência factual | Reprodução | Risco | Confiança | Decisão
+E01 | 001 | Contrato repo | src/application/ports/Repository.ts:Repository:1-5 | Não existe consulta por escopo; somente list() | N/A | Consumidores dependem de conjunto global | Alta | D1
+E02 | 001 | IndexedDB | src/infrastructure/repositories/IndexedDbRepository.ts:list:25-32 | list() executa getAll() | Inspeção | Carga integral | Alta | D1
+E03 | 001 | Staging protegido | src/infrastructure/repositories/ImportacaoStagingRepository.ts:list:144-155,199-210 | Todos os records são listados e descriptografados | Inspeção | Custo/escopo global | Alta | D1
+E04 | 001 | Domínio | src/domain/importacao/ImportacaoTransacoesFinanceiro.ts:61-77,134-149 | Registros já possuem loteImportacaoId | Inspeção | Campo existe, mas é ignorado pelos fluxos mapeados | Alta | D1/D3
+E05 | 001 | Listagem | src/application/importacao/ListarStagingImportacaoUseCase.ts:execute:24-40 | Quatro list() globais; resumo global; slice(-80) após carga | Retornou lotes A/B juntos | UI mistura contexto | Alta | D1
+E06 | 001 | View | src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts:preencherAndamento/preencherPendencias:133-144 | Contagens exibidas vêm da listagem global | Derivada de E05 | Mensagem “importação” pode representar várias | Alta | D1
+E07 | 001 | Conciliação | src/application/importacao/ConciliarTransacoesFinanceiroUseCase.ts:execute:160-181 | Lista todos os abertos; não compara lote | t-a do lote A conciliada com f-b do lote B | Cruzamento entre importações | Alta | D1/D3
+E08 | 001 | Conciliação | mesmo arquivo:217-226,270-297 | Candidatos posteriores e resumo usam conjunto global | Inspeção | Sugestão/contagem contaminada | Alta | D1
+E09 | 001 | Vínculo manual | src/application/importacao/ResolverPendenciaImportacaoUseCase.ts:vincularFinanceiro:115-123 | Aceita par por IDs sem conferir lote | Inspeção | Vínculo manual cruzado possível | Alta | D1
+E10 | 001 | Massa | mesmo arquivo:validarVinculosEmMassa:126-166 | Valida par/duplicidade, não escopo de importação | Inspeção | Aprovação pode envolver outro lote | Alta | D1/D2
+E11 | 001 | Desfazer massa | mesmo arquivo:desfazerAprovacaoMassa:169-194 | Sem input; limpa todos massa_segura | Desfez dois lotes em uma chamada | Efeito global destrutivo no staging | Alta | D2
+E12 | 001 | Confirmação | src/application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase.ts:montarPlano:288-425 | Plano usa todos os staging abertos e todos oficiais | Prévia criou pacote com lotes A/B | Confirmação multiorigem | Alta | D1/D3
+E13 | 001 | Lista pacotes | mesmo arquivo:listarPacotes/resumosPacotes:264-285 | list() global; busca por lote faz list()+find; sem paginação | Inspeção | Leitura/descriptografia total | Alta | D1
+E14 | 001 | Resultado | mesmo arquivo:resultadoDoPlano:428-451 | Toda operação anexa listas globais confirmados/falhas | Inspeção | Sobrecarga e exposição fora do contexto | Alta | D1
+E15 | 002 | Rollback | mesmo arquivo:rollbackConfirmacaoHistorica:727-816 | Remove artefatos registrados; não restaura staging no catch | Inspeção | Staging depende de recuperação posterior | Alta | D4
+E16 | 002 | Recuperação | mesmo arquivo:recuperarFalha:633-646 | Dirigida por lote; remove IDs, restaura snapshots, volta a congelado | Inspeção | Sem wiring visual | Alta | D4
+E17 | 002 | Desfazer lote | mesmo arquivo:desfazerLote:669-710 | Exige lote+DESFAZER; filtra por IDs; bloqueia ausente/updatedAt posterior | Removeu pacote e preservou oficial externo | Cenário feliz é dirigido por pacote | Alta | D4/D5
+E18 | 002 | Estado | src/domain/importacao/ImportacaoTransacoesFinanceiro.ts:396 | Status não inclui desfazendo/desfeito_parcial | Inspeção | Falha parcial sem estado próprio | Alta | D5
+E19 | 002 | Política | docs/importacao/REGRAS_FINANCEIRO_TRANSACOES_IMPORTADAS.md:412-448 | Exige intenção, desfazendo, desfeito_parcial e revisão guiada | Comparação código/documento | Divergência de contrato atual | Alta | D5
+E20 | 002 | Performance | mesmo documento:521-541 | Proíbe lista inteira e exige consulta/paginação | Comparação código/documento | Código viola política documental | Alta | D1
+E21 | 002 | View | src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts:bind/fluxos:168-228 | Só previsualizar/confirmar; resolverPendencia injetado e não usado | Inspeção | Contratos sem acesso visual | Alta | D4
+E22 | 002 | Templates | ...recuperacao.html:27-31; ...detalhes.html:47-51 | Botões apenas navegam; não listam/recuperam/desfazem | Inspeção | Comunicação sem execução correspondente | Alta | D4
+E23 | 001/002 | Test runner | package.json:scripts:7-18 | npm test apenas informa testes desabilitados | Execução | Sem gate | Alta | Após decisões
+E24 | 001/002 | Testes legados | tests/*1160,1171,1172,1180-1186,1150 | 11/11 falharam; testes estruturais e desatualizados | Execução direta | Não caracterizam escopo/rollback | Alta | Após decisões
+E25 | 001/002 | Política testes | docs/importacao/REGRAS_FINANCEIRO_TRANSACOES_IMPORTADAS.md:642-661 | Busca de strings não comprova segurança financeira | Comparação | Falsa confiança se tratados como regressão | Alta | Após decisões
+
+Legenda:
+- Reprodução: harness descartável fora do checkout; não foi adicionado ao repositório.
+- Confiança Alta: comportamento observado diretamente no snapshot e/ou executado com os use cases reais.
+- D1-D5: perguntas fechadas registradas no relatório principal.
+- A matriz não autoriza correção, teste-gate, migration, campo, filtro, novo contrato ou alteração de UI.

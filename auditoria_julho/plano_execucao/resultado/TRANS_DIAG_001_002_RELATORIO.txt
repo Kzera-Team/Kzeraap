@@ -1,0 +1,394 @@
+RELATÓRIO DIAGNÓSTICO — TRANS-DIAG-001 / TRANS-DIAG-002
+Destinatários: Integrador e QA
+Natureza: leitura e caracterização factual; não autoriza correção
+Data: 2026-07-18
+
+======================================================================
+1. BASE E CONTROLE DE ESCOPO
+======================================================================
+
+Repositório confirmado: Kzera-Team/Kzeraap
+Branch operacional: nova_desenvolvimento_de_n1
+HEAD remoto observado: ed2fe881ad47ee3530a439a5c1b2618e3ca94c5a
+Snapshot funcional obrigatório: b91223b5fd4363c4969524399416dc37fb7623c8
+Merge-base branch/snapshot: b91223b5fd4363c4969524399416dc37fb7623c8
+Relação: branch 4 commits à frente, 0 atrás.
+
+Diferença posterior ao snapshot: somente documentação e memória. Nenhum arquivo funcional foi alterado entre o snapshot e o HEAD observado. Os relatórios posteriores de auditoria_julho não foram usados como fonte.
+
+Mutação funcional: nenhuma.
+Migration: nenhuma.
+Contrato novo: nenhum.
+Alteração de UI: nenhuma.
+Branch/commit/push/PR: nenhum.
+Teste criado como gate: nenhum.
+
+======================================================================
+2. VEREDITO DIAGNÓSTICO
+======================================================================
+
+TRANS-DIAG-001 — RISCO REPRODUZIDO.
+
+Listagem de staging, conciliação, prévia e confirmação operam sobre conjuntos globais dos repositórios, sem receber um escopo de importação. O domínio já registra loteImportacaoId nos registros, mas os use cases citados não o usam para delimitar essas operações.
+
+Há dois mecanismos diferentes chamados de “desfazer”:
+
+1. desfazer_aprovacao_massa: é global no efeito; uma chamada desfaz todas as resoluções massa_segura existentes no staging.
+2. desfazer_lote: recebe loteConfirmacaoId e remove somente os artefatos cujos IDs foram gravados naquele pacote; portanto, o efeito é dirigido ao pacote, embora a validação carregue integralmente três repositórios oficiais.
+
+TRANS-DIAG-002 — CONTRATO PARCIALMENTE IMPLEMENTADO E NÃO LIGADO À VIEW ATUAL.
+
+O use case possui rollback automático de confirmação, recuperação de falha e desfazer de lote confirmado. A View atual chama apenas previsualizar e confirmar. Não chama listar_lotes, recuperar_falha, desfazer_lote nem qualquer ação de resolverPendencia. A tela de recuperação existente é visual/navegacional, sem execução do contrato de recuperação ou desfazer.
+
+O desfazer de lote implementado diverge da política documental vigente em pontos de estado e atomicidade: não registra intenção antes da remoção, não usa estado desfazendo e não possui estado desfeito_parcial. Se houver falha depois de alguma remoção, o pacote pode permanecer confirmado enquanto os artefatos já estão parcialmente removidos.
+
+Nenhum destes achados autoriza escolher o escopo correto, alterar persistência, adicionar filtro, criar migration, mudar UI ou corrigir o fluxo.
+
+======================================================================
+3. MAPA POR CAMADA E SÍMBOLO
+======================================================================
+
+3.1. Persistência e contrato de repositório
+
+FATO
+- Repository<T> oferece somente save, getById, list e remove opcional.
+- IndexedDbRepository.list() executa IDBObjectStore.getAll().
+- RegistroImportacaoTransacaoRepository.list(), RegistroImportacaoFinanceiraRepository.list(), FinanceiroProtegidoRepository.list() e PacoteConfirmacaoHistoricaRepository.list() carregam todos os records e descriptografam todos os payloads.
+- Os object stores têm apenas keyPath id; não há índices declarados na conexão operacional.
+- RegistroImportacaoTransacao e RegistroImportacaoFinanceira já carregam loteImportacaoId.
+
+EVIDÊNCIA
+- src/application/ports/Repository.ts:1-5
+- src/infrastructure/repositories/IndexedDbRepository.ts:25-32
+- src/infrastructure/repositories/ImportacaoStagingRepository.ts:19-38, 65-83, 144-155, 199-210
+- src/infrastructure/repositories/FinanceiroProtegidoRepository.ts:72-82
+- src/infrastructure/repositories/PacoteConfirmacaoHistoricaRepository.ts:132-143
+- src/app/createOperationalPersistence.ts:20-48
+- src/infrastructure/storage/IndexedDbConnection.ts:18-25
+
+RISCO
+- Toda operação baseada em list() cresce com o volume acumulado e descriptografa registros fora do contexto necessário.
+- A camada atual não oferece consulta delimitada; registrar o risco não define como ele deve ser corrigido.
+
+3.2. Listagem de staging
+
+SÍMBOLO
+- ListarStagingImportacaoUseCase.execute()
+
+FATO
+- Não recebe input.
+- Lista integralmente lotes de transações, registros de transações, lotes financeiros e registros financeiros.
+- Calcula os resumos sobre todos os registros.
+- O limite de 80 é aplicado somente depois do carregamento e somente às duas listas de registros retornadas à View.
+- Os lotes continuam retornados integralmente.
+
+EVIDÊNCIA
+- src/application/importacao/ListarStagingImportacaoUseCase.ts:16-42
+- src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts:133-144
+
+REPRODUÇÃO NÃO BLOQUEANTE
+- Dois lotes de transações e um lote financeiro foram inseridos em repositórios em memória.
+- Uma única chamada retornou registros de todos os três lotes.
+
+RISCO
+- Contagens exibidas como “importação em andamento” podem incorporar importações anteriores ou paralelas.
+- slice(-80) pode mostrar uma cauda global que não corresponde ao lote que originou a tela.
+
+3.3. Conciliação
+
+SÍMBOLO
+- ConciliarTransacoesFinanceiroUseCase.execute()
+
+FATO
+- Não recebe input.
+- Lista todas as transações e todos os financeiros, removendo apenas status ignorado.
+- Agrupa financeiro por número de transação e aceita vínculos manuais por IDs.
+- Não compara loteImportacaoId entre transação e financeiro.
+- A busca por pagamento posterior percorre todos os financeiros ainda não usados.
+- O resumo contabiliza o conjunto global.
+
+EVIDÊNCIA
+- src/application/importacao/ConciliarTransacoesFinanceiroUseCase.ts:154-181, 188-226, 270-297
+
+REPRODUÇÃO NÃO BLOQUEANTE
+- Transação t-a, lote-trans-A, número 1001.
+- Financeiro f-b, lote-fin-B, referência 1001.
+- Resultado observado: t-a foi classificada como conciliado com f-b.
+
+RISCO
+- Registros de lotes diferentes podem ser conciliados entre si quando referência, perfil, pagamento e valor coincidirem.
+- Uma referência repetida em importações distintas pode contaminar o resumo e as sugestões de aprovação.
+
+3.4. Resolução manual, aprovação em massa e desfazer aprovação em massa
+
+SÍMBOLOS
+- ResolverPendenciaImportacaoUseCase.vincularFinanceiro()
+- ResolverPendenciaImportacaoUseCase.vincularFinanceiroEmMassa()
+- ResolverPendenciaImportacaoUseCase.desfazerAprovacaoMassa()
+
+FATO
+- O vínculo manual recebe IDs de uma transação e um financeiro, mas não verifica se pertencem ao mesmo lote ou à mesma importação iniciada na tela.
+- A validação em massa também opera por pares de IDs sem regra de lote.
+- desfazerAprovacaoMassa não recebe lote, seleção ou lista de IDs.
+- Ele lista os dois repositórios, seleciona todos os registros com resolucaoConciliacao === massa_segura e limpa todos em sequência.
+
+EVIDÊNCIA
+- src/application/importacao/ResolverPendenciaImportacaoUseCase.ts:77-83, 86-123, 126-166, 169-194
+
+REPRODUÇÃO NÃO BLOQUEANTE
+- Foram preparados dois pares massa_segura, um no lote A e outro no lote B.
+- Uma chamada execute({ acao: 'desfazer_aprovacao_massa' }) retornou “2 aprovações em massa desfeitas no staging”.
+- Após a chamada, nenhum registro dos dois lotes conservava massa_segura.
+
+RISCO
+- Uma ação apresentada como desfazer uma aprovação pode desfazer aprovações de outras importações abertas.
+
+3.5. Prévia e confirmação
+
+SÍMBOLOS
+- ConfirmarImportacaoHistoricaFinanceiraUseCase.montarPlano()
+- ConfirmarImportacaoHistoricaFinanceiraUseCase.execute()
+
+FATO
+- montarPlano() lista todo o staging de transações, todo o staging financeiro e todas as transações oficiais.
+- Inclui toda transação aberta, validada, sem pendências e ainda não confirmada, independentemente de loteImportacaoId.
+- O pacote de confirmação não possui um lote de origem único; armazena snapshots dos registros planejados, que podem conter loteImportacaoId diferentes.
+- execute({ modo: 'previsualizar' }) não recebe escopo de lote.
+- execute({ modo: 'confirmar' }) confirma exatamente o pacote congelado, mas esse pacote pode ter sido montado globalmente.
+
+EVIDÊNCIA
+- src/application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase.ts:21-25, 288-425, 713-725
+
+REPRODUÇÃO NÃO BLOQUEANTE
+- Duas transações validáveis, uma do lote A e outra do lote B, foram colocadas no staging.
+- Uma única prévia retornou transacoesPrevistas = 2.
+- O payload do único pacote congelado continha snapshots dos lotes A e B.
+
+RISCO
+- Confirmar uma “prévia da importação atual” pode confirmar registros abertos de outra importação.
+- O loteConfirmacaoId delimita o pacote oficial criado, mas não prova que os itens vieram de uma única importação de origem.
+
+3.6. Listagem de pacotes
+
+SÍMBOLOS
+- listarPacotes()
+- buscarPacotePorLote()
+- resumosPacotes()
+- execute({ modo: 'listar_lotes' })
+
+FATO
+- listarPacotes() chama list() sem paginação.
+- buscarPacotePorLote() carrega todos os pacotes e só então usa find().
+- resumosPacotes() carrega todos e retorna todos os confirmados e todos os falha_confirmacao/confirmando.
+- Congelados e desfeitos não entram nessas duas listas de resumo.
+- resultadoDoPlano() anexa essas listas inclusive a resultados de prévia, confirmação, recuperação e desfazer.
+
+EVIDÊNCIA
+- src/application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase.ts:264-285, 428-451, 713-716
+
+RISCO
+- Leitura e descriptografia globais de pacotes em operações que não precisam de todo o histórico.
+- Estados congelado e desfeito ficam fora do retorno resumido, embora o repositório os tenha.
+
+3.7. Rollback automático de falha de confirmação
+
+SÍMBOLOS
+- removerArtefatos()
+- rollbackConfirmacaoHistorica
+
+CONTRATO ATUAL — FATO
+- Antes de confirmar, exige remove() nos três repositórios oficiais.
+- Antes de cada write oficial, grava o ID planejado no pacote em estado confirmando.
+- Em erro, consulta os IDs persistidos e tenta remover movimentos, pagamentos e transações, nessa ordem por classe.
+- Se a remoção falhar, preserva IDs para recuperação posterior.
+- Depois, marca o pacote como falha_confirmacao e relança o erro.
+- O rollback automático não restaura os snapshots de staging. A restauração é feita por recuperarFalha(), em chamada posterior.
+
+EVIDÊNCIA
+- src/application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase.ts:252-255, 617-646, 727-816
+
+RISCO
+- Mesmo quando a remoção oficial funciona, registros de staging já marcados confirmado podem permanecer assim até a recuperação explícita.
+- A continuidade depende de recuperar_falha; a View atual não chama esse modo.
+
+3.8. Recuperação de pacote interrompido
+
+SÍMBOLO
+- recuperarFalha()
+
+CONTRATO ATUAL — FATO
+- Exige loteConfirmacaoId.
+- Aceita somente pacote falha_confirmacao ou confirmando.
+- Remove artefatos registrados, restaura snapshots do staging com status validado, zera IDs de artefatos e retorna o pacote ao estado congelado.
+
+EVIDÊNCIA
+- src/application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase.ts:633-646, 713-716
+
+RISCO
+- removerArtefatos() usa Promise.all dentro de cada classe. Falha parcial não possui estado próprio de recuperação da recuperação.
+- O contrato existe no use case, mas não está ligado à View atual.
+
+3.9. Desfazer lote confirmado
+
+SÍMBOLO
+- desfazerLote()
+
+CONTRATO ATUAL — FATO
+- Exige loteConfirmacaoId, texto exato DESFAZER, pacote persistente com payload e status confirmado.
+- Carrega integralmente transações, pagamentos e movimentos oficiais.
+- Filtra pelos IDs gravados no pacote.
+- Bloqueia se algum artefato estiver ausente ou se updatedAt for posterior a confirmadoEm.
+- Remove os artefatos do pacote, restaura snapshots do staging para validado e somente ao final marca o pacote desfeito.
+- Não remove artefato oficial fora da lista de IDs do pacote.
+
+EVIDÊNCIA
+- src/application/importacao/ConfirmarImportacaoHistoricaFinanceiraUseCase.ts:625-630, 669-710
+
+REPRODUÇÃO NÃO BLOQUEANTE
+- Um pacote com duas transações de origem foi confirmado.
+- Um registro oficial externo foi acrescentado.
+- desfazer_lote removeu as duas transações do pacote, preservou oficial-fora-do-lote, restaurou ambos os staging para validado e marcou o pacote desfeito.
+
+LACUNA FRENTE À POLÍTICA DOCUMENTAL — FATO
+- A política exige registrar intenção, marcar desfazendo antes de remover e marcar desfeito_parcial se falhar.
+- O tipo de status implementado não possui desfazendo nem desfeito_parcial.
+- O código remove primeiro e só marca desfeito ao final.
+- A política também cita vínculo novo, movimento conciliado manualmente e dependência criada em relatório/ajuste. O código valida presença e updatedAt; não há verificação explícita dessas dependências.
+
+EVIDÊNCIA
+- src/domain/importacao/ImportacaoTransacoesFinanceiro.ts:396
+- docs/importacao/REGRAS_FINANCEIRO_TRANSACOES_IMPORTADAS.md:412-448
+
+RISCO
+- Falha durante remoção/restauração pode produzir estado parcial sem representação explícita e com pacote ainda confirmado.
+- Comparar datas ISO por string pressupõe timestamps normalizados e não substitui verificação de dependências.
+
+3.10. Wiring visual e política manual disponível
+
+FATO
+- ImportacaoTransacoesFinanceiroView.bind() liga preparar, conciliar, gerar prévia, abrir confirmação e confirmar.
+- A View chama o use case de confirmação somente com previsualizar e confirmar.
+- Não há chamada a listar_lotes, recuperar_falha ou desfazer_lote.
+- resolverPendencia é injetado, porém não é chamado pela classe.
+- O template de recuperação possui ações que apenas navegam para detalhes ou prévia.
+- O template de detalhes não lista lotes nem oferece desfazer.
+- A política documental manda manter desfazer em área avançada, bloquear automático diante de alterações e abrir revisão guiada/manual.
+
+EVIDÊNCIA
+- src/presentation/importacao/ImportacaoTransacoesFinanceiroView.ts:9-16, 168-228
+- src/presentation/importacao/templates/importacao-transacoes-financeiro-recuperacao.html:27-31
+- src/presentation/importacao/templates/importacao-transacoes-financeiro-detalhes.html:47-51
+- docs/importacao/REGRAS_FINANCEIRO_TRANSACOES_IMPORTADAS.md:412-448, 628-638
+
+RISCO
+- Há contrato de aplicação sem caminho visual funcional para recuperação, listagem de lotes ou desfazer.
+- A usuária pode entrar em telas que comunicam recuperação sem executar recuperar_falha.
+
+======================================================================
+4. TESTES — CARACTERIZAÇÃO NÃO BLOQUEANTE
+======================================================================
+
+FATO
+- package.json define npm test como apenas: “Testes temporariamente desabilitados neste branch”.
+- Foram executados isoladamente 11 arquivos relacionados a staging/conciliação/confirmação.
+- Resultado: 11/11 falharam no snapshot.
+- Nove falham antes da verificação funcional por versão fixa divergente: o snapshot é 0.19.50, enquanto os testes esperam 1.19.5 ou 0.19.27.
+- Dois falham porque docs/importacao/APROVACAO_MASSA_CONCILIACAO_1.17.2.md não existe no snapshot.
+- Esses testes leem arquivos como texto e procuram strings; não instanciam os use cases para exercitar escopo entre lotes.
+- A própria política documental registra que teste estrutural por strings não comprova segurança financeira.
+
+EVIDÊNCIA
+- package.json:7-18
+- tests/conciliacao-transacoes-financeiro-1160.test.cjs
+- tests/aprovacao-massa-conciliacao-1171.test.cjs
+- tests/aprovacao-massa-conciliacao-1172.test.cjs
+- tests/confirmacao-historico-financeiro-1180.test.cjs até 1186.test.cjs
+- tests/importacao-transacoes-financeiro-1150.test.cjs
+- docs/importacao/REGRAS_FINANCEIRO_TRANSACOES_IMPORTADAS.md:642-661
+
+CLASSIFICAÇÃO
+- A reprodução descartável feita nesta análise é evidência diagnóstica não bloqueante.
+- Não constitui contrato funcional.
+- Não deve bloquear release.
+- Não foi adicionada ao repositório nem ao script de testes.
+- Após decisão do Líder, deve ser substituída por teste de regressão alinhado ao escopo escolhido.
+
+======================================================================
+5. FATOS, HIPÓTESES, RISCOS E DECISÕES
+======================================================================
+
+FATOS CONFIRMADOS
+F1. Os registros possuem loteImportacaoId.
+F2. Os use cases de listagem, conciliação e prévia não recebem escopo.
+F3. list() usa getAll() no navegador.
+F4. Conciliação cruzada entre lotes foi reproduzida.
+F5. Prévia contendo mais de um lote de origem foi reproduzida.
+F6. desfazer_aprovacao_massa global foi reproduzido.
+F7. desfazer_lote é dirigido pelos IDs persistidos no pacote e preservou oficial externo na reprodução.
+F8. A View não liga recuperação, listagem de lotes ou desfazer.
+F9. O estado/passo a passo do desfazer diverge da política documental vigente.
+F10. A suíte relevante não fornece gate nem caracterização comportamental válida no snapshot.
+
+HIPÓTESES EXPLICITADAS
+H1. Se mais de um lote permanecer aberto no staging, a tela pode misturá-los. A coexistência é aceita pela persistência; não foi localizada limpeza automática que imponha lote único.
+H2. A intenção de negócio pode ser “uma importação ativa por vez” ou “múltiplas importações abertas”. O código atual não torna essa intenção explícita.
+H3. A tela pode ter sido refatorada para templates sem atualização dos testes estruturais; a causa histórica não foi investigada porque não é necessária para caracterizar o snapshot.
+
+RISCOS
+R1. Conciliação ou confirmação cruzada entre importações.
+R2. Desfazer aprovação em massa de outro lote.
+R3. Contagens e amostras visuais fora do contexto corrente.
+R4. Custo crescente de getAll() + descriptografia global.
+R5. Recuperação/desfazer não acessíveis pela UI atual.
+R6. Estado parcial sem desfazendo/desfeito_parcial se o desfazer falhar.
+R7. Falsa confiança em testes que não rodam e não exercitam comportamento.
+
+DECISÕES NECESSÁRIAS DO LÍDER — PERGUNTAS FECHADAS
+
+D1. Para listagem, conciliação, prévia e confirmação, qual escopo de negócio é válido?
+[A] Somente a importação iniciada/selecionada na tela.
+[B] Todo o staging aberto no dispositivo.
+
+D2. Para desfazer aprovação em massa, qual alcance é válido?
+[A] Somente a seleção explícita da usuária.
+[B] Somente a importação selecionada.
+[C] Todo o staging aberto, como hoje.
+
+D3. O lote de confirmação pode reunir registros de mais de uma importação de origem?
+[A] Sim.
+[B] Não.
+
+D4. Recuperação e desfazer de lote devem ser operáveis pela interface do produto?
+[A] Sim, em área avançada/guiada.
+[B] Não, permanecem operação manual fora da View.
+
+D5. Em falha durante o desfazer, qual política deve prevalecer?
+[A] Estados explícitos desfazendo/desfeito_parcial e retomada guiada, conforme documento vigente.
+[B] Manter apenas bloqueio/erro e tratamento manual externo.
+
+Nenhuma alternativa acima foi escolhida nesta frente.
+
+======================================================================
+6. HANDOFF AO INTEGRADOR E AO QA
+======================================================================
+
+AO INTEGRADOR
+- Tratar o diagnóstico como mapa de superfícies, não como autorização de patch.
+- Não promover campo, filtro, migration, contrato ou UI antes das decisões D1-D5.
+- Distinguir desfazer_aprovacao_massa (global) de desfazer_lote (dirigido por pacote).
+- Preservar o fluxo Transações → Financeiro e a regra de não baixar estoque/lote.
+
+AO QA
+- A reprodução temporária comprovou quatro propriedades do snapshot: listagem global, conciliação cruzada, desfazer aprovação em massa global e pacote de confirmação multiorigem.
+- Também comprovou que desfazer_lote preserva oficial externo e restaura o staging do pacote no cenário feliz.
+- Não converter essa reprodução em gate antes da decisão do Líder.
+- Após decisão, substituir por testes comportamentais de regressão, incluindo falha parcial de desfazer e recuperação após rollback.
+
+======================================================================
+7. CONDIÇÃO DE PARADA
+======================================================================
+
+A investigação chegou ao ponto em que avançar exige escolher regra de escopo, reservar contrato de consulta/isolamento, alterar UI ou modificar estados do desfazer. Conforme a ordem recebida, a frente para aqui.
+
+Estado final: DIAGNÓSTICO CONCLUÍDO, CORREÇÃO NÃO AUTORIZADA.
+
