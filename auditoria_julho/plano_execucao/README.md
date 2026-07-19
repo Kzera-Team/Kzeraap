@@ -1,3 +1,7 @@
+Este plano passou por 4 auditorias ate chegar aqui.
+
+
+
 # PLANO DE AÇÃO — EQUIPE KZERAAP V4.1
 
 ## Quantidade de pessoas
