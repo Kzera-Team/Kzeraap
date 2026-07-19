@@ -1,4 +1,5 @@
 {
+  "agent": "malu",
   "hooks": {
     "PreToolUse": [
       {
