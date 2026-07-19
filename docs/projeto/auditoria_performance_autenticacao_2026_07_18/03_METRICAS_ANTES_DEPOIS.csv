@@ -1,0 +1,7 @@
+bug_id,cenario,metrica,antes,depois,status,observacao
+PERF-001,build,tempo_segundos,1.70,,baseline,medido por vite build
+PERF-001,bundle_js_principal,tamanho_kb,279.37,,baseline,sem gzip
+PERF-001,bundle_js_principal,tamanho_gzip_kb,72.07,,baseline,medido por vite build
+PERF-001,inicializacao_fria,tempo_ms,,,nao_medido,sem ambiente e dados representativos
+PERF-001,login,tempo_ms,,,nao_medido,sem credencial e navegador instrumentado
+PERF-001,listagem_grande,tempo_ms,,,nao_medido,sem base representativa
