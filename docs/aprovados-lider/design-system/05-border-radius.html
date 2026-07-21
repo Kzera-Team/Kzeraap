@@ -179,7 +179,7 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
       <span class="semantic-chip">FAB</span>
       <span class="semantic-chip">Avatar</span>
       <span class="semantic-chip">Chip de filtro ativo</span>
-      <span class="semantic-chip">Badge de notificação</span>
+      <span class="semantic-chip">Badge numérico de notificação (bolinha)</span>
     </div>
   </div>
 </div>
@@ -236,8 +236,16 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
     <div class="rule-icon">4</div>
     <div class="rule-text">Cards dentro de sheets usam <span>--radius-5 (20px)</span>. Cards soltos em tela usam <span>--radius-4 (16px)</span>.</div>
   </div>
+  <div class="rule-row">
+    <div class="rule-icon">5</div>
+    <div class="rule-text">Badge numérico de notificação (bolinha com número): <span>--radius-full</span>. Badge de texto inline (tag de categoria, status PRO, label): <span>--radius-1 (4px)</span>. Nunca usar --radius-full em badge de texto — fica pílula, não badge.</div>
+  </div>
+  <div class="rule-row">
+    <div class="rule-icon">6</div>
+    <div class="rule-text">O salto de <span>--radius-5 (20px)</span> para <span>--radius-6 (28px)</span> é intencional — 28px é o valor visual correto para modal e bottom sheet. Não criar --radius entre eles.</div>
+  </div>
 </div>
 
 <div class="note">
-  <strong>Migração:</strong> o mockup aprovado do bottom sheet usa <code style="background:#DDD4F3;padding:1px 5px;border-radius:4px;">18px</code> nos cards de opção. Migrar para <code style="background:#DDD4F3;padding:1px 5px;border-radius:4px;">--radius-5 (20px)</code> quando o componente for reimplementado.
+  <strong>Backlog:</strong> cards de opção no bottom sheet ainda usam 18px no mockup aprovado. Migrar para <code style="background:#DDD4F3;padding:1px 5px;border-radius:4px;">--radius-5 (20px)</code> quando o componente for reimplementado. Esta especificação já adota 20px como canônico — o mockup que está pendente de atualização, não a escala.
 </div>

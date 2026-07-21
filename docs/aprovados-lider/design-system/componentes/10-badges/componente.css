@@ -1,0 +1,56 @@
+/* ══════════════════════════════════════════
+   10 — Badges · componente.css
+   Fonte do design system — copiar para src/presentation/shared/styles/badge.css
+══════════════════════════════════════════ */
+
+/* ── Base ── */
+.kz-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-full);
+  padding: 3px 9px;
+  font-size: var(--t-xs);           /* 10px */
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ── Variantes de status ── */
+.kz-badge--success {
+  background: var(--kz-status-success-bg);
+  color: var(--kz-status-success-text);
+}
+
+.kz-badge--warning {
+  background: var(--kz-status-warning-bg);
+  color: var(--kz-status-warning-text);
+}
+
+.kz-badge--danger {
+  background: var(--kz-status-danger-bg);
+  color: var(--kz-status-danger-text);
+}
+
+.kz-badge--info {
+  background: var(--kz-status-info-bg);
+  color: var(--kz-status-info-text);
+}
+
+.kz-badge--neutral {
+  background: var(--kz-status-neutral-bg);
+  color: var(--kz-status-neutral-text);
+}
+
+/* ── Variante: numérico (contador circular) ── */
+.kz-badge--count {
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  justify-content: center;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: none;
+}

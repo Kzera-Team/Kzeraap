@@ -1,8 +1,8 @@
 .metric-card,
 .item-metric-card,
 .info-item {
-  border-radius: 14px;
-  padding: 12px;
+  border-radius: var(--radius-4); /* card de métrica → 16px (era 14px fora de escala) */
+  padding: var(--space-3);
 }
 
 .metric-card strong,
