@@ -78,3 +78,4 @@ Depois do papel, leia o módulo afetado:
 - `docs/modulos/ITENS.md`
 - `docs/modulos/ESTOQUE.md`
 - `docs/modulos/VENDAS.md`
+- `docs/reconstrucao/RECONSTRUCAO_MODULAR_2026-07-15.md`
