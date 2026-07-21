@@ -69,6 +69,12 @@ Se for entrega oficial, ler também:
 
 Usar quando houver validação, regressão, print, build, pacote ou entrega final.
 
+## Reconstrução atual
+
+Para retomada dos módulos dispersos, leia:
+
+- `docs/RECONSTRUCAO_MODULOS_DISPERSOS.md`
+
 ## Módulos
 
 Depois do papel, leia o módulo afetado:
