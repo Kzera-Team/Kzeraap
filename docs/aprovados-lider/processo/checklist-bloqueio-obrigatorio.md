@@ -2,11 +2,11 @@
 
 Os checklists oficiais ficam em:
 
-- `docs/aprovado-lider/dev/processo-dev.md`
-- `docs/aprovado-lider/dev/checklist-dev.md`
-- `docs/aprovado-lider/dev/checklist-visual.md`
-- `docs/aprovado-lider/dev/governanca-e-excecoes.md`
-- `docs/aprovado-lider/dev/controles-futuros.md`
+- `docs/aprovados-lider/processo/dev/processo-dev.md`
+- `docs/aprovados-lider/processo/dev/checklist-dev.md`
+- `docs/aprovados-lider/processo/dev/checklist-visual.md`
+- `docs/aprovados-lider/processo/dev/governanca-e-excecoes.md`
+- `docs/aprovados-lider/processo/dev/controles-futuros.md`
 
 Regra-mãe:
 

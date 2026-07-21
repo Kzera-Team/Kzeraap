@@ -1,0 +1,183 @@
+/* ══════════════════════════════════════════
+   11 — Navegação · nav.css
+   Fonte canônica: docs/aprovados-lider/design-system/componentes/11-navegacao/componente.css
+══════════════════════════════════════════ */
+
+.kz-nav-menu-btn {
+  position: fixed;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 60;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-4);
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(18,11,53,.82);
+  color: #fff;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-3);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kz-nav-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(0,0,0,.34);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+
+.kz-nav-drawer-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.kz-nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  width: min(84vw, 320px);
+  height: 100dvh;
+  padding: var(--space-6);
+  background: rgba(18,11,53,.98);
+  color: #fff;
+  transform: translateX(-105%);
+  transition: transform .2s ease;
+  box-shadow: 24px 0 60px rgba(0,0,0,.34);
+  display: flex;
+  flex-direction: column;
+}
+
+.kz-nav-drawer.is-open {
+  transform: translateX(0);
+}
+
+.kz-nav-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.kz-nav-drawer-title {
+  font-size: var(--t-md);
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+.kz-nav-drawer-close {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-3);
+  border: none;
+  background: rgba(255,255,255,.10);
+  color: inherit;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.kz-nav-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.kz-nav-drawer-item {
+  width: 100%;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-3);
+  border: none;
+  background: rgba(255,255,255,.07);
+  color: inherit;
+  font-size: var(--t-base);
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kz-nav-drawer-item.is-active,
+.kz-nav-drawer-item:hover {
+  background: rgba(255,255,255,.15);
+}
+
+.kz-nav-drawer-footer {
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+.kz-nav-version {
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.44);
+}
+
+.kz-screen-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  min-height: 56px;
+  background: var(--kz-light-bg);
+  border-bottom: 1px solid var(--kz-light-border);
+}
+
+.kz-screen-header-title {
+  flex: 1;
+  font-size: var(--t-xl);
+  font-weight: 900;
+  letter-spacing: -.03em;
+  color: var(--kz-light-text);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kz-screen-header-action {
+  flex-shrink: 0;
+}
+
+.kz-btn-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-3);
+  border: 1px solid var(--kz-light-border);
+  background: var(--kz-light-surface);
+  color: var(--kz-light-text);
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+  -webkit-tap-highlight-color: transparent;
+  transition: background .12s;
+  flex-shrink: 0;
+}
+
+.kz-btn-back:hover {
+  background: var(--kz-light-bg);
+}
+
+.kz-btn-back:active {
+  transform: scale(.95);
+  opacity: .85;
+}

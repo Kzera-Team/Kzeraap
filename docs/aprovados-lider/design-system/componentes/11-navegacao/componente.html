@@ -1,0 +1,32 @@
+<!-- KZERA · 11 — Navegação · componente.html -->
+<!-- Status: REPROVADO funcionalmente até validação em HTML real -->
+<!-- Requer: componente.css e componente.js -->
+
+<button class="kz-nav-menu-btn" type="button" aria-label="Abrir menu" aria-controls="kz-nav-drawer" aria-expanded="false" data-kz-nav-open>
+  ☰
+</button>
+
+<div class="kz-nav-drawer-backdrop" data-kz-nav-backdrop hidden></div>
+
+<aside class="kz-nav-drawer" id="kz-nav-drawer" aria-hidden="true" data-kz-nav-drawer>
+  <header class="kz-nav-drawer-header">
+    <strong class="kz-nav-drawer-title">KZERA</strong>
+    <button class="kz-nav-drawer-close" type="button" aria-label="Fechar menu" data-kz-nav-close>×</button>
+  </header>
+
+  <nav class="kz-nav-drawer-nav" aria-label="Menu principal">
+    <a class="kz-nav-drawer-link is-active" href="#">Início</a>
+    <a class="kz-nav-drawer-link" href="#">Venda manual</a>
+    <a class="kz-nav-drawer-link" href="#">Perfis</a>
+    <a class="kz-nav-drawer-link" href="#">Itens</a>
+    <a class="kz-nav-drawer-link" href="#">Financeiro</a>
+  </nav>
+</aside>
+
+<header class="kz-screen-header">
+  <button class="kz-btn-back" type="button" aria-label="Voltar">←</button>
+  <div class="kz-screen-header__text">
+    <p class="kz-screen-header__eyebrow">Venda manual</p>
+    <h1 class="kz-screen-header__title">Nova venda</h1>
+  </div>
+</header>

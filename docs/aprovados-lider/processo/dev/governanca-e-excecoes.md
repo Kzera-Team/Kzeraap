@@ -9,7 +9,7 @@ No contexto atual, o dono é o usuário solicitante.
 
 Só o dono pode aprovar alteração em:
 
-- documentos em `docs/aprovado-lider/dev`;
+- documentos em `docs/aprovados-lider/processo/dev`;
 - template de PR;
 - workflows;
 - scripts de bloqueio;

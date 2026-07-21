@@ -71,9 +71,9 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
   <div class="token-row"><span class="token-name">--kz-light-bg</span><span class="token-value">#F4F0FC</span><span class="token-badge badge-new">novo</span></div>
   <div class="token-row"><span class="token-name">--kz-light-surface</span><span class="token-value">#FFFFFF</span><span class="token-badge badge-new">novo</span></div>
   <div class="token-row"><span class="token-name">--kz-light-text</span><span class="token-value">#120B35</span><span class="token-badge badge-new">novo</span></div>
-  <div class="token-row"><span class="token-name">--kz-light-muted</span><span class="token-value">#6B5FA0</span><span class="token-badge badge-new">novo · AA 4.6:1</span></div>
-  <div class="token-row"><span class="token-name">--kz-light-accent</span><span class="token-value">#7B4DFF</span><span class="token-badge badge-new">novo</span></div>
-  <div class="token-row"><span class="token-name">--kz-light-accent-deep</span><span class="token-value">#5B2ECC</span><span class="token-badge badge-new">novo</span></div>
+  <div class="token-row"><span class="token-name">--kz-light-muted</span><span class="token-value">#6B5FA0</span><span class="token-badge badge-new">AA 4.6:1 · proibido &lt;14px</span></div>
+  <div class="token-row"><span class="token-name">--kz-light-accent</span><span class="token-value">#7B4DFF</span><span class="token-badge badge-new">decorativo · proibido como texto</span></div>
+  <div class="token-row"><span class="token-name">--kz-light-accent-deep</span><span class="token-value">#5B2ECC</span><span class="token-badge badge-new">AA 6.4:1 · links inline</span></div>
   <div class="token-row"><span class="token-name">--kz-light-border</span><span class="token-value">#DDD4F3</span><span class="token-badge badge-new">novo</span></div>
 </div>
 
@@ -88,4 +88,13 @@ h1 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; margin-bottom: 6
   <div class="migration-row"><span class="migration-old">--ift-purple</span><span class="migration-arrow">→</span><span class="migration-new">--vv-purple</span></div>
   <div class="migration-row"><span class="migration-old">#7B4DFF (hardcoded catalog)</span><span class="migration-arrow">→</span><span class="migration-new">--kz-light-accent</span></div>
   <div class="migration-row"><span class="migration-old">#7B4DFF (hardcoded dark)</span><span class="migration-arrow">→</span><span class="migration-new">--vv-purple</span></div>
+</div>
+
+<div class="sec">Regras de uso</div>
+<div class="decision-box">
+  <div class="decision-desc">
+    <strong style="color:#120B35;">--kz-light-muted:</strong> proibido em texto corrido abaixo de 14px. Uso restrito a metadados, hints e labels com tamanho mínimo --t-base (14px).<br><br>
+    <strong style="color:#120B35;">--kz-light-accent:</strong> proibido como cor de texto corrido (contraste 4.0:1 falha AA em texto normal). Para links inline usar --kz-light-accent-deep (#5B2ECC, 6.4:1) ou sublinhar.<br><br>
+    <strong style="color:#120B35;">Ver também:</strong> 03-cores para paleta completa com ratios de contraste e regras de status.
+  </div>
 </div>
