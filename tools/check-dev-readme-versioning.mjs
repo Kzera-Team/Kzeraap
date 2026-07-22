@@ -1,13 +1,42 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import path from 'node:path';
 
-const readmePath = 'docs/aprovado-lider/dev/README.md';
-const text = fs.readFileSync(readmePath, 'utf8').replace(/\r\n/g, '\n');
+const processDocsRoot = 'docs/aprovados-lider/processo';
 
 function fail(message) {
   console.error(`Versionamento do README inválido: ${message}`);
   process.exit(1);
 }
+
+if (!fs.existsSync(processDocsRoot)) {
+  fail(`diretório vigente não encontrado: ${processDocsRoot}`);
+}
+
+const markdownFiles = fs
+  .readdirSync(processDocsRoot, { recursive: true, withFileTypes: true })
+  .filter(entry => entry.isFile() && entry.name.toLowerCase().endsWith('.md'))
+  .map(entry => path.join(entry.parentPath ?? entry.path, entry.name));
+
+const candidates = markdownFiles
+  .map(filePath => ({
+    filePath,
+    text: fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n'),
+  }))
+  .filter(({ text }) =>
+    text.includes('## Versionamento do processo') &&
+    text.includes('## Alterações desta versão'),
+  );
+
+if (candidates.length === 0) {
+  fail(`nenhum README de processo versionado foi encontrado em ${processDocsRoot}.`);
+}
+
+if (candidates.length > 1) {
+  fail(`mais de um documento versionado foi encontrado: ${candidates.map(item => item.filePath).join(', ')}.`);
+}
+
+const [{ filePath: readmePath, text }] = candidates;
 
 function section(title) {
   const heading = `## ${title}`;
@@ -59,4 +88,6 @@ if (changeBullets.some(line => line === '-' || line.length < 20)) {
   fail('há item de alteração vazio ou insuficiente.');
 }
 
-console.log(`README de processo versionado corretamente: ${versionMatch[1]} (${dateMatch[1]}).`);
+console.log(
+  `README de processo versionado corretamente: ${readmePath} — ${versionMatch[1]} (${dateMatch[1]}).`,
+);
